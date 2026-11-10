@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LiteVideo from '../../components/LiteVideo.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { blowerGuides, dosDonts, getVideo } from '../../data/ownerHelp';
+import { photo } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('performance/16000-lift');
+// The Do's & Don'ts that are about the blower and raising/lowering
+const safety = [...dosDonts.dos, ...dosDonts.donts].filter((t) => /blower|lower|rais|swimmers|test run/i.test(t));
+---
+
+<BaseLayout title="Blower Controller User Guides" description="FiberSteel's blower controller user guides: the single-valve blower box, the double-valve blower box controller, and a lift lowering and raising — on video.">
+  <PageHero
+    title="Blower control guide"
+    titleHtml="Blower controller <em>user guides</em>"
+    eyebrow="Owners"
+    lead="How FiberSteel’s single- and double-valve blower boxes work, on video. Questions? Call — we’re glad to walk you through it."
+    crumbs={[{ label: 'Owners', href: withBase('/owners/') }, { label: 'Blower control guide' }]}
+    image={hero}
+    variant="split"
+  >
+    <a href={tel(site.sales.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container guides">
+      {
+        blowerGuides.map((g, n) => (
+          <article class="guide">
+            <p class="guide__num">{n + 1}</p>
+            <div class="guide__text">
+              <h2 class="h3">{g.title}</h2>
+              {g.tip && (
+                <p class="guide__tip">
+                  <Icon name="info" size={18} /> {g.tip}
+                </p>
+              )}
+              <p class="muted small">{getVideo(g.video).title}</p>
+            </div>
+            <LiteVideo video={getVideo(g.video)} />
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container container--narrow">
+      <h2>Before you raise or lower</h2>
+      <p class="lead">From FiberSteel’s <a class="text-link" href={withBase('/owners/dos-and-donts/')}>Do’s &amp; Don’ts</a>:</p>
+      <ul class="checklist mt-5">
+        {
+          safety.map((t) => (
+            <li>
+              <Icon name={t.startsWith('Do ') ? 'check' : 'close'} size={18} strokeWidth={2.4} /> <span>{t}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Want to run it <em>from a key fob?</em>"
+    text="Admiral remote control blower systems fit any size and any brand of boat lift."
+    quoteHref={withBase('/remotes/')}
+    image="remotes/double-valve-2-tanks"
+  />
+</BaseLayout>
+
+<style>
+  .guides {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .guide {
+    display: grid;
+    gap: var(--space-5);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .guide {
+      grid-template-columns: auto minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .guide__num {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--c-sun);
+    color: var(--c-ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+  }
+
+  .guide__text {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .guide__tip {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--c-accent-50);
+    font-weight: 600;
+  }
+
+  .guide__tip :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--c-accent);
+  }
+</style>

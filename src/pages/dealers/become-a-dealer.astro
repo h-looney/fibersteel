@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import RequestForm from '../../components/RequestForm.astro';
+import Icon from '../../components/Icon.astro';
+import { dealerKinds, STATE_NAMES } from '../../data/dealers';
+import { photo } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('about/boat-show-booth');
+const states = ['MO', 'IL', 'IA', 'IN', 'KS', 'TX', 'TN', 'AR', 'OK', 'NE', 'KY', 'Other'];
+---
+
+<BaseLayout
+  title="Become a FiberSteel Dealer"
+  description="FiberSteel Boat Lifts dealerships are available for marinas, dock builders and boat dealers. Tell us about your business."
+>
+  <PageHero
+    title="Become a dealer"
+    titleHtml="Sell <em>FiberSteel lifts</em>"
+    eyebrow="Dealerships available"
+    lead="Marinas, dock builders, boat dealers: FiberSteel is looking for dealers. Tell us about your business — or call to talk it through."
+    crumbs={[{ label: 'Dealers', href: withBase('/dealers/') }, { label: 'Become a dealer' }]}
+    image={hero}
+    variant="split"
+  >
+    <a href={tel(site.sales.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container dealer-form">
+      <RequestForm kind="dealer" submitLabel="Send my inquiry" doneText="Your inquiry is on its way to the FiberSteel team, and we’ll be in touch.">
+        <fieldset>
+          <legend class="request__legend">Your business</legend>
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Business name</span>
+              <input class="input" type="text" name="business" required autocomplete="organization" data-msg-required="Please tell us the business name." data-summary="Business" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Type of business</span>
+              <select class="select" name="businessType" data-summary="Type">
+                {dealerKinds.map((k) => <option value={k.toLowerCase()}>{k.replace(/s$/, '')}</option>)}
+                <option value="other">Something else</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">City</span>
+              <input class="input" type="text" name="city" autocomplete="address-level2" data-summary="Where" />
+            </label>
+            <label class="field">
+              <span class="field__label">State</span>
+              <select class="select" name="state" data-summary="Where">
+                {states.map((s) => <option value={s}>{STATE_NAMES[s] ?? (s === 'Other' ? 'Other / Canada' : s)}</option>)}
+              </select>
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Lakes or areas you serve <span class="field__optional">(optional)</span></span>
+              <input class="input" type="text" name="lakes" placeholder="e.g. Table Rock Lake, Branson area" data-summary="Serves" />
+            </label>
+            <label class="field">
+              <span class="field__label">Website <span class="field__optional">(optional)</span></span>
+              <input class="input" type="url" name="website" inputmode="url" placeholder="https://" data-msg-format="Please enter a full web address, starting with https://" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Years in business <span class="field__optional">(optional)</span></span>
+              <input class="input" type="number" name="years" min="0" max="200" inputmode="numeric" />
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="request__legend">You</legend>
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Your name</span>
+              <input class="input" type="text" name="name" required autocomplete="name" data-msg-required="Please tell us your name." />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input class="input" type="tel" name="phone" autocomplete="tel" pattern="[\d\s\(\)\.\+\-]{10,}" data-msg-format="Please enter a 10-digit phone number." data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="input" type="email" name="email" autocomplete="email" data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Anything else? <span class="field__optional">(optional)</span></span>
+              <textarea class="textarea" name="message" rows="4" placeholder="What you sell or build today, a showroom, install crews…"></textarea>
+            </label>
+          </div>
+        </fieldset>
+      </RequestForm>
+      <aside class="dealer-aside">
+        <h2 class="h4">Who we’re looking for</h2>
+        <ul class="checklist">
+          {
+            dealerKinds.map((k) => (
+              <li>
+                <Icon name="check" size={18} strokeWidth={2.4} /> <span>{k}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="muted small">FiberSteel sells across North America through factory-authorized dealers.</p>
+        <a href={withBase('/dealers/')} class="link-arrow">See the current dealers <Icon name="arrow-right" size={16} /></a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .dealer-form {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 1000px) {
+    .dealer-form {
+      grid-template-columns: minmax(0, 1fr) 300px;
+    }
+  }
+
+  .dealer-aside {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+</style>

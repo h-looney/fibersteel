@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { dosDonts } from '../../data/ownerHelp';
+import { photo } from '../../data/photos';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('pontoon/tritoon-lowering');
+---
+
+<BaseLayout title="Boat Lift Do’s & Don’ts" description="FiberSteel's basic rules for boat lift use — the do's and don'ts that affect the performance and warranties of the lifts.">
+  <PageHero
+    title="Do’s & Don’ts"
+    titleHtml="Boat lift <em>Do’s &amp; Don’ts</em>"
+    eyebrow="Owners"
+    lead={dosDonts.intro}
+    crumbs={[{ label: 'Owners', href: withBase('/owners/') }, { label: 'Do’s & Don’ts' }]}
+    image={hero}
+  >
+    <button type="button" class="btn btn--ghost-light" data-print><Icon name="book" size={18} /> Print this page</button>
+  </PageHero>
+
+  <section class="section">
+    <div class="container dd">
+      <section class="dd__col dd__col--do" aria-labelledby="dos">
+        <h2 id="dos"><Icon name="check" size={26} strokeWidth={2.6} /> Do</h2>
+        <ol class="dd__list">
+          {dosDonts.dos.map((t) => <li>{t.replace(/^Do /, '')}</li>)}
+        </ol>
+      </section>
+      <section class="dd__col dd__col--dont" aria-labelledby="donts">
+        <h2 id="donts"><Icon name="close" size={26} strokeWidth={2.6} /> Don’t</h2>
+        <ol class="dd__list">
+          {dosDonts.donts.map((t) => <li>{t.replace(/^Don't /, '')}</li>)}
+        </ol>
+      </section>
+    </div>
+    <div class="container">
+      <p class="dd__source">From FiberSteel’s Do’s &amp; Don’ts (© DMP ’08), which the current site shows as a picture — here as text that screen readers, search engines and printers can read.</p>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Questions about <em>your lift?</em>"
+    text="Ask your dealer or installer, or call the factory."
+    quoteHref={withBase('/service/')}
+    image="vbottom/16000-post-walkboards"
+  />
+</BaseLayout>
+
+<style>
+  .dd {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .dd {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .dd__col {
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    border-top: 6px solid var(--c-open);
+  }
+
+  .dd__col--dont {
+    border-top-color: var(--c-closed);
+  }
+
+  .dd__col h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    font-size: var(--fs-2xl);
+  }
+
+  .dd__col--do h2 :global(svg) {
+    color: var(--c-open);
+  }
+
+  .dd__col--dont h2 :global(svg) {
+    color: var(--c-closed);
+  }
+
+  .dd__list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding-left: 1.4em;
+  }
+
+  .dd__list li {
+    padding-left: var(--space-2);
+  }
+
+  .dd__list li::marker {
+    font-weight: 700;
+    color: var(--c-text-muted);
+  }
+
+  .dd__list li::first-letter {
+    text-transform: uppercase;
+  }
+
+  .dd__source {
+    margin-top: var(--space-5);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  @media print {
+    .dd__col {
+      break-inside: avoid;
+      border-width: 1px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+</script>

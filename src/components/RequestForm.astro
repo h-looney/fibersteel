@@ -1,0 +1,272 @@
+---
+/**
+ * A one-page request form (service & parts, warranty registration, dealer inquiry, contact): the fields go in the
+ * default slot; this handles checking them, sending (src/scripts/forms.ts — front end only, `data-endpoint` to wire a
+ * backend), the confirmation, and the concept demo's hand-off note to FiberSteel mode.
+ *
+ * Fields marked data-contact-one (phone, email): at least one of them is needed.
+ */
+import Icon from './Icon.astro';
+import { site, tel, prettyPhone } from '../data/site';
+import type { FormKind } from '../office/bridge';
+
+interface Props {
+  kind: FormKind;
+  submitLabel: string;
+  doneTitle?: string;
+  doneText: string;
+  /** Which phone line to offer on the confirmation */
+  line?: 'sales' | 'service';
+  id?: string;
+}
+
+const { kind, submitLabel, doneTitle = 'Thank you!', doneText, line = 'sales', id } = Astro.props;
+const phone = line === 'service' ? site.service : site.sales;
+---
+
+<div class="request" data-request id={id}>
+  <form class="request__form" data-request-form data-office={kind} novalidate>
+    <slot />
+    <p class="request__privacy"><Icon name="shield" size={16} /> We’ll only use your information to answer your request.</p>
+    <div class="request__actions">
+      <button type="submit" class="btn btn--primary btn--lg" data-submit>
+        {submitLabel} <Icon name="arrow-right" size={18} class="icon-arrow" />
+      </button>
+    </div>
+    <p class="request__fail" role="alert" hidden data-fail>
+      Something went wrong sending your request. Please try again, or call {prettyPhone(phone.phone)}.
+    </p>
+  </form>
+
+  <div class="request__done" data-done hidden tabindex="-1">
+    <span class="request__done-icon"><Icon name="check" size={30} strokeWidth={2.4} /></span>
+    <h2 class="request__done-title" data-done-title data-default={doneTitle}>{doneTitle}</h2>
+    <p class="muted">
+      {doneText} Need us sooner? Call <a href={tel(phone.phone)}>{prettyPhone(phone.phone)}</a>.
+    </p>
+    <dl class="request__summary" data-request-summary></dl>
+    <p class="demo-handoff" data-office-note hidden>
+      <Icon name="briefcase" size={16} />
+      <span><strong>Concept demo:</strong> on the real site, this request is emailed to the address FiberSteel chooses, for the team to review. If FiberSteel adds FiberSteel mode, it also arrives in the staff inbox. <a href="#" data-office-link>See it in the FiberSteel mode demo</a></span>
+    </p>
+  </div>
+</div>
+
+<style>
+  .request {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .request__form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .request__form :global(.request__grid) {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .request__form :global(.request__grid) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .request__form :global(.request__full) {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .request__form :global(fieldset) {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .request__form :global(.request__legend) {
+    padding: 0;
+    margin-bottom: var(--space-3);
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 760;
+    font-size: var(--fs-lg);
+  }
+
+  .request__form :global([data-required-group][data-invalid] .field__error) {
+    display: block;
+  }
+
+  .request__form :global([data-required-group][data-invalid] .option) {
+    border-color: var(--c-danger);
+  }
+
+  .request__privacy {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .request__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .request__fail {
+    color: var(--c-danger);
+    font-weight: 550;
+  }
+
+  .request__done {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .request__done[hidden] {
+    display: none;
+  }
+
+  .request__done:focus {
+    outline: none;
+  }
+
+  .request__done a:not(.btn) {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .request__done-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--c-open);
+    color: #fff;
+  }
+
+  .request__done-title {
+    font-size: var(--fs-2xl);
+  }
+
+  .request__summary {
+    display: grid;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-4) var(--space-5);
+    background: var(--c-tint);
+    border-radius: var(--radius);
+    font-size: var(--fs-sm);
+  }
+
+  .request__summary:empty {
+    display: none;
+  }
+
+  .request__summary :global(div) {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: var(--space-3);
+  }
+
+  .request__summary :global(dt) {
+    color: var(--c-text-muted);
+  }
+
+  @media (max-width: 480px) {
+    .request__summary :global(div) {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>
+
+<script>
+  import { validate, liveClear, submit, setBusy } from '../scripts/forms';
+  import { withBase } from '../scripts/url';
+
+  document.querySelectorAll<HTMLElement>('[data-request]').forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>('[data-request-form]')!;
+    const done = root.querySelector<HTMLElement>('[data-done]')!;
+    liveClear(form);
+
+    /** Phone or email: one way to reach them is enough */
+    const contactOk = () => {
+      const fields = [...form.querySelectorAll<HTMLInputElement>('[data-contact-one]')];
+      if (fields.length < 2 || fields.some((f) => f.value.trim())) return true;
+      const last = fields[fields.length - 1];
+      const holder = last.closest<HTMLElement>('.field')!;
+      holder.dataset.invalid = '';
+      holder.querySelector<HTMLElement>('.field__error')!.textContent = 'Please give us a phone number or an email address.';
+      last.setAttribute('aria-invalid', 'true');
+      fields[0].focus();
+      return false;
+    };
+
+    /** What the visitor saw for a field, for the confirmation */
+    const shownValue = (el: Element) => {
+      if (el instanceof HTMLSelectElement) return el.value ? el.selectedOptions[0]?.textContent?.trim() ?? '' : '';
+      if (el instanceof HTMLInputElement && (el.type === 'radio' || el.type === 'checkbox')) return el.checked ? el.closest('label')?.textContent?.trim() ?? '' : '';
+      if (el instanceof HTMLInputElement && el.type === 'file') return el.files?.length ? `${el.files.length} file${el.files.length > 1 ? 's' : ''}` : '';
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return el.value.trim();
+      return '';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate(form) || !contactOk()) return;
+      const button = form.querySelector<HTMLButtonElement>('[data-submit]');
+      const fail = form.querySelector<HTMLElement>('[data-fail]')!;
+      fail.hidden = true;
+      setBusy(button, true);
+      try {
+        const officeRef = await submit(form);
+        const name = String(new FormData(form).get('name') ?? new FormData(form).get('contactName') ?? '').split(' ')[0];
+        const title = root.querySelector<HTMLElement>('[data-done-title]')!;
+        title.textContent = name ? `${title.dataset.default?.replace(/!$/, '')}, ${name}!` : title.dataset.default ?? 'Thank you!';
+        // Summary: every field marked data-summary="Label"
+        const rows = new Map<string, string[]>();
+        form.querySelectorAll<HTMLElement>('[data-summary]').forEach((el) => {
+          const label = el.dataset.summary!;
+          const controls = el.matches('input, select, textarea') ? [el] : [...el.querySelectorAll('input, select, textarea')];
+          const values = controls.map(shownValue).filter(Boolean);
+          if (values.length) rows.set(label, [...(rows.get(label) ?? []), ...values]);
+        });
+        const dl = root.querySelector<HTMLElement>('[data-request-summary]')!;
+        dl.replaceChildren(
+          ...[...rows].map(([k, v]) => {
+            const div = document.createElement('div');
+            const dt = document.createElement('dt');
+            const dd = document.createElement('dd');
+            dt.textContent = k;
+            dd.textContent = v.join(', ');
+            div.append(dt, dd);
+            return div;
+          }),
+        );
+        if (officeRef) {
+          root.querySelector<HTMLAnchorElement>('[data-office-link]')!.href = withBase(`/office/inbox/?ref=${officeRef}&signin`);
+          root.querySelector<HTMLElement>('[data-office-note]')!.hidden = false;
+        }
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } catch {
+        fail.hidden = false;
+      } finally {
+        setBusy(button, false);
+      }
+    });
+  });
+</script>

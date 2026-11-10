@@ -1,0 +1,246 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Photo from '../components/Photo.astro';
+import LiteVideo from '../components/LiteVideo.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { whyFiberSteel } from '../data/lifts';
+import { videos } from '../data/ownerHelp';
+import { photo } from '../data/photos';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const hero = photo('large/24000-back-in');
+const shop = photo('front/6800-front-mounted-2');
+const booth = photo('about/boat-show-booth');
+const tanks = photo('shallow/8000-shallow-3');
+
+const values = [
+  { icon: 'shield', title: 'The warranties to back it up', text: 'FiberSteel stands behind its lifts with a lifetime warranty on the poly tanks and lift frame, for peace of mind that you’ve invested in quality equipment.' },
+  { icon: 'award', title: 'Experience and knowledge', text: `With ${site.experience} of experience in the marine industry, FiberSteel has the knowledge to handle all of your boat lift needs and requirements.` },
+  { icon: 'users', title: 'Customer service', text: 'Customers trust FiberSteel with their boats. We always try to help our current and future customers with our knowledge and service.' },
+] as const;
+const aboutVideos = videos.filter((v) => ['2gqVc7PhQFY', 'SR-sWVL4A3M', 'bfT7C_Cj4Vw'].includes(v.id));
+---
+
+<BaseLayout
+  title="About FiberSteel Boat Lifts"
+  description="FiberSteel Boat Lifts designs, builds, installs and services its own floating boat lifts in Camdenton, Missouri — square poly tanks, virtually no metal parts in the water, and over 30 years in the marine industry."
+>
+  <PageHero
+    title="About FiberSteel"
+    titleHtml="The boaters’ choice <em>in boat lifts</em>"
+    eyebrow="About us"
+    lead="We design, build, install and service our lifts — factory direct from Camdenton, at the Lake of the Ozarks."
+    crumbs={[{ label: 'About' }]}
+    image={hero}
+  >
+    <a href={tel(site.sales.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> Call &amp; order · {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {
+          values.map((v) => (
+            <article class="value" data-reveal>
+              <span class="icon-tile">
+                <Icon name={v.icon} size={24} />
+              </span>
+              <h2 class="h3">{v.title}</h2>
+              <p class="muted">{v.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark on-dark">
+    <div class="container story">
+      <div class="story__copy" data-reveal>
+        <p class="eyebrow">Why we build our lifts like we do</p>
+        <h2>Tube tanks or <em>square poly tanks?</em></h2>
+        <p>
+          Good question. Look at almost any dock, marina or floating structure where strength, stability and durability
+          matter: it floats on box-style flotation. FiberSteel lifts use square polyethylene tanks for the same reason.
+        </p>
+        <p>
+          Round, “log” style air tanks don’t spread the weight loads and stresses nearly as well, and they need more steel
+          in the water just to hold them in place. They cost more, have critical metal parts in the water that will rust
+          away, and need deeper water to work.
+        </p>
+        <p><strong>The less steel in the water, the better</strong> — it makes your lift last longer too. FiberSteel lifts handle rough water and waves just like your strong dock does: a tested and proven design, with the warranties to back it up.</p>
+        <ul class="checklist">
+          {
+            whyFiberSteel.map((f) => (
+              <li>
+                <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <figure class="story__photo" data-reveal style="--reveal-delay: 120ms">
+        <Photo src={tanks.src} alt={tanks.alt} sizes="(min-width: 960px) 560px, 100vw" />
+        <figcaption>{tanks.caption}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container dean">
+      <figure class="dean__photo media-frame">
+        <Photo src={shop.src} alt={shop.alt} sizes="(min-width: 960px) 520px, 100vw" />
+      </figure>
+      <div class="dean__copy">
+        <p class="eyebrow">Need help finding the right lift?</p>
+        <h2>Call {site.sales.contact}.</h2>
+        <p class="lead">
+          Finding the right lift can be tricky — and expensive. {site.sales.contact} has been boating for over 55 years and
+          will gladly help you find the right lift for your boats.
+        </p>
+        <div class="cluster">
+          <a href={tel(site.sales.phone)} class="btn btn--primary btn--lg"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+          <a href={withBase('/quote/')} class="link-arrow">Or request a quote online <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <SectionHeading eyebrow="Video" title="See FiberSteel lifts at work" lead="FiberSteel’s own videos — they play from YouTube when you press play." />
+      <div class="grid grid--3">
+        {
+          aboutVideos.map((v) => (
+            <figure class="about-video">
+              <LiteVideo video={v} />
+              <figcaption>{v.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container member">
+      <figure class="member__photo media-frame">
+        <Photo src={booth.src} alt={booth.alt} sizes="(min-width: 960px) 480px, 100vw" />
+      </figure>
+      <div class="stack">
+        <p class="eyebrow">At the lake, and beyond it</p>
+        <h2 class="h3">Factory direct, and through authorized dealers</h2>
+        <p class="muted">
+          FiberSteel serves the Lake of the Ozarks and all of Missouri from the factory in Camdenton — or ships to you —
+          and sells across North America through factory-authorized dealers.
+        </p>
+        <div class="cluster">
+          <a href={withBase('/dealers/')} class="btn btn--outline">Find a dealer</a>
+          <a href={withBase('/contact/')} class="link-arrow">Visit the factory <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .value {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .story {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .story {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    }
+  }
+
+  .story__copy {
+    display: grid;
+    gap: var(--space-4);
+    color: var(--c-text-invert-muted);
+  }
+
+  .story__copy h2,
+  .story__copy strong {
+    color: var(--c-text-invert);
+  }
+
+  .story__copy .checklist {
+    color: var(--c-text-invert);
+  }
+
+  .story__photo {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .story__photo :global(img) {
+    border-radius: var(--radius-lg);
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .story__photo figcaption {
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  .dean,
+  .member {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .dean {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .member {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .dean__photo,
+  .member__photo {
+    margin: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .dean__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .about-video {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .about-video figcaption {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+</style>

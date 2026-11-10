@@ -1,0 +1,86 @@
+---
+interface Props {
+  steps: { title: string; text: string }[];
+  dark?: boolean;
+}
+
+const { steps, dark = false } = Astro.props;
+---
+
+<ol class:list={['steps', { 'steps--dark': dark }]} role="list">
+  {
+    steps.map((s, i) => (
+      <li class="step" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
+        <span class="step__num" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <h3 class="step__title">{s.title}</h3>
+        <p class="step__text">{s.text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: var(--space-6);
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--c-line-strong);
+  }
+
+  .steps--dark .step {
+    border-color: var(--c-ink-line);
+  }
+
+  .step::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 48px;
+    height: 2px;
+    background: var(--c-accent);
+  }
+
+  .steps--dark .step::before {
+    background: var(--c-sun);
+  }
+
+  .step__num {
+    font-family: var(--font-display);
+    font-size: var(--fs-2xl);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1;
+    color: var(--c-steel-text);
+  }
+
+  .steps--dark .step__num {
+    color: var(--c-steel-light);
+  }
+
+  .step__title {
+    font-size: var(--fs-lg);
+  }
+
+  .step__text {
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .steps--dark .step__text {
+    color: var(--c-text-invert-muted);
+  }
+</style>

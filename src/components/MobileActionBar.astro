@@ -1,0 +1,169 @@
+---
+/**
+ * Thumb-friendly action bar for phones: call (sales or service), get directions to the factory, or request a quote.
+ * The call sheet uses the native Popover API — no JavaScript.
+ */
+import Icon from './Icon.astro';
+import OpenStatus from './OpenStatus.astro';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const lines = [
+  { label: 'Sales & new lifts', sub: `Ask for ${site.sales.contact}`, phone: site.sales.phone },
+  { label: 'Service, parts & repairs', sub: 'Service department', phone: site.service.phone },
+];
+---
+
+<nav class="action-bar no-print" aria-label="Quick actions">
+  <button type="button" class="action-bar__btn" popovertarget="call-sheet">
+    <Icon name="phone" size={20} />
+    <span>Call</span>
+  </button>
+  <a href={site.directionsUrl} class="action-bar__btn" target="_blank" rel="noopener">
+    <Icon name="pin" size={20} />
+    <span>Directions</span>
+  </a>
+  <a href={withBase('/quote/')} class="action-bar__btn action-bar__btn--primary">
+    <Icon name="lift" size={20} />
+    <span>Get a quote</span>
+  </a>
+</nav>
+
+<div id="call-sheet" popover class="sheet">
+  <p class="sheet__title">Call FiberSteel</p>
+  <p class="sheet__status"><OpenStatus /></p>
+  <ul role="list" class="sheet__list">
+    {
+      lines.map((l) => (
+        <li>
+          <a href={tel(l.phone)} class="sheet__item">
+            <span class="icon-tile">
+              <Icon name={l.label.startsWith('Service') ? 'wrench' : 'phone'} size={20} />
+            </span>
+            <span class="sheet__text">
+              <strong>{l.label}</strong>
+              <span class="tabular">{prettyPhone(l.phone)}</span>
+              <span class="sheet__sub">{l.sub}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <button type="button" class="btn btn--outline btn--block" popovertarget="call-sheet" popovertargetaction="hide">
+    Cancel
+  </button>
+</div>
+
+<style>
+  .action-bar {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .action-bar {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 90;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+      background: rgb(11 37 69 / 0.96);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--c-ink-line);
+    }
+  }
+
+  .action-bar__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 48px;
+    border-radius: var(--radius);
+    color: var(--c-text-invert);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-decoration: none;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .action-bar__btn--primary {
+    background: var(--c-sun);
+    color: var(--c-ink);
+  }
+
+  .sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + env(safe-area-inset-bottom));
+    border: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--c-paper);
+    color: var(--c-text);
+    box-shadow: 0 -20px 50px -10px rgb(0 0 0 / 0.4);
+  }
+
+  .sheet::backdrop {
+    background: rgb(7 26 50 / 0.55);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sheet:popover-open {
+      animation: sheet-in 280ms var(--ease-out);
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      translate: 0 100%;
+    }
+  }
+
+  .sheet__title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 760;
+    font-size: var(--fs-lg);
+  }
+
+  .sheet__status {
+    margin: var(--space-1) 0 var(--space-4);
+    color: var(--c-text-muted);
+  }
+
+  .sheet__list {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .sheet__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--c-text);
+    text-decoration: none;
+  }
+
+  .sheet__text {
+    display: grid;
+    gap: 0.1rem;
+    line-height: 1.35;
+  }
+
+  .sheet__sub {
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+</style>

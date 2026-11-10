@@ -1,0 +1,223 @@
+---
+/**
+ * A grid of FiberSteel's photos with their captions. Clicking one opens it larger in a dialog (keyboard: arrows move,
+ * Esc closes). Captions are FiberSteel's own, from its current site.
+ */
+import { getImage } from 'astro:assets';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import type { SitePhoto } from '../data/photos';
+
+interface Props {
+  photos: SitePhoto[];
+  id?: string;
+  /** Columns on wide screens */
+  columns?: 3 | 4;
+}
+
+const { photos, id = 'photos', columns = 3 } = Astro.props;
+const large = await Promise.all(photos.map((p) => getImage({ src: p.src, width: Math.min(1600, p.src.width), format: 'webp' })));
+---
+
+<div class="photo-grid" data-photo-grid id={id} style={`--cols: ${columns}`}>
+  <ul role="list" class="photo-grid__list">
+    {
+      photos.map((p, i) => (
+        <li>
+          <figure class="photo-grid__item">
+            <button
+              type="button"
+              class="photo-grid__open"
+              data-full={large[i].src}
+              data-alt={p.alt}
+              data-caption={p.caption ?? ''}
+              data-index={i}
+            >
+              <Photo src={p.src} alt={p.alt} sizes={`(min-width: 1240px) ${columns === 4 ? 300 : 400}px, (min-width: 700px) 45vw, 100vw`} position={p.position} />
+              <span class="photo-grid__zoom" aria-hidden="true">
+                <Icon name="expand" size={16} />
+              </span>
+              <span class="visually-hidden">View larger</span>
+            </button>
+            {p.caption && <figcaption class="photo-grid__caption">{p.caption}</figcaption>}
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+  <dialog class="photo-viewer" data-photo-viewer aria-label="Photo">
+    <div class="photo-viewer__inner">
+      <img alt="" data-viewer-img />
+      <p class="photo-viewer__caption" data-viewer-caption></p>
+      <div class="photo-viewer__nav">
+        <button type="button" class="btn btn--ghost-light btn--sm" data-viewer-prev><Icon name="arrow-left" size={16} /> Previous</button>
+        <span class="photo-viewer__count" data-viewer-count></span>
+        <button type="button" class="btn btn--ghost-light btn--sm" data-viewer-next>Next <Icon name="arrow-right" size={16} /></button>
+      </div>
+      <button type="button" class="photo-viewer__close" data-viewer-close>
+        <Icon name="close" size={22} />
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  .photo-grid__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1100px) {
+    .photo-grid__list {
+      grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    }
+  }
+
+  .photo-grid__item {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .photo-grid__open {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--c-tint);
+    cursor: zoom-in;
+  }
+
+  .photo-grid__open :global(picture),
+  .photo-grid__open :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .photo-grid__open:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .photo-grid__zoom {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgb(11 37 69 / 0.75);
+    color: #fff;
+  }
+
+  .photo-grid__caption {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+    line-height: 1.45;
+  }
+
+  .photo-viewer {
+    width: min(1100px, 100% - 2rem);
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: #061629;
+    color: var(--c-text-invert);
+  }
+
+  .photo-viewer::backdrop {
+    background: rgb(7 26 50 / 0.85);
+  }
+
+  .photo-viewer__inner {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .photo-viewer img {
+    width: 100%;
+    max-height: calc(100dvh - 11rem);
+    object-fit: contain;
+  }
+
+  .photo-viewer__caption {
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert-muted);
+  }
+
+  .photo-viewer__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .photo-viewer__count {
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  .photo-viewer__close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgb(11 37 69 / 0.85);
+    color: #fff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-photo-grid]').forEach((grid) => {
+    const dialog = grid.querySelector<HTMLDialogElement>('[data-photo-viewer]')!;
+    const img = dialog.querySelector<HTMLImageElement>('[data-viewer-img]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-viewer-caption]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-viewer-count]')!;
+    const items = [...grid.querySelectorAll<HTMLButtonElement>('[data-full]')];
+    let at = 0;
+    let opener: HTMLElement | null = null;
+    const show = (n: number) => {
+      at = (n + items.length) % items.length;
+      const b = items[at];
+      img.src = b.dataset.full!;
+      img.alt = b.dataset.alt ?? '';
+      caption.textContent = b.dataset.caption ?? '';
+      caption.hidden = !b.dataset.caption;
+      count.textContent = `${at + 1} of ${items.length}`;
+    };
+    items.forEach((b, n) =>
+      b.addEventListener('click', () => {
+        opener = b;
+        show(n);
+        dialog.showModal();
+      }),
+    );
+    dialog.querySelector('[data-viewer-prev]')!.addEventListener('click', () => show(at - 1));
+    dialog.querySelector('[data-viewer-next]')!.addEventListener('click', () => show(at + 1));
+    dialog.querySelector('[data-viewer-close]')!.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(at - 1);
+      if (e.key === 'ArrowRight') show(at + 1);
+    });
+    dialog.addEventListener('close', () => opener?.focus());
+  });
+</script>

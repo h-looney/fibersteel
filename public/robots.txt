@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+# FiberSteel mode (the optional staff demo)
+Disallow: /office/
+
+Sitemap: https://lakeboatlifts.com/sitemap.xml

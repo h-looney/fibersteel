@@ -1,0 +1,285 @@
+---
+/**
+ * One install: FiberSteel's photos (a gallery), what was built for the boat, the lift and the slip at a glance, a
+ * quote for a lift like it, and more installs. The installs in the repo are samples, and the page says so.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getImage } from 'astro:assets';
+import '../../styles/gallery.css';
+import '../../styles/installs.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import Photo from '../../components/Photo.astro';
+import InstallGrid from '../../components/InstallGrid.astro';
+import FeatureOff from '../../components/FeatureOff.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { installs, kindLabel, kindsForType, monthLabel, type Install } from '../../data/installs';
+import { features } from '../../data/features';
+import { getSize, liftTypeHref } from '../../data/lifts';
+import { photo } from '../../data/photos';
+import { site } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+export const getStaticPaths = (() => (features.installs ? installs.map((install) => ({ params: { slug: install.slug }, props: { install } })) : [])) satisfies GetStaticPaths;
+
+interface Props {
+  install: Install;
+}
+
+const { install: i } = Astro.props;
+const pics = i.photos.map(photo);
+const size = i.size ? getSize(i.size) : undefined;
+const finished = monthLabel(i.month);
+const typeSlug = Object.entries(kindsForType).find(([, kinds]) => kinds.includes(i.kind))?.[0];
+const quoteType = { pwc: 'pwc', 'v-bottom': 'v-bottom', pontoon: 'pontoon', performance: 'performance', large: 'large', front: 'front', shallow: 'shallow', 'dock-steps': 'dock-steps' }[i.kind];
+const quoteHref = withBase(`/quote/?type=${quoteType}`);
+
+const more = installs
+  .filter((x) => x.slug !== i.slug)
+  .sort((a, b) => Number(b.kind === i.kind) - Number(a.kind === i.kind) || b.month.localeCompare(a.month))
+  .slice(0, 3);
+
+const lead = await getImage({ src: pics[0].src, width: Math.min(1200, pics[0].src.width), format: 'jpg' });
+const glance = [
+  ['The lift', size?.name ?? (i.kind === 'dock-steps' ? 'Self-raising dock steps' : 'Custom built')],
+  ['The boat', i.boat !== '—' ? i.boat : ''],
+  ['Slip', i.slip ?? ''],
+  ['Docking', i.docking ?? ''],
+  ['Where', `${i.town}, MO · Lake of the Ozarks`],
+  ['Finished', finished],
+].filter(([, v]) => v);
+
+const schema = {
+  '@type': 'ImageGallery',
+  name: i.title,
+  description: i.story,
+  url: new URL(withBase(`/installs/${i.slug}/`), Astro.site).toString(),
+  image: new URL(lead.src, Astro.site).toString(),
+  contentLocation: { '@type': 'Place', name: `${i.town}, MO` },
+  creator: { '@id': `${site.url}/#business` },
+};
+---
+
+<BaseLayout title={`${i.title} — ${i.town}, MO`} description={`${i.story} A FiberSteel lift at the Lake of the Ozarks (sample install).`} image={lead.src} schema={[schema]}>
+  <div data-feature="installs">
+    <section class="ihero on-dark" data-install-page={i.slug}>
+      <div class="container ihero__inner">
+        <div class="ihero__text">
+          <Breadcrumbs items={[{ label: 'Lifts we’ve installed', href: withBase('/installs/') }, { label: i.title }]} />
+          <p class="eyebrow">Lifts we’ve installed · {i.town}, MO</p>
+          <h1>{i.title}</h1>
+          <p class="lead">{i.story}</p>
+          <ul class="cluster ihero__chips" role="list">
+            <li class="chip">{kindLabel(i.kind)}</li>
+            <li class="chip">{finished}</li>
+            {i.sample && <li class="chip">Sample</li>}
+          </ul>
+          <div class="cluster">
+            <a href={quoteHref} class="btn btn--sun">Get a quote for a lift like this <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+            {typeSlug && <a href={withBase(liftTypeHref(typeSlug))} class="btn btn--ghost-light">About these lifts</a>}
+          </div>
+        </div>
+
+        <div class="gallery" data-install-gallery>
+          <div class="gallery__slides">
+            {
+              pics.map((p, n) => (
+                <figure class="gallery__slide" data-slide={n} hidden={n > 0}>
+                  <div class:list={['gallery__frame', { 'gallery__frame--fill': p.src.width / p.src.height > 1.4 }]}>
+                    <Photo src={p.src} alt={p.alt} sizes="(min-width: 960px) 600px, 100vw" position={p.position} loading={n === 0 ? 'eager' : 'lazy'} />
+                  </div>
+                  {p.caption && <figcaption class="gallery__caption">{p.caption}</figcaption>}
+                </figure>
+              ))
+            }
+          </div>
+          {
+            pics.length > 1 && (
+              <ul class="gallery__thumbs" role="list">
+                {pics.map((p, n) => (
+                  <li>
+                    <button type="button" class="gallery__thumb" data-show={n} aria-pressed={n === 0 ? 'true' : 'false'}>
+                      <Photo src={p.src} alt="" sizes="72px" widths={[144]} />
+                      <span class="visually-hidden">Photo {n + 1} of {pics.length}: {p.alt}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container ibody">
+        <div class="ibody__main">
+          <h2 class="h3">What was built for it</h2>
+          <ul class="checklist">
+            {
+              i.built.map((b) => (
+                <li>
+                  <Icon name="check" size={18} strokeWidth={2.4} /> <span>{b}</span>
+                </li>
+              ))
+            }
+          </ul>
+          {
+            i.sample && (
+              <p class="ibody__sample">
+                <Icon name="info" size={16} />
+                <span>
+                  A sample for this concept: the photos and what was built come from FiberSteel’s current site; the town, month and write-up are made up.
+                </span>
+              </p>
+            )
+          }
+        </div>
+        <aside class="ibody__glance" aria-label="At a glance">
+          <h2 class="h4">At a glance</h2>
+          <dl>
+            {
+              glance.map(([k, v]) => (
+                <div>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          {size && <a href={withBase(`/lifts/sizes/#size-${size.id}`)} class="link-arrow">The {size.name} <Icon name="arrow-right" size={16} /></a>}
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section--tint">
+      <div class="container">
+        <SectionHeading align="split" eyebrow="More installs" title="Lifts like this one">
+          <a href={withBase('/installs/')} class="link-arrow">All installs <Icon name="arrow-right" size={16} /></a>
+        </SectionHeading>
+        <InstallGrid installs={more} scope="none" />
+      </div>
+    </section>
+  </div>
+
+  <section class="section" data-feature-off="installs">
+    <div class="container">
+      <FeatureOff feature="installs" headingLevel="h2" page />
+    </div>
+  </section>
+
+  <CtaBand quoteHref={quoteHref} image={i.photos[0]} />
+</BaseLayout>
+
+<style>
+  .ihero {
+    background:
+      radial-gradient(ellipse 60% 90% at 90% 110%, rgb(29 78 208 / 0.3), transparent 60%),
+      var(--c-ink);
+  }
+
+  .ihero__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  @media (min-width: 960px) {
+    .ihero__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .ihero__text {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .ihero h1 {
+    font-size: var(--fs-3xl);
+  }
+
+  .ihero__chips {
+    padding: 0;
+  }
+
+  .ibody {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  @media (min-width: 900px) {
+    .ibody {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+
+  .ibody__main {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .ibody__sample {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--c-line-strong);
+    border-radius: var(--radius);
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  .ibody__sample :global(svg) {
+    flex: none;
+    margin-top: 3px;
+  }
+
+  .ibody__glance {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .ibody__glance dl {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .ibody__glance dl div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .ibody__glance dt {
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .ibody__glance dd {
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-install-gallery]').forEach((g) => {
+    g.querySelector('.gallery__thumbs')?.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLElement>('[data-show]');
+      if (!b) return;
+      const show = Number(b.dataset.show);
+      g.querySelectorAll<HTMLElement>('[data-slide]').forEach((s, n) => (s.hidden = n !== show));
+      g.querySelectorAll('[data-show]').forEach((t, n) => t.setAttribute('aria-pressed', String(n === show)));
+    });
+  });
+</script>

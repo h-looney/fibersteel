@@ -1,0 +1,814 @@
+---
+/**
+ * Three-step quote request: the boat, the slip, and how to reach you — what FiberSteel's home page says it needs to
+ * size a lift (brand, model, length and weight, and the slip's width × length). As the visitor types the boat's dry
+ * weight, fuel and length, it works out FiberSteel's own formula and names the standard size that covers it.
+ *
+ * Pre-fills from the URL: ?type=pwc|v-bottom|pontoon|performance|large|front|shallow (lift-type pages), and the lift
+ * size calculator's hand-off ?dry=&fuel=&length=. Front-end only — see src/scripts/forms.ts.
+ */
+import Icon from './Icon.astro';
+import { boatSizes, formula } from '../data/lifts';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const steps = ['Your boat', 'Your slip', 'Your details'];
+
+const boatTypes = [
+  ['pwc', 'PWC / personal watercraft'],
+  ['v-bottom', 'V-bottom (fishing, ski, runabout)'],
+  ['cat-hull', 'Cat-hull'],
+  ['pontoon', 'Pontoon or tri-toon'],
+  ['performance', 'Performance boat or cuddy'],
+  ['cruiser', 'Cruiser or large boat'],
+  ['sailboat', 'Sailboat'],
+  ['other', 'Something else'],
+];
+const sizes = boatSizes.map((s) => ({ capacity: s.capacity, name: s.name }));
+const calc = { ...formula, sizes };
+---
+
+<div class="quote" data-quote>
+  <script is:inline type="application/json" data-quote-calc set:html={JSON.stringify(calc)} />
+  <ol class="quote__steps" role="list" aria-label="Form progress">
+    {
+      steps.map((s, i) => (
+        <li class="quote__step" data-step-indicator={i} aria-current={i === 0 ? 'step' : undefined}>
+          <span class="quote__step-num">{i + 1}</span>
+          <span class="quote__step-label">{s}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <form class="quote__form" data-quote-form data-office="quote" novalidate>
+    <!-- Step 1: the boat -->
+    <fieldset class="quote__panel" data-panel="0">
+      <legend class="quote__legend">Tell us about your boat</legend>
+      <p class="quote__hint">Brand, model, length and weight are what we need to size your lift. Not sure of something? Leave it blank — we’ll help.</p>
+      <div class="quote__from-calc" data-from-calc hidden>
+        <Icon name="calculator" size={18} />
+        <p>Filled in from the lift size calculator. Check the numbers, then carry on.</p>
+      </div>
+
+      <div class="quote__full quote__types" data-required-group data-msg-required="Please choose the type of boat.">
+        <p class="field__label">What kind of boat is it?</p>
+        <div class="option-grid">
+          {
+            boatTypes.map(([value, label]) => (
+              <label class="option">
+                <input type="radio" name="boatType" value={value} />
+                <span class="option__mark">
+                  <Icon name="check" size={13} strokeWidth={3} />
+                </span>
+                <span class="option__text">{label}</span>
+              </label>
+            ))
+          }
+        </div>
+        <p class="field__error" role="alert"></p>
+      </div>
+
+      <div class="quote__grid">
+        <label class="field" data-pwc-only hidden>
+          <span class="field__label">How many watercraft?</span>
+          <select class="select" name="pwcCount">
+            <option value="1">One</option>
+            <option value="2">Two</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Brand <span class="field__optional">(optional)</span></span>
+          <input class="input" type="text" name="brand" autocomplete="off" placeholder="e.g. Sea Ray" />
+        </label>
+        <label class="field">
+          <span class="field__label">Model <span class="field__optional">(optional)</span></span>
+          <input class="input" type="text" name="model" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span class="field__label">Length (ft) <span class="field__optional">(optional)</span></span>
+          <input class="input" type="number" name="length" inputmode="decimal" min="5" max="80" step="0.5" data-msg-format="Please enter a length between 5 and 80 ft." />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Dry weight (lb) <span class="field__optional">(optional)</span></span>
+          <input class="input" type="number" name="dryWeight" inputmode="numeric" min="100" max="40000" step="1" data-msg-format="Please enter the weight in pounds." />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Fuel capacity (gallons) <span class="field__optional">(optional)</span></span>
+          <input class="input" type="number" name="fuel" inputmode="numeric" min="0" max="1000" step="1" data-msg-format="Please enter the fuel capacity in gallons." />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <div class="quote__estimate" data-estimate hidden aria-live="polite">
+          <p class="quote__estimate-label">By FiberSteel’s formula</p>
+          <p class="quote__estimate-math" data-estimate-math></p>
+          <p class="quote__estimate-size" data-estimate-size></p>
+          <input type="hidden" name="suggested" value="" data-estimate-input />
+        </div>
+      </div>
+      <div class="quote__nav">
+        <span></span>
+        <button type="button" class="btn btn--primary" data-next>
+          Next: your slip <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </button>
+      </div>
+    </fieldset>
+
+    <!-- Step 2: the slip -->
+    <fieldset class="quote__panel" data-panel="1" hidden>
+      <legend class="quote__legend">Tell us about your slip</legend>
+      <p class="quote__hint">Measure the inside of the slip, width × length.</p>
+      <div class="quote__grid">
+        <label class="field">
+          <span class="field__label">Slip width (ft) <span class="field__optional">(optional)</span></span>
+          <input class="input" type="number" name="slipWidth" inputmode="decimal" min="4" max="40" step="0.5" data-msg-format="Please enter a width between 4 and 40 ft." />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Slip length (ft) <span class="field__optional">(optional)</span></span>
+          <input class="input" type="number" name="slipLength" inputmode="decimal" min="6" max="100" step="0.5" data-msg-format="Please enter a length between 6 and 100 ft." />
+          <span class="field__error" role="alert"></span>
+        </label>
+
+        <div class="quote__full">
+          <p class="field__label">How do you dock?</p>
+          <div class="cluster quote__inline-options">
+            {
+              [
+                ['straight', 'Straight pull-in'],
+                ['back-in', 'Back-in'],
+                ['not-sure', 'Not sure yet'],
+              ].map(([value, label]) => (
+                <label class="option">
+                  <input type="radio" name="docking" value={value} />
+                  <span class="option__mark">
+                    <Icon name="check" size={13} strokeWidth={3} />
+                  </span>
+                  <span class="option__text">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="quote__full">
+          <p class="field__label">How deep is the water at the slip?</p>
+          <div class="cluster quote__inline-options">
+            {
+              [
+                ['normal', 'Plenty deep'],
+                ['shallow', 'Shallow (a cove, or low water)'],
+                ['not-sure', 'Not sure'],
+              ].map(([value, label]) => (
+                <label class="option">
+                  <input type="radio" name="water" value={value} />
+                  <span class="option__mark">
+                    <Icon name="check" size={13} strokeWidth={3} />
+                  </span>
+                  <span class="option__text">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="quote__note" data-shallow-note hidden>
+            <Icon name="waves" size={16} /> FiberSteel builds shallow-water lifts with poly tanks only 20 to 24 inches deep.
+          </p>
+        </div>
+
+        <div class="quote__full">
+          <p class="field__label">Also interested in <span class="field__optional">(optional)</span></p>
+          <div class="option-grid">
+            {
+              [
+                ['remote', 'An Admiral remote control'],
+                ['walkboards', 'Walk boards'],
+                ['guides', 'Lift guides'],
+                ['front-mounted', 'A front-mounted lift'],
+                ['dock-steps', 'Dock steps'],
+              ].map(([value, label]) => (
+                <label class="option">
+                  <input type="checkbox" name="extras" value={value} />
+                  <span class="option__mark">
+                    <Icon name="check" size={13} strokeWidth={3} />
+                  </span>
+                  <span class="option__text">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </div>
+
+        <label class="field">
+          <span class="field__label">Where is the dock?</span>
+          <select class="select" name="area" data-area>
+            <option value="loz" selected>Lake of the Ozarks</option>
+            <option value="missouri">Elsewhere in Missouri</option>
+            <option value="other">Outside Missouri</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="field__label">Cove, mile marker or town <span class="field__optional">(optional)</span></span>
+          <input class="input" type="text" name="location" autocomplete="off" placeholder="e.g. Gravois arm, near the 8 MM" />
+        </label>
+        <p class="quote__note quote__full" data-area-note hidden>
+          <Icon name="truck" size={16} /> FiberSteel can ship to you — or <a href={withBase('/dealers/')}>find an authorized dealer</a> near you.
+        </p>
+      </div>
+      <div class="quote__nav">
+        <button type="button" class="btn btn--outline" data-back>
+          <Icon name="arrow-left" size={18} /> Back
+        </button>
+        <button type="button" class="btn btn--primary" data-next>
+          Next: your details <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </button>
+      </div>
+    </fieldset>
+
+    <!-- Step 3: contact -->
+    <fieldset class="quote__panel" data-panel="2" hidden>
+      <legend class="quote__legend">How can we reach you?</legend>
+      <div class="quote__grid">
+        <label class="field">
+          <span class="field__label">Full name</span>
+          <input class="input" type="text" name="name" autocomplete="name" required data-msg-required="Please tell us your name." />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Phone</span>
+          <input class="input" type="tel" name="phone" autocomplete="tel" pattern="[\d\s\(\)\.\+\-]{10,}" data-msg-format="Please enter a 10-digit phone number." data-contact-one />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">Email</span>
+          <input class="input" type="email" name="email" autocomplete="email" data-contact-one />
+          <span class="field__error" role="alert"></span>
+        </label>
+        <label class="field">
+          <span class="field__label">When do you need it?</span>
+          <select class="select" name="timeline">
+            <option value="asap">As soon as possible</option>
+            <option value="summer" selected>Before summer</option>
+            <option value="planning">Just planning ahead</option>
+          </select>
+        </label>
+        <div class="quote__full">
+          <p class="field__label">Best way to reach you</p>
+          <div class="cluster quote__inline-options">
+            {
+              [
+                ['phone', 'Phone call'],
+                ['text', 'Text message'],
+                ['email', 'Email'],
+              ].map(([value, label], i) => (
+                <label class="option">
+                  <input type="radio" name="contactPref" value={value} checked={i === 0} />
+                  <span class="option__mark">
+                    <Icon name="check" size={13} strokeWidth={3} />
+                  </span>
+                  <span class="option__text">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </div>
+        <label class="field quote__full">
+          <span class="field__label">Anything else we should know? <span class="field__optional">(optional)</span></span>
+          <textarea class="textarea" name="details" rows="4" placeholder="A second boat, a lift you’re replacing, the dock, the best time to call…"></textarea>
+        </label>
+      </div>
+      <p class="quote__privacy">
+        <Icon name="shield" size={16} /> We’ll only use your information to answer your request.
+      </p>
+      <div class="quote__nav">
+        <button type="button" class="btn btn--outline" data-back>
+          <Icon name="arrow-left" size={18} /> Back
+        </button>
+        <button type="submit" class="btn btn--primary btn--lg" data-submit>
+          Send my request <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </button>
+      </div>
+      <p class="quote__fail" role="alert" hidden data-fail>
+        Something went wrong sending your request. Please try again, or call {prettyPhone(site.sales.phone)}.
+      </p>
+    </fieldset>
+  </form>
+
+  <div class="quote__done" data-done hidden tabindex="-1">
+    <span class="quote__done-icon"><Icon name="check" size={30} strokeWidth={2.4} /></span>
+    <h2 class="quote__done-title" data-done-title>Thank you!</h2>
+    <p class="muted">
+      Your request is on its way to the FiberSteel team, and we’ll get back to you within 48 hours. Want to talk it
+      through now? Call {site.sales.contact} at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a>.
+    </p>
+    <dl class="quote__summary" data-summary></dl>
+    <p class="demo-handoff" data-office-note hidden>
+      <Icon name="briefcase" size={16} />
+      <span><strong>Concept demo:</strong> on the real site, this request is emailed to the address FiberSteel chooses, for the team to review. If FiberSteel adds FiberSteel mode, it also arrives in the staff inbox. <a href="#" data-office-link>See it in the FiberSteel mode demo</a></span>
+    </p>
+    <div class="cluster">
+      <a href={withBase('/installs/')} class="btn btn--outline" data-feature="installs">See lifts we’ve installed</a>
+      <a href={withBase('/lifts/')} class="link-arrow">Browse lifts by boat type <Icon name="arrow-right" size={16} /></a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quote {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .quote__steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  .quote__step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 3px solid var(--c-line);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--c-text-muted);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .quote__step[aria-current='step'],
+  .quote__step.is-done {
+    border-color: var(--c-accent);
+    color: var(--c-text);
+  }
+
+  .quote__step-num {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--c-tint);
+    font-size: var(--fs-2xs);
+  }
+
+  .quote__step[aria-current='step'] .quote__step-num,
+  .quote__step.is-done .quote__step-num {
+    background: var(--c-accent);
+    color: #fff;
+  }
+
+  .quote__panel {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .quote__panel[hidden],
+  .quote__done[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .quote__panel:not([hidden]) {
+      animation: q-in 380ms var(--ease-out);
+    }
+  }
+
+  @keyframes q-in {
+    from {
+      opacity: 0;
+      translate: 14px 0;
+    }
+  }
+
+  .quote__legend {
+    padding: 0;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-size: var(--fs-xl);
+    font-weight: 780;
+    line-height: 1.2;
+  }
+
+  .quote__hint {
+    margin-top: var(--space-1);
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .quote__types {
+    margin-top: var(--space-5);
+  }
+
+  @media (max-width: 520px) {
+    .quote__types .option-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+
+    .quote__types .option {
+      gap: var(--space-2);
+      padding: 0.7rem 0.75rem;
+      font-size: var(--fs-xs);
+    }
+  }
+
+  [data-required-group][data-invalid] .field__error {
+    display: block;
+  }
+
+  [data-required-group][data-invalid] .option {
+    border-color: var(--c-danger);
+  }
+
+  .quote__grid {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+
+  @media (min-width: 640px) {
+    .quote__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .quote__full {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .quote__inline-options .option {
+    min-height: 48px;
+  }
+
+  .quote__estimate {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.2rem;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius);
+    background: var(--c-accent-50);
+    border: 1px solid #c9d8fa;
+  }
+
+  .quote__estimate[hidden] {
+    display: none;
+  }
+
+  .quote__estimate-label {
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-accent-700);
+  }
+
+  .quote__estimate-math {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .quote__estimate-size {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 780;
+    font-size: var(--fs-lg);
+    color: var(--c-ink);
+  }
+
+  .quote__from-calc,
+  .quote__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius);
+    background: var(--c-sun-50);
+    color: var(--c-text);
+    font-size: var(--fs-sm);
+  }
+
+  .quote__from-calc {
+    margin-top: var(--space-4);
+  }
+
+  .quote__from-calc[hidden],
+  .quote__note[hidden] {
+    display: none;
+  }
+
+  .quote__from-calc :global(svg),
+  .quote__note :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--c-sun-text);
+  }
+
+  .quote__note a {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .quote__privacy {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .quote__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .quote__fail {
+    margin-top: var(--space-4);
+    color: var(--c-danger);
+    font-weight: 550;
+  }
+
+  .quote__done {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .quote__done:focus {
+    outline: none;
+  }
+
+  .quote__done a:not(.btn):not(.link-arrow) {
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .quote__done-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--c-open);
+    color: #fff;
+  }
+
+  .quote__done-title {
+    font-size: var(--fs-2xl);
+  }
+
+  .quote__summary {
+    display: grid;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-4) var(--space-5);
+    background: var(--c-tint);
+    border-radius: var(--radius);
+    font-size: var(--fs-sm);
+  }
+
+  .quote__summary :global(div) {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: var(--space-3);
+  }
+
+  .quote__summary :global(dt) {
+    color: var(--c-text-muted);
+  }
+
+  @media (max-width: 480px) {
+    .quote__step-label {
+      font-size: 0.6875rem;
+    }
+
+    .quote__summary :global(div) {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>
+
+<script>
+  import { validate, liveClear, submit, setBusy } from '../scripts/forms';
+  import { withBase } from '../scripts/url';
+
+  interface Calc {
+    fuelLbPerGallon: number;
+    allowanceUpTo30ft: number;
+    allowanceOver30ft: number;
+    lengthCutoffFt: number;
+    sizes: { capacity: number; name: string }[];
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-quote]');
+  if (root) {
+    const form = root.querySelector<HTMLFormElement>('[data-quote-form]')!;
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+    const indicators = Array.from(root.querySelectorAll<HTMLElement>('[data-step-indicator]'));
+    const done = root.querySelector<HTMLElement>('[data-done]')!;
+    const calc: Calc = JSON.parse(root.querySelector('[data-quote-calc]')?.textContent ?? '{}');
+    const field = <T extends Element = HTMLInputElement>(name: string) => form.elements.namedItem(name) as unknown as T | null;
+    const num = (name: string) => {
+      const v = Number((field(name) as HTMLInputElement | null)?.value);
+      return Number.isFinite(v) && v > 0 ? v : 0;
+    };
+    const lb = (n: number) => `${n.toLocaleString('en-US')} lb`;
+    let step = 0;
+
+    const go = (n: number) => {
+      step = n;
+      panels.forEach((p, i) => (p.hidden = i !== n));
+      indicators.forEach((ind, i) => {
+        ind.toggleAttribute('aria-current', i === n);
+        if (i === n) ind.setAttribute('aria-current', 'step');
+        ind.classList.toggle('is-done', i < n);
+      });
+      const top = root.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight * 0.5) root.scrollIntoView({ block: 'start' });
+      panels[n].querySelector<HTMLElement>('input, select, textarea')?.focus({ preventScroll: true });
+    };
+
+    /** Name and (phone or email): one way to reach them is enough */
+    const contactOk = () => {
+      const phone = field('phone') as HTMLInputElement;
+      const email = field('email') as HTMLInputElement;
+      const ok = !!(phone.value.trim() || email.value.trim());
+      const holder = email.closest<HTMLElement>('.field')!;
+      const error = holder.querySelector<HTMLElement>('.field__error')!;
+      if (!ok) {
+        holder.dataset.invalid = '';
+        error.textContent = 'Please give us a phone number or an email address.';
+        email.setAttribute('aria-invalid', 'true');
+      }
+      return ok;
+    };
+
+    const check = (n: number) => {
+      const valid = validate(panels[n]);
+      if (n === 2 && valid && !contactOk()) {
+        (field('phone') as HTMLInputElement).focus();
+        return false;
+      }
+      return valid;
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-next]').forEach((b) =>
+      b.addEventListener('click', () => {
+        if (check(step)) go(step + 1);
+      }),
+    );
+    root.querySelectorAll<HTMLButtonElement>('[data-back]').forEach((b) => b.addEventListener('click', () => go(step - 1)));
+    liveClear(form);
+
+    /* ----- FiberSteel's formula, live ----- */
+    const estimate = root.querySelector<HTMLElement>('[data-estimate]')!;
+    const pwcOnly = root.querySelector<HTMLElement>('[data-pwc-only]')!;
+    const boatType = () => (form.querySelector<HTMLInputElement>('input[name="boatType"]:checked')?.value ?? '');
+    const updateEstimate = () => {
+      const isPwc = boatType() === 'pwc';
+      pwcOnly.hidden = !isPwc;
+      const dry = num('dryWeight');
+      const length = num('length');
+      const input = root.querySelector<HTMLInputElement>('[data-estimate-input]')!;
+      if (isPwc || !dry || !length) {
+        estimate.hidden = true;
+        input.value = '';
+        return;
+      }
+      const fuel = Math.round(num('fuel') * calc.fuelLbPerGallon);
+      const allowance = length > calc.lengthCutoffFt ? calc.allowanceOver30ft : calc.allowanceUpTo30ft;
+      const needed = Math.round(dry) + fuel + allowance;
+      const size = calc.sizes.find((s) => s.capacity >= needed);
+      root.querySelector('[data-estimate-math]')!.textContent =
+        `${lb(Math.round(dry))} dry + ${lb(fuel)} of fuel + ${lb(allowance)} (${length > calc.lengthCutoffFt ? 'over' : 'up to'} ${calc.lengthCutoffFt} ft) = ${lb(needed)}`;
+      root.querySelector('[data-estimate-size]')!.textContent = size
+        ? `A ${size.name} covers it — we’ll confirm when we call.`
+        : 'More than 24,000 lb — call us about a custom lift.';
+      input.value = size ? `${size.name} (needs ${lb(needed)})` : `Custom (needs ${lb(needed)})`;
+      estimate.hidden = false;
+    };
+    form.addEventListener('input', updateEstimate);
+    form.addEventListener('change', updateEstimate);
+
+    /* ----- Notes that follow the answers ----- */
+    const shallowNote = root.querySelector<HTMLElement>('[data-shallow-note]')!;
+    const areaNote = root.querySelector<HTMLElement>('[data-area-note]')!;
+    form.addEventListener('change', () => {
+      shallowNote.hidden = form.querySelector<HTMLInputElement>('input[name="water"]:checked')?.value !== 'shallow';
+      areaNote.hidden = (field<HTMLSelectElement>('area')?.value ?? 'loz') !== 'other';
+    });
+
+    /* ----- Pre-fill from the URL ----- */
+    const params = new URLSearchParams(location.search);
+    const setRadio = (name: string, value: string) => {
+      const box = form.querySelector<HTMLInputElement>(`input[name="${name}"][value="${CSS.escape(value)}"]`);
+      if (box) box.checked = true;
+    };
+    const setBox = (name: string, value: string) => setRadio(name, value);
+    const type = params.get('type');
+    const typeMap: Record<string, () => void> = {
+      pwc: () => setRadio('boatType', 'pwc'),
+      'v-bottom': () => setRadio('boatType', 'v-bottom'),
+      pontoon: () => setRadio('boatType', 'pontoon'),
+      performance: () => setRadio('boatType', 'performance'),
+      large: () => setRadio('boatType', 'cruiser'),
+      front: () => setBox('extras', 'front-mounted'),
+      shallow: () => setRadio('water', 'shallow'),
+      'dock-steps': () => setBox('extras', 'dock-steps'),
+      remote: () => setBox('extras', 'remote'),
+    };
+    if (type && typeMap[type]) typeMap[type]();
+    const fromCalc = ['dry', 'fuel', 'length'].some((k) => params.has(k));
+    for (const [param, name] of [
+      ['dry', 'dryWeight'],
+      ['fuel', 'fuel'],
+      ['length', 'length'],
+    ]) {
+      const v = Number(params.get(param));
+      const input = field(name) as HTMLInputElement | null;
+      if (input && Number.isFinite(v) && v > 0) input.value = String(v);
+    }
+    if (fromCalc) {
+      root.querySelector<HTMLElement>('[data-from-calc]')!.hidden = false;
+      if (!boatType()) setRadio('boatType', 'v-bottom');
+    }
+    updateEstimate();
+    form.dispatchEvent(new Event('change'));
+
+    /* ----- Send ----- */
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!check(step)) return;
+      const button = form.querySelector<HTMLButtonElement>('[data-submit]');
+      const fail = form.querySelector<HTMLElement>('[data-fail]')!;
+      fail.hidden = true;
+      setBusy(button, true);
+      try {
+        const officeRef = await submit(form);
+        const data = new FormData(form);
+        const name = String(data.get('name') ?? '').split(' ')[0];
+        root.querySelector('[data-done-title]')!.textContent = name ? `Thank you, ${name}!` : 'Thank you!';
+        const labels = (f: string) =>
+          data
+            .getAll(f)
+            .map((v) => form.querySelector(`input[name="${f}"][value="${CSS.escape(String(v))}"]`)?.closest('label')?.textContent?.trim() ?? String(v))
+            .join(', ');
+        const boat = [data.get('brand'), data.get('model')].filter(Boolean).join(' ');
+        const slip = data.get('slipWidth') || data.get('slipLength') ? `${data.get('slipWidth') || '?'} × ${data.get('slipLength') || '?'} ft` : '';
+        const rows: [string, string][] = [
+          ['Boat', [labels('boatType'), boat, data.get('length') ? `${data.get('length')} ft` : ''].filter(Boolean).join(' · ')],
+          ['Suggested lift', String(data.get('suggested') ?? '')],
+          ['Slip', [slip, labels('docking')].filter(Boolean).join(' · ')],
+          ['Also interested in', labels('extras')],
+          ['Contact', [data.get('phone'), data.get('email')].filter(Boolean).join(' · ')],
+        ];
+        const dl = root.querySelector<HTMLElement>('[data-summary]')!;
+        dl.replaceChildren(
+          ...rows
+            .filter(([, v]) => v)
+            .map(([k, v]) => {
+              const div = document.createElement('div');
+              const dt = document.createElement('dt');
+              const dd = document.createElement('dd');
+              dt.textContent = k;
+              dd.textContent = v;
+              div.append(dt, dd);
+              return div;
+            }),
+        );
+        if (officeRef) {
+          root.querySelector<HTMLAnchorElement>('[data-office-link]')!.href = withBase(`/office/inbox/?ref=${officeRef}&signin`);
+          root.querySelector<HTMLElement>('[data-office-note]')!.hidden = false;
+        }
+        form.hidden = true;
+        root.querySelector<HTMLElement>('.quote__steps')!.hidden = true;
+        done.hidden = false;
+        done.focus();
+      } catch {
+        fail.hidden = false;
+      } finally {
+        setBusy(button, false);
+      }
+    });
+  }
+</script>

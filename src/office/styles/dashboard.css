@@ -1,0 +1,411 @@
+/* ---------- Dashboard ---------- */
+.welcome {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 24px;
+  margin-bottom: 16px;
+  padding: 20px 22px;
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgb(255 207 51 / 0.12), transparent 60%),
+    var(--o-surface);
+}
+
+.welcome__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-steel-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.welcome__title {
+  margin: 6px 0 8px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.welcome__text {
+  color: var(--o-muted);
+  max-width: 54ch;
+}
+
+.welcome__progress {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.welcome__list .section-label {
+  margin-top: 0;
+}
+
+.welcome__list ul {
+  display: grid;
+  gap: 2px;
+}
+
+.welcome__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  color: var(--o-text);
+  text-decoration: none;
+}
+
+.welcome__item:hover {
+  background: var(--o-hover);
+}
+
+.welcome__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--o-line-strong);
+  background: #fff;
+}
+
+.welcome__check.is-done {
+  border-color: #2f8a62;
+  background: #2f8a62;
+  color: #fff;
+}
+
+.welcome__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+@media (max-width: 960px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dash-main,
+.dash-side {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .dash-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Agenda (today's schedule) */
+.agenda {
+  max-height: 452px;
+  overflow-y: auto;
+}
+
+.agenda li + li {
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.agenda__row {
+  display: grid;
+  grid-template-columns: 62px 4px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.agenda__row:hover {
+  background: var(--o-hover);
+}
+
+.agenda__time {
+  display: grid;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.agenda__dur {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.agenda__bar {
+  align-self: stretch;
+  border-radius: 2px;
+  background: var(--o-line-strong);
+}
+
+.agenda__bar--accent {
+  background: var(--series-1);
+}
+
+.agenda__bar--blue {
+  background: #1f4f86;
+}
+
+.agenda__bar--green {
+  background: var(--series-3);
+}
+
+.agenda__bar--amber {
+  background: #c98500;
+}
+
+.agenda__bar--violet {
+  background: #6b4fa3;
+}
+
+.agenda__bar--teal {
+  background: #1f7a8c;
+}
+
+.agenda__bar--neutral {
+  background: #7b8a9b;
+}
+
+.agenda__main {
+  display: grid;
+  min-width: 0;
+}
+
+.agenda__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agenda__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--o-muted);
+  font-size: 0.78125rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .agenda__row {
+    grid-template-columns: 54px 4px minmax(0, 1fr);
+    padding: 10px 14px;
+  }
+
+  .agenda__row .avatar-stack,
+  .agenda__status {
+    display: none;
+  }
+}
+
+/* Compact lists in side cards */
+.mini-list li + li {
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.mini-list__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mini-list__row:hover {
+  background: var(--o-hover);
+}
+
+.mini-list__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--c-tint);
+  color: var(--o-muted);
+}
+
+.mini-list__icon--accent {
+  background: #e8effd;
+  color: #153690;
+}
+
+.mini-list__icon--blue {
+  background: #e3edf8;
+  color: #1f4f86;
+}
+
+.mini-list__icon--red {
+  background: #fbe4df;
+  color: #9b2c1d;
+}
+
+.mini-list__icon--amber {
+  background: #fbefd5;
+  color: #7a4f06;
+}
+
+.mini-list__icon--violet {
+  background: #ece7f8;
+  color: #4f3d99;
+}
+
+.mini-list__icon--neutral {
+  background: #e8eef4;
+  color: #2f3e50;
+}
+
+.mini-list__icon--green {
+  background: #e0f0e5;
+  color: #1d6a3d;
+}
+
+.mini-list__icon--teal {
+  background: #dff1f1;
+  color: #155e63;
+}
+
+.mini-list__main {
+  display: grid;
+  min-width: 0;
+}
+
+.mini-list__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-list__sub {
+  color: var(--o-muted);
+  font-size: 0.78125rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-list__time {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.mini-list__chev {
+  color: var(--o-muted);
+}
+
+.unread-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+
+.channel-split {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.channel-split li {
+  display: grid;
+  gap: 6px;
+}
+
+.channel-split__name {
+  font-weight: 600;
+}
+
+.channel-split__value {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-footnote {
+  margin-top: 20px;
+  color: var(--o-muted);
+  font-size: 0.78125rem;
+}
+
+/* The revenue sparkline sits under the numbers, so long values never run into it */
+.dashboard .stat__spark {
+  position: static;
+  margin-top: 4px;
+}
+
+/* "Needs attention" titles wrap instead of cutting off */
+.mini-list--wrap .mini-list__title {
+  white-space: normal;
+  overflow: visible;
+}
+
+.mini-list--wrap .mini-list__sub {
+  white-space: normal;
+}
+
+.mini-list__status {
+  color: var(--o-text);
+  font-weight: 600;
+}
+
+button.welcome__item {
+  width: 100%;
+  text-align: left;
+}
+
+.welcome__item.is-off {
+  color: var(--o-muted);
+  flex-wrap: wrap;
+}
+
+.welcome__off {
+  flex-basis: 100%;
+  margin-left: 28px;
+  font-size: 0.75rem;
+}
+
+/* Two numbers per row on phones */
+@media (max-width: 640px) {
+  .dashboard > .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard > .stats .stat {
+    padding: 12px;
+  }
+
+  .dashboard > .stats .stat__value {
+    font-size: 1.375rem;
+  }
+}

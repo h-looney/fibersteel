@@ -1,0 +1,60 @@
+# Builds and publishes the concept site to GitHub Pages — on every push to main, and on demand.
+# One-time setup: repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
+#
+# Cut down from the HMI concept's workflow: this site has no outbound-link checker or /go/ pages (only 13 outbound
+# links — see the README), so there's no nightly run. A deploy happens only after the unit tests and the checks on the
+# built site pass. The browser tests run locally (npm run test:browser).
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - id: pages
+        uses: actions/configure-pages@v6
+      - run: npm ci
+
+      - name: Unit tests (lift-size formula, hours, data rules, website publishing checks)
+        run: npm test
+
+      # Build for the Pages address, e.g. https://<user>.github.io/<repo>/
+      - run: npm run build -- --site "$PAGES_ORIGIN" --base "$PAGES_BASE"
+        env:
+          PAGES_ORIGIN: ${{ steps.pages.outputs.origin }}
+          PAGES_BASE: ${{ steps.pages.outputs.base_path || '/' }}
+
+      - name: Check the built site (links, SEO tags, redirects, wording, prices)
+        run: npm run test:site
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

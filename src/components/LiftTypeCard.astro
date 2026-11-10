@@ -1,0 +1,99 @@
+---
+/** A lift-type card: FiberSteel's photo, the name, what its pages say about it, and the sizes it lists. */
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { getSize, liftTypeHref, type LiftType } from '../data/lifts';
+import { photo } from '../data/photos';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  type: LiftType;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { type: t, headingLevel: H = 'h3' } = Astro.props;
+const img = photo(t.hero);
+const sizes = t.sizes.map((id) => getSize(id)!).filter(Boolean);
+const range =
+  sizes.length > 1 && sizes.every((s) => s.group !== 'pwc')
+    ? `${sizes[0].capacity.toLocaleString('en-US')} – ${sizes[sizes.length - 1].capacity.toLocaleString('en-US')} lb`
+    : sizes.length === 1
+      ? sizes[0].name
+      : sizes.length
+        ? `${sizes.length} styles`
+        : 'Custom built';
+---
+
+<article class="card card--hover lift-card">
+  <div class="card__media lift-card__media">
+    <Photo src={img.src} alt={img.alt} sizes="(min-width: 1240px) 300px, (min-width: 700px) 45vw, 100vw" position={img.position} />
+    <span class="lift-card__range">{range}</span>
+  </div>
+  <div class="card__body">
+    <H class="lift-card__title">
+      <a href={withBase(liftTypeHref(t.slug))} class="card__link">{t.name}</a>
+    </H>
+    <p class="lift-card__tagline">{t.tagline.text}</p>
+    <span class="link-arrow lift-card__more" aria-hidden="true">See the lifts <Icon name="arrow-right" size={16} /></span>
+  </div>
+</article>
+
+<style>
+  .lift-card__media {
+    --ratio: 4 / 3;
+  }
+
+  .lift-card__range {
+    position: absolute;
+    left: var(--space-3);
+    bottom: var(--space-3);
+    z-index: 2;
+    padding: 0.25em 0.7em;
+    border-radius: var(--radius-pill);
+    background: var(--c-sun);
+    color: var(--c-ink);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+
+  .lift-card__title {
+    font-size: var(--fs-lg);
+  }
+
+  .lift-card__tagline {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  .lift-card__more {
+    margin-top: auto;
+  }
+
+  /* Phones: one column, the photo beside the text */
+  @media (max-width: 560px) {
+    .lift-card {
+      flex-direction: row;
+    }
+
+    .lift-card__media {
+      flex: 0 0 38%;
+      aspect-ratio: auto;
+      min-height: 150px;
+    }
+
+    .lift-card .card__body {
+      padding: var(--space-4);
+      gap: var(--space-2);
+    }
+
+    .lift-card__title {
+      font-size: var(--fs-md);
+    }
+
+    .lift-card__range {
+      left: var(--space-2);
+      bottom: var(--space-2);
+      font-size: var(--fs-2xs);
+    }
+  }
+</style>

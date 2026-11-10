@@ -1,0 +1,53 @@
+---
+/**
+ * A plain-words privacy policy for the new site (the current site has none). DRAFT for FiberSteel to review — see the
+ * README's "To confirm with FiberSteel".
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site, tel, prettyPhone } from '../data/site';
+---
+
+<BaseLayout title="Privacy" description="How FiberSteel Boat Lifts uses the information you send through this website.">
+  <PageHero title="Privacy" eyebrow="Plain words" lead="What we collect through this website, and what we do with it." crumbs={[{ label: 'Privacy' }]} />
+
+  <section class="section">
+    <div class="container container--narrow prose">
+      <p class="draft-note">Draft for FiberSteel to review before launch.</p>
+      <h2>What we collect</h2>
+      <p>
+        Only what you type into a form: your name, how to reach you, and details about your boat, your slip or your lift —
+        plus any photos you choose to attach. We don’t ask for payment details on this site.
+      </p>
+      <h2>What we do with it</h2>
+      <p>
+        We use it to answer your request: to quote, schedule, service or register your lift. It’s never sold, and it’s
+        shared only with the people who need it to do that work — for example, an authorized dealer near you, if you ask
+        for one.
+      </p>
+      <h2>Maps and videos</h2>
+      <p>
+        Maps (Google) and videos (YouTube) load only when you press to open them. Until then, this site doesn’t contact
+        those services. “Sort by distance” on the dealer page uses your device’s location only in your browser; it isn’t
+        sent anywhere.
+      </p>
+      <h2>Questions</h2>
+      <p>
+        Call {site.name} at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> or email
+        <a href={`mailto:${site.sales.email}`}>{site.sales.email}</a> to ask what we hold about you, or to have it deleted.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .draft-note {
+    display: inline-block;
+    padding: 0.2em 0.7em;
+    border-radius: var(--radius-pill);
+    background: var(--c-sun-50);
+    color: var(--c-sun-text);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,490 @@
+/* ---------- Inventory (one location: the Camdenton shop) ---------- */
+
+.inv-select .select {
+  min-width: 170px;
+}
+
+.inv-link {
+  color: var(--o-text);
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.35;
+}
+
+.inv-link:hover {
+  color: var(--c-accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.inv-product {
+  display: grid;
+  min-width: 0;
+}
+
+.inv-stock {
+  display: grid;
+  white-space: nowrap;
+}
+
+.table tr.inv-row--out td:first-child {
+  box-shadow: inset 3px 0 0 #c0392b;
+}
+
+.inv-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inv-delta {
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.inv-note {
+  display: inline-block;
+  max-width: 28ch;
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+}
+
+/* Item drawer */
+.inv-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.inv-head .thumb {
+  border-radius: 10px;
+}
+
+.inv-money {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.inv-money > div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--o-radius);
+  background: var(--o-surface-2);
+  border: 1px solid var(--o-line-soft);
+}
+
+.inv-money__label {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+}
+
+.inv-money__value {
+  font-size: 1.0625rem;
+  font-weight: 650;
+}
+
+.inv-store {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--o-line);
+  background: var(--o-surface);
+}
+
+.inv-store__avail {
+  color: var(--o-muted);
+}
+
+.inv-store__avail strong {
+  margin-right: 2px;
+  color: var(--o-text);
+  font-size: 1.5rem;
+  font-weight: 650;
+}
+
+.inv-store__dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.inv-store__dl dt {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+}
+
+.inv-store__dl dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-store__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.inv-list {
+  display: grid;
+  border: 1px solid var(--o-line);
+  border-radius: var(--o-radius);
+  overflow: hidden;
+}
+
+.inv-list li + li {
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.inv-list__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.inv-list__row:hover {
+  background: var(--o-hover);
+}
+
+.inv-list__main {
+  display: grid;
+  min-width: 0;
+}
+
+.inv-list__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inv-list__meta {
+  flex: none;
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.inv-moves td {
+  vertical-align: top;
+}
+
+.inv-list--card {
+  border: 0;
+  border-radius: 0;
+}
+
+.inv-list__meta--stack {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inv-short {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 12px;
+}
+
+.inv-short .inv-list__row {
+  flex: 1;
+  min-width: 0;
+}
+
+.inv-intro {
+  max-width: 72ch;
+}
+
+.inv-footnote {
+  margin-top: 10px;
+}
+
+.inv-price {
+  display: grid;
+  justify-items: end;
+}
+
+.inv-money__note {
+  margin-top: 6px;
+}
+
+/* Reorder point editor */
+.inv-reorder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 8px 10px;
+  border-radius: var(--o-radius);
+  background: var(--o-surface-2);
+  border: 1px solid var(--o-line-soft);
+}
+
+.inv-reorder--edit {
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.inv-reorder__actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Bills of materials */
+.inv-cap {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.inv-cap .icon {
+  flex: none;
+  margin-top: 2px;
+  color: #4f3d99;
+}
+
+.inv-bom td,
+.inv-bom th {
+  white-space: nowrap;
+}
+
+.inv-bom td:first-child {
+  white-space: normal;
+}
+
+.table tr.inv-bom__limit td {
+  background: #fbefd5;
+}
+
+.inv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Lifts & builds: two cards side by side */
+.inv-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+/* Orders */
+.inv-suggest {
+  display: grid;
+  gap: 12px;
+}
+
+.inv-suggest__group {
+  padding: 12px 14px;
+  border-radius: var(--o-radius);
+  border: 1px solid var(--o-line);
+  background: var(--o-surface-2);
+}
+
+.inv-suggest__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.inv-suggest__vendor {
+  font-weight: 650;
+}
+
+.inv-suggest__items {
+  display: grid;
+  gap: 4px;
+}
+
+.inv-suggest__items li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+
+.inv-suggest__item {
+  color: var(--o-text);
+  font-weight: 600;
+  text-align: left;
+}
+
+.inv-progress {
+  display: grid;
+  gap: 4px;
+  min-width: 96px;
+}
+
+.inv-progress--wide {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.inv-po-lines td,
+.inv-po-lines th {
+  white-space: nowrap;
+}
+
+.inv-po-lines td:first-child {
+  white-space: normal;
+  min-width: 180px;
+}
+
+.inv-qty {
+  max-width: 140px;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-qty--sm {
+  width: 84px;
+  text-align: right;
+}
+
+/* Dialogs */
+.inv-pick {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--o-radius);
+  border: 1px solid var(--o-line);
+  background: var(--o-surface-2);
+}
+
+.inv-pick__text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.inv-error {
+  color: var(--bad);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.inv-preview {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: var(--o-radius);
+  background: #eaf5ee;
+  border: 1px solid #c4e2cf;
+}
+
+.inv-preview__label {
+  color: var(--good);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.inv-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #7a4f06;
+  font-size: 0.8125rem;
+}
+
+.inv-po-total {
+  align-self: center;
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+}
+
+.inv-po-total strong {
+  color: var(--o-text);
+  font-size: 0.9375rem;
+}
+
+.inv-empty-lines {
+  padding: 18px;
+  border-radius: var(--o-radius);
+  border: 1px dashed var(--o-line-strong);
+  color: var(--o-muted);
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .inv-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .inventory .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .inventory .stat {
+    padding: 12px;
+  }
+
+  .inventory .stat__value {
+    font-size: 1.375rem;
+  }
+
+  .inv-product {
+    min-width: 150px;
+  }
+
+  .inventory .item-cell .thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  .inv-money {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .inv-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inv-short {
+    padding-right: 10px;
+  }
+
+  .inv-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .inv-select,
+  .inv-select .select {
+    width: 100%;
+  }
+
+  .inventory .search {
+    width: 100%;
+  }
+
+  .inv-po-total {
+    flex-basis: 100%;
+  }
+}

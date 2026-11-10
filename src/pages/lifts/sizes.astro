@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import SizeTable from '../../components/SizeTable.astro';
+import LiftCalculator from '../../components/LiftCalculator.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import Icon from '../../components/Icon.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { parts, quoteChecklist } from '../../data/lifts';
+import { getFaqs } from '../../data/faqs';
+import { photo, photos } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('vbottom/14000-6-arm');
+const partPhotos = photos(parts.map((p) => p.photo));
+---
+
+<BaseLayout
+  title="Boat Lift Sizes & Lift Size Calculator"
+  description="FiberSteel's lift sizes — single, twin and double PWC lifts, and 4,800 to 24,000 lb boat lifts — with a calculator that uses FiberSteel's formula: dry weight + fuel + 2,000 lb."
+>
+  <PageHero
+    title="Lift sizes"
+    titleHtml="Get the right lift <em>for your boat</em>"
+    eyebrow="Lift sizes & calculator"
+    lead="FiberSteel’s standard sizes, from a 1,500 lb PWC lift to a 24,000 lb lift with 8 arms, 4 axles and 3 poly tanks — and the formula FiberSteel uses to pick one."
+    crumbs={[{ label: 'Lifts', href: withBase('/lifts/') }, { label: 'Lift sizes' }]}
+    image={hero}
+    variant="split"
+  >
+    <a href="#calculator" class="btn btn--sun"><Icon name="calculator" size={18} /> Use the calculator</a>
+    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section section--tint" id="calculator-section">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Lift size calculator"
+        title="Dry weight + fuel + <em>2,000 lb</em>"
+        lead="That’s FiberSteel’s formula for boats up to 30 ft long (3,000 lb for larger boats), with fuel at 7 lb a gallon. Type in your boat’s numbers."
+      />
+      <LiftCalculator id="calculator" />
+    </div>
+  </section>
+
+  <section class="section" id="sizes">
+    <div class="container">
+      <SectionHeading
+        align="split"
+        eyebrow="Boat lift sizes"
+        title="Every standard size"
+        lead="Please call for help finding the proper size lift for your needs — or if you have an idea for a custom lift."
+      >
+        <a href={tel(site.sales.phone)} class="link-arrow"><Icon name="phone" size={16} /> {prettyPhone(site.sales.phone)}</a>
+      </SectionHeading>
+      <SizeTable />
+    </div>
+  </section>
+
+  <section class="section section--paper" id="parts">
+    <div class="container">
+      <SectionHeading eyebrow="Parts & features" title="The details that make it last" lead="FiberSteel’s photos and captions." />
+      <PhotoGrid photos={partPhotos} id="parts-photos" columns={4} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container ready">
+      <div>
+        <p class="eyebrow">Getting a quote</p>
+        <h2>What to have ready</h2>
+        <p class="lead">Call {site.sales.contact} at <a class="text-link" href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a>, or send it online.</p>
+      </div>
+      <ul class="checklist">
+        {
+          quoteChecklist.map((f) => (
+            <li>
+              <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <a href={withBase('/quote/')} class="btn btn--primary btn--lg">Request a quote <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container container--narrow">
+      <SectionHeading align="center" title="Questions about sizing" />
+      <FaqList faqs={getFaqs(['size', 'quote', 'shallow'])} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .ready {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .ready {
+      grid-template-columns: 1.2fr 1fr auto;
+    }
+  }
+
+  .ready > div {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .ready .checklist {
+    font-weight: 600;
+  }
+</style>

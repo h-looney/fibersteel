@@ -1,0 +1,90 @@
+---
+import { site, tel } from '../data/site';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Absolute or root-relative image URL for social previews */
+  image?: string;
+  noindex?: boolean;
+  /** Extra JSON-LD objects for this page (FAQPage, BreadcrumbList, …) */
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description = site.description, image = withBase('/og-image.jpg'), noindex = false, schema = [] } = Astro.props;
+
+const fullTitle = title.includes('FiberSteel') ? title : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
+
+const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// The business, for search engines. Saturday is "by appointment", which opening hours can't express, so only the
+// weekday hours are listed.
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  legalName: site.legalName,
+  url: site.url,
+  description: site.description,
+  slogan: site.slogan,
+  image: imageUrl.toString(),
+  logo: new URL(withBase('/apple-touch-icon.png'), Astro.site).toString(),
+  telephone: `+1-${site.sales.phone}`,
+  email: site.sales.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.state,
+    postalCode: site.address.zip,
+    addressCountry: 'US',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  areaServed: [{ '@type': 'Place', name: 'Lake of the Ozarks' }, { '@type': 'State', name: 'Missouri' }],
+  contactPoint: [
+    { '@type': 'ContactPoint', contactType: 'sales', telephone: tel(site.sales.phone).replace('tel:', ''), email: site.sales.email, areaServed: 'US' },
+    { '@type': 'ContactPoint', contactType: 'customer service', name: site.service.label, telephone: tel(site.service.phone).replace('tel:', ''), email: site.service.email, areaServed: 'US' },
+  ],
+  openingHoursSpecification: site.hours.flatMap((h, i) =>
+    h && h !== 'appointment' ? [{ '@type': 'OpeningHoursSpecification', dayOfWeek: dayNames[i], opens: h.open, closes: h.close }] : [],
+  ),
+  sameAs: Object.values(site.social),
+};
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+{
+  !noindex && (
+    <script is:inline define:vars={{ liveHost: new URL(site.url).hostname.replace(/^www\./, '') }}>
+      // Preview copies (GitHub Pages, Netlify, localhost…) stay out of search results — only the live domain is indexed.
+      if (location.hostname.replace(/^www\./, '') !== liveHost) {
+        const robots = document.createElement('meta');
+        robots.name = 'robots';
+        robots.content = 'noindex';
+        document.head.append(robots);
+      }
+    </script>
+  )
+}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+<script type="application/ld+json" set:html={JSON.stringify(business)} />
+{schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...s })} />)}

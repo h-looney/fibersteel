@@ -1,0 +1,366 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/logo.png';
+import Icon from './Icon.astro';
+import OpenStatus from './OpenStatus.astro';
+import { footerNav } from '../data/navigation';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer on-dark">
+  <div class="container footer__top">
+    <div class="footer__brand">
+      <a href={withBase('/')} aria-label="FiberSteel Boat Lifts — home" class="footer__logo">
+        <Image src={logo} alt="" width={190} densities={[1, 2]} />
+      </a>
+      <div>
+        <p class="footer__motto">{site.slogan.replace('!', '')}</p>
+        <p class="footer__blurb">
+          We design, build, install and service our own floating boat lifts — factory direct at the Lake of the Ozarks for
+          {` ${site.experience}`}, and through authorized dealers.
+        </p>
+        <ul class="footer__social" role="list">
+          <li>
+            <a href={site.social.facebook} target="_blank" rel="noopener">
+              <Icon name="facebook" size={18} />
+              <span class="visually-hidden">FiberSteel on Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href={site.social.yelp} target="_blank" rel="noopener">
+              <Icon name="star" size={18} />
+              <span class="visually-hidden">FiberSteel on Yelp</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <address class="footer__visit">
+      <p class="footer__heading">Factory direct sales &amp; service</p>
+      <p class="footer__address">
+        <strong>{site.name}</strong>
+        <span>{site.address.street}, {site.address.city}, {site.address.state} {site.address.zip}</span>
+        <a href={site.directionsUrl} target="_blank" rel="noopener" class="footer__directions">
+          <Icon name="pin" size={14} /> Get directions
+        </a>
+      </p>
+      <div class="footer__lines">
+        <p>
+          <span class="footer__line-label">{site.sales.label}</span>
+          <a href={tel(site.sales.phone)} class="footer__phone tabular"><Icon name="phone" size={14} /> {prettyPhone(site.sales.phone)}</a>
+          <a href={`mailto:${site.sales.email}`} class="footer__email">{site.sales.email}</a>
+        </p>
+        <p>
+          <span class="footer__line-label">{site.service.label}</span>
+          <a href={tel(site.service.phone)} class="footer__phone tabular"><Icon name="wrench" size={14} /> {prettyPhone(site.service.phone)}</a>
+          <a href={`mailto:${site.service.email}`} class="footer__email">{site.service.email}</a>
+        </p>
+      </div>
+      <OpenStatus />
+    </address>
+  </div>
+
+  <div class="container footer__grid">
+    {
+      footerNav.map((col) => (
+        <nav class="footer__col" aria-label={col.title}>
+          <p class="footer__heading">{col.title}</p>
+          <ul role="list">
+            {col.links.map((l) => (
+              <li data-feature={l.feature}>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+
+  <div class="container footer__hours">
+    <Icon name="clock" size={18} />
+    <dl>
+      {
+        site.hoursSummary.map((h) => (
+          <div>
+            <dt>{h.days}</dt>
+            <dd>{h.time}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <p>© {year} {site.name} · {site.domain}. All rights reserved.</p>
+      <p class="footer__bottom-links">
+        <a href={withBase('/privacy/')}>Privacy</a>
+        <a href={withBase('/contact/')}>Contact</a>
+        <a href={withBase('/office/?signin')}>Staff sign-in</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    background:
+      radial-gradient(ellipse 60% 120% at 85% 0%, rgb(29 78 208 / 0.18), transparent 60%),
+      var(--c-ink);
+    padding-top: var(--space-8);
+    --icon-cutout: var(--c-ink);
+  }
+
+  .footer__top {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-7);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--c-ink-line);
+  }
+
+  .footer__brand {
+    display: flex;
+    gap: var(--space-6);
+    align-items: flex-start;
+  }
+
+  .footer__logo :global(img) {
+    width: 190px;
+    height: auto;
+  }
+
+  .footer__motto {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    color: var(--c-sun);
+  }
+
+  .footer__blurb {
+    margin-top: var(--space-2);
+    max-width: 40ch;
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert-muted);
+  }
+
+  .footer__social {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--c-ink-line);
+    color: var(--c-text-invert);
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+
+  .footer__social a:hover {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    --icon-cutout: var(--c-accent);
+  }
+
+  .footer__heading {
+    margin-bottom: var(--space-4);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-sun);
+  }
+
+  .footer__visit {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    font-style: normal;
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert-muted);
+  }
+
+  .footer__visit .footer__heading {
+    margin-bottom: 0;
+  }
+
+  .footer__address {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .footer__address strong {
+    color: var(--c-text-invert);
+    font-size: var(--fs-md);
+  }
+
+  .footer__lines {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .footer__lines p {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .footer__line-label {
+    color: var(--c-text-invert-muted);
+    font-size: var(--fs-xs);
+  }
+
+  .footer__visit a {
+    color: var(--c-text-invert);
+    text-decoration: none;
+  }
+
+  .footer__visit a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .footer__phone,
+  .footer__directions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-weight: 600;
+  }
+
+  .footer__directions {
+    margin-top: 0.3rem;
+  }
+
+  .footer__email {
+    font-size: var(--fs-xs);
+    overflow-wrap: anywhere;
+  }
+
+  .footer__visit :global(.status) {
+    color: var(--c-text-invert-muted);
+  }
+
+  .footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-7);
+  }
+
+  .footer__col ul {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__col a {
+    color: var(--c-text-invert-muted);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .footer__col a:hover {
+    color: var(--c-text-invert);
+  }
+
+  .footer__hours {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--c-ink-line);
+    color: var(--c-steel-light);
+  }
+
+  .footer__hours dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-7);
+    font-size: var(--fs-sm);
+  }
+
+  .footer__hours dl div {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  .footer__hours dt {
+    color: var(--c-text-invert-muted);
+  }
+
+  .footer__hours dd {
+    color: var(--c-text-invert);
+    font-weight: 550;
+  }
+
+  .footer__bottom {
+    border-top: 1px solid var(--c-ink-line);
+    background: #071a32;
+  }
+
+  .footer__bottom-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    padding-block: var(--space-5);
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  .footer__bottom-links {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .footer__bottom a {
+    color: var(--c-text-invert-muted);
+    text-decoration: none;
+  }
+
+  .footer__bottom a:hover {
+    color: var(--c-text-invert);
+  }
+
+  @media (max-width: 1000px) {
+    .footer__top {
+      grid-template-columns: 1fr;
+    }
+
+    .footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-footer {
+      padding-bottom: 72px; /* room for the mobile action bar */
+    }
+
+    .footer__brand {
+      flex-direction: column;
+    }
+
+    .footer__hours {
+      align-items: flex-start;
+    }
+  }
+</style>

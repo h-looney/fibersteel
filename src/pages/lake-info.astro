@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { lakeInfo } from '../data/sideTopics';
+import { photo } from '../data/photos';
+import { withBase } from '../scripts/url';
+
+const hero = photo('large/16000-tall-bunks-grand-lake');
+const groups = [
+  { title: 'Boating safety tips', icon: 'boat' as const, items: lakeInfo.boating },
+  { title: 'Swimming safety', icon: 'waves' as const, items: lakeInfo.swimming },
+  { title: 'Cold-water survival', icon: 'shield' as const, items: lakeInfo.coldWater },
+];
+---
+
+<BaseLayout title="Local Lake Info — Lake of the Ozarks" description="Lake of the Ozarks contacts and lake information from Ameren, plus boating, swimming and cold-water safety tips from FiberSteel Boat Lifts.">
+  <PageHero
+    title="Local lake info"
+    titleHtml="Local <em>lake info</em>"
+    eyebrow="Around the lake"
+    lead="Who to call about the Lake of the Ozarks, where to check the lake, and a few safety reminders for everyone on the water."
+    crumbs={[{ label: 'Local lake info' }]}
+    image={hero}
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--2">
+        {
+          lakeInfo.links.map((l) => (
+            <article class="card lake-link">
+              <div class="card__body">
+                <span class="icon-tile">
+                  <Icon name="info" size={22} />
+                </span>
+                <h2 class="h3">{l.title}</h2>
+                <p class="muted">{l.text}</p>
+                <a href={l.href} class="link-arrow" target="_blank" rel="noopener">
+                  {l.label} <Icon name="arrow-up-right" size={16} />
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <div class="grid grid--3">
+        {
+          groups.map((g) => (
+            <section class="safety" aria-labelledby={`safety-${g.icon}`}>
+              <h2 class="h3" id={`safety-${g.icon}`}>
+                <Icon name={g.icon} size={22} /> {g.title}
+              </h2>
+              <ul class="checklist">
+                {g.items.map((t) => (
+                  <li>
+                    <Icon name="check" size={18} strokeWidth={2.4} /> <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container cluster">
+      <a href={withBase('/lakefront-rental/')} class="btn btn--outline">Lakefront vacation rental</a>
+      <a href={withBase('/owners/dos-and-donts/')} class="link-arrow">Boat lift Do’s &amp; Don’ts <Icon name="arrow-right" size={16} /></a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lake-link h2 {
+    margin-top: var(--space-2);
+  }
+
+  .safety {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .safety h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .safety h2 :global(svg) {
+    color: var(--c-accent);
+  }
+</style>

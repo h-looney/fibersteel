@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import LiteVideo from '../components/LiteVideo.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { dockSteps, usd } from '../data/products';
+import { getVideo } from '../data/ownerHelp';
+import { photo, photos } from '../data/photos';
+import { sources } from '../data/sources';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const hero = photo('docksteps/down');
+const schema = [
+  {
+    '@type': 'Product',
+    name: 'FiberSteel self-raising floating dock steps',
+    brand: { '@type': 'Brand', name: site.name },
+    description: 'Self-raising, floating, super heavy-duty dock steps: 7 ft long, 38 in. wide, 7 steps.',
+    image: new URL(hero.src.src, Astro.site).toString(),
+    offers: { '@type': 'Offer', price: dockSteps.prices[0].price, priceCurrency: 'USD', seller: { '@id': `${site.url}/#business` } },
+  },
+];
+---
+
+<BaseLayout
+  title="Self-Raising Floating Dock Steps"
+  description="Self-raising, floating, super heavy-duty dock steps — 7 ft long, 38 in. wide, 7 steps — for docks, seawalls, bulkheads and houseboats. $2,195, installation on the Lake of the Ozarks $200."
+  schema={schema}
+>
+  <PageHero
+    title="Dock steps"
+    titleHtml="Easy in, <em>easy out.</em>"
+    eyebrow="Self-raising floating dock steps"
+    lead="Super heavy-duty floating steps for getting in and out of the water from your dock, a seawall, a bulkhead or even a houseboat — great for pets too."
+    crumbs={[{ label: 'Dock steps' }]}
+    image={hero}
+  >
+    <a href={withBase('/quote/?type=dock-steps')} class="btn btn--sun">Order dock steps <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container steps-buy">
+      <div class="stack">
+        <SectionHeading eyebrow="The steps" title="One of the best investments <em>for your dock</em>" />
+        <dl class="dims">
+          {
+            dockSteps.dimensions.map((d) => (
+              <div>
+                <dt>{d.label}</dt>
+                <dd>{d.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="muted">Mounts to {dockSteps.uses.slice(0, -1).join(', ')} or {dockSteps.uses.at(-1)} — on a pier-style dock, or in a dock slip. They raise up out of the water when you’re done.</p>
+      </div>
+      <div class="buy">
+        <h2 class="h3">Prices</h2>
+        <table class="price-table">
+          <caption class="visually-hidden">Dock step prices</caption>
+          <tbody>
+            {
+              dockSteps.prices.map((p) => (
+                <tr>
+                  <th scope="row">
+                    {p.label}
+                    {p.note && <span class="price-table__note">{p.note}</span>}
+                  </th>
+                  <td>{p.note?.startsWith('about') ? '≈ ' : ''}{usd(p.price)}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <p class="small muted">
+          As listed on FiberSteel’s <a class="text-link" href={sources[dockSteps.pricesSrc].url} target="_blank" rel="noopener">current dock steps page</a>. Call for shipping information and details.
+        </p>
+        <div class="cluster">
+          <a href={withBase('/quote/?type=dock-steps')} class="btn btn--primary">Order dock steps</a>
+          <a href={tel(site.sales.phone)} class="link-arrow"><Icon name="phone" size={16} /> {prettyPhone(site.sales.phone)}</a>
+        </div>
+        <p class="buy__note"><Icon name="info" size={15} /> Paying online: the current site takes card payments through PayPal. This concept doesn’t take payments — the order request reaches the team, who confirm shipping first.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <SectionHeading eyebrow="Photos & video" title="See them in action" />
+      <div class="grid grid--2 steps-videos">
+        {dockSteps.videos.map((id) => <LiteVideo video={getVideo(id)} />)}
+      </div>
+      <div class="mt-7">
+        <PhotoGrid photos={photos(dockSteps.photos)} id="step-photos" columns={4} />
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Want dock steps — <em>or a dealership?</em>"
+    text="Call for information, or about becoming a FiberSteel dealer in your area."
+    quoteHref={withBase('/quote/?type=dock-steps')}
+    image="docksteps/pier-dock"
+  />
+</BaseLayout>
+
+<style>
+  .steps-buy {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  @media (min-width: 960px) {
+    .steps-buy {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    }
+  }
+
+  .steps-buy :global(.section-head) {
+    margin-bottom: var(--space-4);
+  }
+
+  .dims {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .dims div {
+    padding: var(--space-4);
+    border-radius: var(--radius);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    text-align: center;
+  }
+
+  .dims dt {
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .dims dd {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-xl);
+    color: var(--c-ink);
+  }
+
+  .buy {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    box-shadow: var(--shadow);
+  }
+
+  .price-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .price-table th,
+  .price-table td {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--c-line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .price-table th {
+    font-weight: 600;
+  }
+
+  .price-table td {
+    text-align: right;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 780;
+    font-size: var(--fs-lg);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .price-table__note {
+    display: block;
+    font-weight: 400;
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .buy__note {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .buy__note :global(svg) {
+    flex: none;
+    margin-top: 2px;
+  }
+
+  @media (max-width: 480px) {
+    .dims {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

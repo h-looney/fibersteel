@@ -1,0 +1,403 @@
+/* ---------- Warranty ---------- */
+
+.warranty-note {
+  margin: 0 18px 12px;
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0 18px 12px;
+  padding: 8px 10px 8px 14px;
+  border-radius: var(--o-radius);
+  border: 1px solid #c9d8fa;
+  background: var(--c-accent-50);
+}
+
+.bulk-bar > span {
+  margin-right: auto;
+}
+
+.link-plain {
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.link-plain:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .hide-md-inline {
+    display: none;
+  }
+}
+
+/* Claims by status */
+.claim-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.claim-summary__item {
+  width: 100%;
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--o-radius);
+  border: 1px solid var(--o-line);
+  background: var(--o-surface);
+  box-shadow: var(--o-shadow-1);
+  text-align: left;
+}
+
+.claim-summary__item:hover {
+  border-color: var(--o-line-strong);
+}
+
+.claim-summary__item.is-active {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 1px var(--c-accent);
+}
+
+.claim-summary__item .badge {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.35;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.claim-summary__count {
+  font-size: 1.25rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.claim-summary__amount {
+  color: var(--o-muted);
+  font-size: 0.78125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress stepper in the claim drawer */
+.claim-steps {
+  display: flex;
+  list-style: none;
+  padding: 4px 0 0;
+}
+
+.claim-steps:focus {
+  outline: none;
+}
+
+.claim-steps li {
+  position: relative;
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.claim-steps li + li::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--o-line);
+  z-index: 0;
+}
+
+.claim-steps li.is-done + li.is-done::before {
+  background: #2f8a62;
+}
+
+.claim-steps__dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--o-line-strong);
+  background: var(--o-surface);
+  color: #fff;
+}
+
+.claim-steps li.is-done .claim-steps__dot {
+  border-color: #2f8a62;
+  background: #2f8a62;
+}
+
+.claim-steps li[aria-current='step'] .claim-steps__dot {
+  box-shadow: 0 0 0 4px rgb(47 138 98 / 0.18);
+}
+
+.claim-steps__label {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.claim-steps li.is-done .claim-steps__label {
+  color: var(--o-text);
+}
+
+.claim-steps.is-denied .claim-steps__label {
+  color: var(--o-muted);
+}
+
+/* Inline field in a dialog footer (credit amount, deny reason) */
+.dialog__foot .claim-inline-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialog__foot .claim-inline-field .input {
+  width: 130px;
+}
+
+.dialog__foot .claim-inline-field--wide .input {
+  width: min(260px, 52vw);
+}
+
+/* Lift choice in the new-claim dialog */
+.claim-lifts {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+}
+
+.claim-lifts legend {
+  margin-bottom: 8px;
+}
+
+.claim-lifts__option {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--o-radius);
+  border: 1px solid var(--o-line-strong);
+  background: #fff;
+  cursor: pointer;
+}
+
+.claim-lifts__option.is-selected {
+  border-color: var(--c-accent);
+  background: var(--c-accent-50);
+}
+
+.claim-lifts__option input {
+  accent-color: var(--c-accent);
+}
+
+.claim-lifts__text {
+  display: grid;
+  min-width: 0;
+}
+
+.claim-lifts__option.is-disabled {
+  cursor: not-allowed;
+  background: var(--o-surface-2);
+  color: var(--o-muted);
+}
+
+.claim-lifts__option.is-disabled strong {
+  color: var(--o-muted);
+}
+
+/* Coverage check */
+.coverage-check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .coverage-check {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.coverage-table th[scope='row'] {
+  font-weight: 600;
+  text-align: left;
+  white-space: normal;
+}
+
+.coverage-table tr.is-current th,
+.coverage-table tr.is-current td {
+  background: var(--c-accent-50);
+}
+
+.coverage-table .link-plain[aria-pressed='true'] {
+  color: var(--c-accent-700);
+}
+
+.cov-yes,
+.cov-no {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cov-yes {
+  color: var(--good);
+}
+
+.cov-no {
+  color: var(--o-muted);
+}
+
+.cov-answer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--o-radius);
+  border: 1px solid var(--o-line);
+  background: var(--o-surface-2);
+}
+
+.cov-answer .icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+.cov-answer--yes {
+  border-color: #c4e2cf;
+  background: #eaf5ee;
+}
+
+.cov-answer--yes .icon {
+  color: var(--good);
+}
+
+.cov-answer--no .icon {
+  color: var(--o-muted);
+}
+
+.cov-answer__title {
+  font-weight: 650;
+}
+
+.terms-list {
+  display: grid;
+  gap: 8px;
+}
+
+.terms-list li {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  font-size: 0.8125rem;
+}
+
+.terms-list .icon {
+  margin-top: 3px;
+  color: var(--good);
+}
+
+.terms-full {
+  margin-top: 12px;
+  font-size: 0.8125rem;
+}
+
+.terms-full summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 4px;
+  margin-left: -4px;
+}
+
+.terms-full summary::-webkit-details-marker {
+  display: none;
+}
+
+.terms-full summary:hover {
+  background: var(--o-hover);
+}
+
+.terms-full[open] .terms-full__chev {
+  transform: rotate(90deg);
+}
+
+.terms-full p {
+  margin-top: 8px;
+  color: var(--o-muted);
+}
+
+.terms-contacts {
+  display: grid;
+  gap: 12px;
+}
+
+.terms-contacts li {
+  display: grid;
+  gap: 2px;
+}
+
+.terms-contacts a {
+  font-weight: 600;
+}
+
+.picked--wrap {
+  flex-wrap: wrap;
+}
+
+.picked--wrap .picked__text {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .coverage-table .cov-term {
+    display: none;
+  }
+
+  .coverage-table th,
+  .coverage-table td {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* The icon shows the answer on a phone; the words stay for screen readers (and in the answer below) */
+  .coverage-table .cov-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .claim-steps__label {
+    font-size: 0.6875rem;
+    letter-spacing: -0.01em;
+  }
+}

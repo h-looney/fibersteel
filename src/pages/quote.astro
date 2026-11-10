@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import OpenStatus from '../components/OpenStatus.astro';
+import Icon from '../components/Icon.astro';
+import { quoteChecklist } from '../data/lifts';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+---
+
+<BaseLayout
+  title="Request a Boat Lift Quote"
+  description="Tell FiberSteel about your boat and your slip — brand, model, length, weight and slip size — and we'll size your lift and send a quote. Or call 573-346-3088."
+>
+  <PageHero
+    title="Request a quote"
+    titleHtml="Request a <em>lift quote</em>"
+    eyebrow="Factory direct"
+    lead="Three quick steps: your boat, your slip, and how to reach you. Prefer to talk? Ordering by phone and scheduling the installation only takes about five minutes."
+    crumbs={[{ label: 'Request a quote' }]}
+  />
+
+  <section class="section quote-page">
+    <div class="container quote-page__inner">
+      <QuoteForm />
+      <aside class="quote-aside">
+        <div class="quote-aside__card">
+          <p class="quote-aside__title">Rather call?</p>
+          <a href={tel(site.sales.phone)} class="quote-aside__phone"><Icon name="phone" size={20} /> {prettyPhone(site.sales.phone)}</a>
+          <p class="muted small">Ask for {site.sales.contact} — {site.sales.label.toLowerCase()}.</p>
+          <OpenStatus />
+        </div>
+        <div class="quote-aside__card">
+          <p class="quote-aside__title">What we’ll ask</p>
+          <ul class="checklist">
+            {
+              quoteChecklist.map((f) => (
+                <li>
+                  <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <a href={withBase('/lifts/sizes/#calculator')} class="link-arrow"><Icon name="calculator" size={16} /> Lift size calculator</a>
+        </div>
+        <div class="quote-aside__card">
+          <p class="quote-aside__title">Need service instead?</p>
+          <p class="muted small">Repairs, parts and service calls go to the service department.</p>
+          <a href={withBase('/service/')} class="link-arrow">Request service <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .quote-page__inner {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 1000px) {
+    .quote-page__inner {
+      grid-template-columns: minmax(0, 1fr) 320px;
+    }
+  }
+
+  .quote-aside {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .quote-aside__card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .quote-aside__title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 760;
+    font-size: var(--fs-md);
+  }
+
+  .quote-aside__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    white-space: nowrap;
+    color: var(--c-accent);
+    text-decoration: none;
+  }
+
+  .quote-aside .checklist {
+    font-size: var(--fs-sm);
+  }
+</style>

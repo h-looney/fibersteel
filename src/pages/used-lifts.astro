@@ -1,0 +1,220 @@
+---
+import '../styles/installs.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { usedLifts, usedRules, statusLabel } from '../data/usedLifts';
+import { getSize } from '../data/lifts';
+import { photo } from '../data/photos';
+import { site, tel, prettyPhone } from '../data/site';
+
+const hero = photo('pontoon/tritoon-lift');
+const listings = usedLifts.map((u) => ({ ...u, img: photo(u.photo), sizeName: getSize(u.size)?.name ?? u.size }));
+---
+
+<BaseLayout
+  title="Used Boat Lifts"
+  description="Used FiberSteel boat lifts for sale: first come, first served, paid in full, all sales final — installed on the Lake of the Ozarks only. Call 573-346-3088 for updates."
+>
+  <PageHero
+    title="Used lifts"
+    titleHtml="Used lifts — <em>they sell fast</em>"
+    eyebrow="Used lifts"
+    lead="Used lifts are first come, first served. Call soon — and call for updates, since listings change quickly."
+    crumbs={[{ label: 'Used lifts' }]}
+    image={hero}
+  >
+    <a href={tel(site.sales.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> Call {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <ul class="rules" role="list">
+        {
+          usedRules.map((r) => (
+            <li>
+              <Icon name="info" size={18} /> <span>{r}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="sample-note">
+        <Icon name="info" size={18} />
+        <span>
+          <strong>Sample listings.</strong> The current page had no used lifts listed with details on November 10, 2026, so these are
+          examples: real FiberSteel sizes with stand-in photos. FiberSteel adds real listings over time — or, with FiberSteel mode,
+          staff post and mark them sold themselves.
+        </span>
+      </p>
+
+      <div class="grid grid--models used-grid" data-used-grid>
+        {
+          listings.map((u) => (
+            <article class:list={['card', 'used-card', { 'is-sold': u.status === 'sold' }]} data-used-card={u.id}>
+              <div class="card__media">
+                <Photo src={u.img.src} alt={u.img.alt} sizes="(min-width: 1240px) 380px, (min-width: 700px) 45vw, 100vw" position={u.img.position} />
+                <span class:list={['used-card__status', `is-${u.status}`]}>{statusLabel[u.status]}</span>
+              </div>
+              <div class="card__body">
+                <p class="used-card__size">{u.sizeName}</p>
+                <h2 class="used-card__title">{u.title}</h2>
+                <p class="muted small" data-used-condition>{u.condition}</p>
+                <ul class="used-card__includes" role="list">
+                  {u.includes.map((x) => (
+                    <li class="chip">{x}</li>
+                  ))}
+                </ul>
+                <p class="used-card__price" data-used-price>Call for price</p>
+                {u.status !== 'sold' && (
+                  <a href={tel(site.sales.phone)} class="btn btn--outline btn--sm" data-used-call>
+                    <Icon name="phone" size={16} /> <span data-used-call-label>Call about {u.id}</span>
+                  </a>
+                )}
+                <p class="install-card__flag" data-used-flag>Sample listing · stand-in photo</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Rather have a <em>new</em> lift?"
+    text="New FiberSteel lifts are built for your boat and your slip, with a lifetime warranty on the tanks and frame."
+    image="pontoon/combo-bunks"
+  />
+</BaseLayout>
+
+<style>
+  .rules {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .rules li {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .rules :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--c-accent);
+  }
+
+  .sample-note {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius);
+    border: 1px dashed var(--c-line-strong);
+    background: var(--c-paper);
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  .sample-note :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--c-accent);
+  }
+
+  .sample-note strong {
+    color: var(--c-text);
+  }
+
+  .used-card .card__media {
+    --ratio: 4 / 3;
+  }
+
+  .used-card__status {
+    position: absolute;
+    left: var(--space-3);
+    top: var(--space-3);
+    z-index: 2;
+    padding: 0.25em 0.7em;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    background: var(--c-open);
+    color: #fff;
+  }
+
+  .used-card__status.is-pending {
+    background: var(--c-sun);
+    color: var(--c-ink);
+  }
+
+  .used-card__status.is-sold {
+    background: var(--c-ink);
+  }
+
+  .used-card.is-sold .card__media :global(img) {
+    filter: grayscale(0.8);
+    opacity: 0.75;
+  }
+
+  .used-card__size {
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .used-card__title {
+    font-size: var(--fs-lg);
+  }
+
+  .used-card__includes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+  }
+
+  .used-card__price {
+    font-weight: 700;
+    color: var(--c-ink);
+  }
+
+  .used-card .btn {
+    justify-self: start;
+  }
+
+  .used-card :global(.install-card__flag) {
+    justify-self: start;
+  }
+
+  .used-card[hidden],
+  .used-card .btn[hidden] {
+    display: none;
+  }
+
+  /* A listing published from FiberSteel mode without a photo (preview only) */
+  .used-card :global(.used-card__nophoto) {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  // Listings published from FiberSteel mode in this browser (simulated) show here as previews
+  import { initUsedLiftPreviews } from '../scripts/usedLifts';
+  void initUsedLiftPreviews();
+</script>

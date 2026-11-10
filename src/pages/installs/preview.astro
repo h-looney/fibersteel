@@ -1,0 +1,136 @@
+---
+/**
+ * /installs/preview/?id=… — an install published from FiberSteel mode in this browser (simulated). Built in the
+ * browser from its storage by src/scripts/installs.ts. Not indexed.
+ */
+import '../../styles/gallery.css';
+import '../../styles/installs.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import { withBase } from '../../scripts/url';
+---
+
+<BaseLayout title="Install preview" description="An install posted in the FiberSteel mode demo, previewed in this browser." noindex>
+  <div data-install-preview>
+    <section class="ihero on-dark" data-preview-found hidden>
+      <div class="container ihero__inner">
+        <div class="ihero__text">
+          <Breadcrumbs items={[{ label: 'Lifts we’ve installed', href: withBase('/installs/') }, { label: 'Preview' }]} />
+          <p class="eyebrow" data-preview-eyebrow></p>
+          <h1 data-preview-title></h1>
+          <p class="lead" data-preview-summary></p>
+          <p class="gallery__note gallery__note--preview">Preview · posted in the FiberSteel mode demo and kept in this browser only.</p>
+          <div class="cluster">
+            <a href={withBase('/quote/')} class="btn btn--sun" data-preview-quote>Get a quote for a lift like this <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+          </div>
+        </div>
+        <div class="gallery" data-preview-gallery></div>
+      </div>
+    </section>
+    <section class="section" data-preview-found hidden>
+      <div class="container ibody">
+        <div class="ibody__main">
+          <div class="stack" data-preview-story></div>
+          <h2 class="h3">What was built for it</h2>
+          <ul class="checklist" data-preview-built></ul>
+        </div>
+        <aside class="ibody__glance" aria-label="At a glance">
+          <h2 class="h4">At a glance</h2>
+          <dl data-preview-glance></dl>
+        </aside>
+      </div>
+    </section>
+    <section class="section" data-preview-missing hidden>
+      <div class="container container--narrow stack">
+        <p class="h1" role="heading" aria-level="1">Nothing to preview here</p>
+        <p class="lead">This install was posted in FiberSteel mode in another browser, or the demo data was reset.</p>
+        <a href={withBase('/installs/')} class="btn btn--primary">See the installs</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .ihero {
+    background: var(--c-ink);
+  }
+
+  .ihero__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  }
+
+  @media (min-width: 960px) {
+    .ihero__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .ihero__text {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .ibody {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  @media (min-width: 900px) {
+    .ibody {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+
+  .ibody__main {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .ibody__main :global(.checklist li) {
+    display: list-item;
+    margin-left: 1.2em;
+  }
+
+  .ibody__glance {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .ibody__glance :global(dl) {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .ibody__glance :global(dl div) {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .ibody__glance :global(dt) {
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .ibody__glance :global(dd) {
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  import { initInstallPreviewPage } from '../../scripts/installs';
+  void initInstallPreviewPage();
+</script>

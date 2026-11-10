@@ -1,0 +1,80 @@
+---
+import Icon from './Icon.astro';
+import { withBase } from '../scripts/url';
+
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+const all: Crumb[] = [{ label: 'Home', href: withBase('/') }, ...items];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: all.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.label,
+    ...(c.href ? { item: new URL(c.href, Astro.site).toString() } : {}),
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class:list={['crumbs', className]}>
+  <ol role="list">
+    {
+      all.map((c, i) => (
+        <li>
+          {c.href && i < all.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+          {i < all.length - 1 && <Icon name="chevron-right" size={13} />}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<style>
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .crumbs a {
+    color: var(--c-text-invert-muted);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--c-text-invert);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .crumbs [aria-current] {
+    color: var(--c-text-invert);
+  }
+
+  .crumbs :global(svg) {
+    opacity: 0.6;
+  }
+</style>

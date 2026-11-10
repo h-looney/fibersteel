@@ -1,0 +1,239 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import RequestForm from '../components/RequestForm.astro';
+import OpenStatus from '../components/OpenStatus.astro';
+import Icon from '../components/Icon.astro';
+import { boatSizes, liftSizes } from '../data/lifts';
+import { serviceFee, remoteWarranty } from '../data/warranty';
+import { photo } from '../data/photos';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const hero = photo('parts/bushing-assembly');
+const sizes = [...liftSizes.filter((s) => s.group === 'pwc'), ...boatSizes];
+const problems = [
+  ['wont-raise', 'Won’t raise, or raises slowly'],
+  ['wont-lower', 'Won’t lower all the way'],
+  ['uneven', 'Sits uneven or leans'],
+  ['blower', 'Blower or controller box'],
+  ['remote', 'Remote control'],
+  ['bunks', 'Bunks, brackets or guides'],
+  ['hose', 'Hose or valve'],
+  ['other', 'Something else'],
+];
+---
+
+<BaseLayout
+  title="Request Service or Parts"
+  description="Request service, repairs or parts for your FiberSteel boat lift — or call the service and parts department at 573-346-9688."
+>
+  <PageHero
+    title="Service & parts"
+    titleHtml="Service, repairs <em>&amp; parts</em>"
+    eyebrow="Service department"
+    lead={`Tell us what’s going on with your lift, add a photo if you can, and the service department will get back to you. Or call ${prettyPhone(site.service.phone)}.`}
+    crumbs={[{ label: 'Owners', href: withBase('/owners/') }, { label: 'Service & parts' }]}
+    image={hero}
+    variant="split"
+  >
+    <a href={tel(site.service.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> {prettyPhone(site.service.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container service">
+      <RequestForm kind="service" submitLabel="Send my service request" doneText="Your request is on its way to the service department, and we’ll get back to you within 48 hours." line="service">
+        <fieldset>
+          <legend class="request__legend">What do you need?</legend>
+          <div class="option-grid" data-required-group data-msg-required="Please choose one.">
+            {
+              [
+                ['repair', 'A repair or service call'],
+                ['parts', 'Parts'],
+                ['checkup', 'A check-up or adjustment'],
+                ['move', 'Moving or re-setting a lift'],
+              ].map(([value, label], i) => (
+                <label class="option">
+                  <input type="radio" name="need" value={value} checked={i === 0} data-summary="Need" />
+                  <span class="option__mark"><Icon name="check" size={13} strokeWidth={3} /></span>
+                  <span class="option__text">{label}</span>
+                </label>
+              ))
+            }
+            <p class="field__error" role="alert"></p>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="request__legend">Your lift</legend>
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Lift size</span>
+              <select class="select" name="liftSize" data-summary="Lift">
+                <option value="">Not sure</option>
+                {sizes.map((s) => <option value={s.id}>{s.name}</option>)}
+                <option value="other">Other / custom</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Who installed it?</span>
+              <select class="select" name="installed" data-summary="Installed by">
+                <option value="fibersteel">FiberSteel</option>
+                <option value="dealer">A FiberSteel dealer</option>
+                <option value="other">Someone else / not sure</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">About when? <span class="field__optional">(year, optional)</span></span>
+              <input class="input" type="number" name="installYear" min="1985" max="2027" inputmode="numeric" placeholder="e.g. 2019" data-msg-format="Please enter a year." data-summary="Installed" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Remote system <span class="field__optional">(optional)</span></span>
+              <select class="select" name="remote">
+                <option value="">None / not sure</option>
+                <option value="admiral">Admiral</option>
+                <option value="firstmate">FirstMate</option>
+                <option value="captains-choice">Captain’s Choice</option>
+                <option value="other">Another brand</option>
+              </select>
+            </label>
+            <div class="request__full" data-required-group data-msg-required="Please pick at least one.">
+              <p class="field__label">What’s the problem?</p>
+              <div class="option-grid">
+                {
+                  problems.map(([value, label]) => (
+                    <label class="option">
+                      <input type="checkbox" name="problem" value={value} data-summary="Problem" />
+                      <span class="option__mark"><Icon name="check" size={13} strokeWidth={3} /></span>
+                      <span class="option__text">{label}</span>
+                    </label>
+                  ))
+                }
+              </div>
+              <p class="field__error" role="alert"></p>
+            </div>
+            <label class="field request__full">
+              <span class="field__label">Tell us more</span>
+              <textarea class="textarea" name="description" rows="4" required minlength="10" placeholder="What happens when you run the blower, how long it’s been like this, the part you need…" data-msg-required="A few words help us bring the right parts." data-summary="Details"></textarea>
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Photos <span class="field__optional">(optional)</span></span>
+              <input class="input" type="file" name="photos" accept="image/*" multiple data-summary="Photos" />
+              <span class="field__hint">A photo of the lift, the controller box or the part helps a lot.</span>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="request__legend">Where and who</legend>
+          <div class="request__grid">
+            <label class="field request__full">
+              <span class="field__label">Where is the lift?</span>
+              <input class="input" type="text" name="location" required autocomplete="street-address" placeholder="Address, or cove and mile marker" data-msg-required="Please tell us where the lift is." data-summary="Where" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Your name</span>
+              <input class="input" type="text" name="name" required autocomplete="name" data-msg-required="Please tell us your name." />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Best days for a visit <span class="field__optional">(optional)</span></span>
+              <input class="input" type="text" name="days" placeholder="e.g. weekdays after noon" data-summary="Best days" />
+            </label>
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input class="input" type="tel" name="phone" autocomplete="tel" pattern="[\d\s\(\)\.\+\-]{10,}" data-msg-format="Please enter a 10-digit phone number." data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="input" type="email" name="email" autocomplete="email" data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+          </div>
+        </fieldset>
+      </RequestForm>
+
+      <aside class="service-aside">
+        <div class="service-aside__card">
+          <p class="service-aside__title">Service department</p>
+          <a href={tel(site.service.phone)} class="service-aside__phone"><Icon name="phone" size={20} /> {prettyPhone(site.service.phone)}</a>
+          <a href={`mailto:${site.service.email}`} class="small">{site.service.email}</a>
+          <OpenStatus />
+        </div>
+        <div class="service-aside__card">
+          <p class="service-aside__title">Good to know</p>
+          <ul class="checklist small">
+            <li><Icon name="info" size={16} /> <span>All service calls are charged a ${serviceFee.amount} service fee after {serviceFee.after}.</span></li>
+            <li><Icon name="info" size={16} /> <span>The warranty covers parts for lifts installed by FiberSteel; the owner pays the service call and labor.</span></li>
+            <li><Icon name="info" size={16} /> <span>Dealer-installed lift outside the Lake of the Ozarks? Check with your dealer first.</span></li>
+          </ul>
+          <a href={withBase('/warranty/')} class="link-arrow">The warranty <Icon name="arrow-right" size={16} /></a>
+        </div>
+        <div class="service-aside__card">
+          <p class="service-aside__title">Another brand’s remote?</p>
+          {remoteWarranty.map((r) => (
+            <p class="small"><strong>{r.system.replace(' remote control blower systems', '').replace(' remote systems', '')}:</strong> {r.who}, <a href={tel(r.phone)}>{prettyPhone(r.phone)}</a></p>
+          ))}
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .service {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 1000px) {
+    .service {
+      grid-template-columns: minmax(0, 1fr) 320px;
+    }
+  }
+
+  .service-aside {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .service-aside__card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .service-aside__card a:not(.link-arrow):not(.service-aside__phone) {
+    color: var(--c-accent);
+  }
+
+  .service-aside__title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 760;
+    font-size: var(--fs-md);
+  }
+
+  .service-aside__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    white-space: nowrap;
+    color: var(--c-accent);
+    text-decoration: none;
+  }
+
+  .service-aside .checklist li > :global(svg) {
+    color: var(--c-accent);
+  }
+</style>

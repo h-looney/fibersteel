@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import RequestForm from '../components/RequestForm.astro';
+import LazyMap from '../components/LazyMap.astro';
+import OpenStatus from '../components/OpenStatus.astro';
+import Icon from '../components/Icon.astro';
+import { photo } from '../data/photos';
+import { site, tel, prettyPhone, fullAddress } from '../data/site';
+import { withBase } from '../scripts/url';
+
+const hero = photo('front/6800-front-mounted-2');
+const lines = [
+  { ...site.sales, icon: 'phone' as const, note: `For help, call ${site.sales.contact} for personal service. Ordering a lift and scheduling the installation only takes about five minutes.` },
+  { ...site.service, icon: 'wrench' as const, note: 'Repairs, parts and service calls.' },
+];
+---
+
+<BaseLayout
+  title="Contact FiberSteel Boat Lifts — Camdenton, MO"
+  description="FiberSteel Boat Lifts, 3910 Old Route 5, Camdenton, MO — about 4.5 miles from Camdenton Square. Sales 573-346-3088, service & parts 573-346-9688. Open Monday–Friday."
+>
+  <PageHero
+    title="Contact us"
+    titleHtml="Better yet, <em>see us in person</em>"
+    eyebrow="Contact"
+    lead={`${fullAddress} — ${site.address.note.charAt(0).toLowerCase()}${site.address.note.slice(1)}.`}
+    crumbs={[{ label: 'Contact' }]}
+    image={hero}
+  >
+    <a href={site.directionsUrl} class="btn btn--sun" target="_blank" rel="noopener"><Icon name="pin" size={18} /> Get directions</a>
+    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__info">
+        {
+          lines.map((l) => (
+            <article class="line">
+              <span class="icon-tile">
+                <Icon name={l.icon} size={22} />
+              </span>
+              <div>
+                <h2 class="h4">{l.label}</h2>
+                <a href={tel(l.phone)} class="line__phone tabular">{prettyPhone(l.phone)}</a>
+                <a href={`mailto:${l.email}`} class="line__email">{l.email}</a>
+                <p class="muted small">{l.note}</p>
+              </div>
+            </article>
+          ))
+        }
+        <article class="line">
+          <span class="icon-tile"><Icon name="clock" size={22} /></span>
+          <div>
+            <h2 class="h4">Hours</h2>
+            <p><OpenStatus /></p>
+            <dl class="hours">
+              {
+                site.hoursSummary.map((h) => (
+                  <div>
+                    <dt>{h.days}</dt>
+                    <dd>{h.time}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </article>
+        <article class="line">
+          <span class="icon-tile"><Icon name="facebook" size={22} /></span>
+          <div>
+            <h2 class="h4">Follow along</h2>
+            <p><a class="text-link" href={site.social.facebook} target="_blank" rel="noopener">facebook.com/lakeboatlifts</a> · <a class="text-link" href={site.social.yelp} target="_blank" rel="noopener">Yelp</a></p>
+          </div>
+        </article>
+      </div>
+
+      <div class="contact__side">
+        <LazyMap src={site.mapEmbed} title={`Map: ${site.name}, ${fullAddress}`} label={fullAddress} />
+        <div>
+          <h2 class="h3">Drop us a line</h2>
+          <p class="muted">For a lift quote, the <a class="text-link" href={withBase('/quote/')}>quote request</a> asks for exactly what we need. For anything else:</p>
+        </div>
+        <RequestForm kind="contact" submitLabel="Send" doneText="Your message is on its way, and we’ll get back to you within 48 hours.">
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Name</span>
+              <input class="input" type="text" name="name" required autocomplete="name" data-msg-required="Please tell us your name." />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">About</span>
+              <select class="select" name="topic" data-summary="About">
+                <option value="new-lift">A new lift</option>
+                <option value="used-lift">A used lift</option>
+                <option value="remote">A remote control</option>
+                <option value="dock-steps">Dock steps</option>
+                <option value="other" selected>Something else</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input class="input" type="tel" name="phone" autocomplete="tel" pattern="[\d\s\(\)\.\+\-]{10,}" data-msg-format="Please enter a 10-digit phone number." data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="input" type="email" name="email" autocomplete="email" data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Message</span>
+              <textarea class="textarea" name="message" rows="4" required data-msg-required="Please write a short message." data-summary="Message"></textarea>
+              <span class="field__error" role="alert"></span>
+            </label>
+          </div>
+        </RequestForm>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  @media (min-width: 1000px) {
+    .contact {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .contact__info,
+  .contact__side {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .line {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .line > div {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .line__phone {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    white-space: nowrap;
+    color: var(--c-accent);
+    text-decoration: none;
+  }
+
+  .line__email {
+    color: var(--c-accent);
+    font-size: var(--fs-sm);
+    overflow-wrap: anywhere;
+  }
+
+  .hours {
+    display: grid;
+    gap: var(--space-1);
+    margin: var(--space-2) 0 0;
+  }
+
+  .hours div {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: space-between;
+    font-size: var(--fs-sm);
+  }
+
+  .hours dt {
+    color: var(--c-text-muted);
+  }
+
+  .hours dd {
+    font-weight: 600;
+  }
+
+  .contact__side :global(.lazy-map) {
+    border-radius: var(--radius-lg);
+  }
+</style>

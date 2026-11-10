@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import RequestForm from '../../components/RequestForm.astro';
+import Icon from '../../components/Icon.astro';
+import { boatSizes, liftSizes } from '../../data/lifts';
+import { coverage } from '../../data/warranty';
+import { photo } from '../../data/photos';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('parts/hull-protectors');
+const sizes = [...liftSizes.filter((s) => s.group === 'pwc'), ...boatSizes];
+const thisYear = new Date().getFullYear();
+---
+
+<BaseLayout title="Register Your Lift’s Warranty" description="Register your FiberSteel boat lift: keep your lift and proof of original ownership on file for the lifetime warranty on the tanks and frame.">
+  <PageHero
+    title="Register your warranty"
+    titleHtml="Register <em>your lift</em>"
+    eyebrow="Warranty"
+    lead="FiberSteel’s warranty takes effect with proof of original ownership. Register your lift so it’s on file — it takes a couple of minutes."
+    crumbs={[{ label: 'Owners', href: withBase('/owners/') }, { label: 'Warranty', href: withBase('/warranty/') }, { label: 'Register' }]}
+    image={hero}
+    variant="split"
+  />
+
+  <section class="section">
+    <div class="container reg">
+      <RequestForm kind="warranty" submitLabel="Register my lift" doneTitle="You’re registered!" doneText="Your registration is on its way to the FiberSteel team to file with your lift.">
+        <fieldset>
+          <legend class="request__legend">Your lift</legend>
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Lift size</span>
+              <select class="select" name="liftSize" required data-msg-required="Please choose the lift size." data-summary="Lift">
+                <option value="">Choose…</option>
+                {sizes.map((s) => <option value={s.id}>{s.name}</option>)}
+                <option value="other">Other / custom</option>
+              </select>
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Installation date</span>
+              <input class="input" type="date" name="installDate" required max={`${thisYear}-12-31`} data-msg-required="Please give the installation date (an estimate is fine)." data-summary="Installed" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Installed by</span>
+              <select class="select" name="installedBy" data-summary="Installed by">
+                <option value="fibersteel">FiberSteel</option>
+                <option value="dealer">A FiberSteel dealer</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Serial or order number <span class="field__optional">(if you have one)</span></span>
+              <input class="input" type="text" name="serial" autocomplete="off" data-summary="Serial / order" />
+            </label>
+            <label class="field">
+              <span class="field__label">Remote system <span class="field__optional">(optional)</span></span>
+              <select class="select" name="remote">
+                <option value="">None</option>
+                <option value="admiral">Admiral</option>
+                <option value="firstmate">FirstMate</option>
+                <option value="captains-choice">Captain’s Choice</option>
+                <option value="other">Another brand</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Proof of purchase <span class="field__optional">(optional)</span></span>
+              <input class="input" type="file" name="photos" accept="image/*,application/pdf" data-summary="Proof attached" />
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Where is the lift?</span>
+              <input class="input" type="text" name="location" required autocomplete="street-address" placeholder="Address, or cove and mile marker" data-msg-required="Please tell us where the lift is." data-summary="Where" />
+              <span class="field__error" role="alert"></span>
+            </label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="request__legend">The original purchaser</legend>
+          <div class="request__grid">
+            <label class="field">
+              <span class="field__label">Name</span>
+              <input class="input" type="text" name="name" required autocomplete="name" data-msg-required="Please tell us your name." />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input class="input" type="tel" name="phone" autocomplete="tel" pattern="[\d\s\(\)\.\+\-]{10,}" data-msg-format="Please enter a 10-digit phone number." data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+            <label class="field request__full">
+              <span class="field__label">Email</span>
+              <input class="input" type="email" name="email" autocomplete="email" data-contact-one data-summary="Contact" />
+              <span class="field__error" role="alert"></span>
+            </label>
+          </div>
+        </fieldset>
+      </RequestForm>
+
+      <aside class="reg-aside">
+        <h2 class="h4">What you’re registering for</h2>
+        <dl>
+          {
+            coverage.map((c) => (
+              <div>
+                <dt>{c.part}</dt>
+                <dd>{c.term}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="small muted">For lifts installed by FiberSteel, to the original purchaser. Lifts installed by dealers outside the Lake of the Ozarks: check with your dealer.</p>
+        <a href={withBase('/warranty/')} class="link-arrow">The full warranty <Icon name="arrow-right" size={16} /></a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .reg {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  @media (min-width: 1000px) {
+    .reg {
+      grid-template-columns: minmax(0, 1fr) 320px;
+    }
+  }
+
+  .reg-aside {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .reg-aside dl {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .reg-aside dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--c-line);
+    font-size: var(--fs-sm);
+  }
+
+  .reg-aside dd {
+    font-weight: 700;
+  }
+</style>

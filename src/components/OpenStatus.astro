@@ -1,0 +1,48 @@
+---
+/**
+ * Live "Open now / Closed / By appointment" indicator for FiberSteel's office (Central time). Renders a static
+ * fallback on the server (the site is pre-rendered), then updates in the browser.
+ */
+import { site } from '../data/site';
+
+interface Props {
+  /** Show the "until 4:30 PM" detail text */
+  detail?: boolean;
+  class?: string;
+}
+
+const { detail = true, class: className } = Astro.props;
+---
+
+<span
+  class:list={['status', className]}
+  data-open-status
+  data-hours={JSON.stringify(site.hours)}
+  data-tz={site.timezone}
+  data-detail={detail ? 'true' : undefined}
+>
+  <span class="status__dot" aria-hidden="true"></span>
+  <span class="status__text">Mon–Fri 9–4:30 · Sat by appt.</span>
+</span>
+
+<script>
+  import { getOpenStatus } from '../scripts/hours';
+
+  const update = () => {
+    document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+      try {
+        const hours = JSON.parse(el.dataset.hours ?? '[]');
+        const status = getOpenStatus(hours, el.dataset.tz);
+        el.dataset.state = status.state;
+        const text = el.querySelector('.status__text');
+        if (text) text.textContent = el.dataset.detail && status.detail ? `${status.label} · ${status.detail}` : status.label;
+      } catch {
+        /* keep the static fallback */
+      }
+    });
+  };
+
+  update();
+  // Refresh every minute so a long-open tab stays accurate.
+  setInterval(update, 60_000);
+</script>

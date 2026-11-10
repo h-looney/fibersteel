@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import LiftTypeCard from '../../components/LiftTypeCard.astro';
+import SizeTable from '../../components/SizeTable.astro';
+import Icon from '../../components/Icon.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { liftTypes, quoteChecklist } from '../../data/lifts';
+import { getFaqs } from '../../data/faqs';
+import { photo } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('large/24000-back-in-16ft');
+---
+
+<BaseLayout
+  title="Boat Lifts by Boat Type — PWC to 24,000 lb"
+  description="FiberSteel floating boat lifts for PWCs, V-bottom and cat-hull boats, pontoons and tri-toons, performance boats, cruisers and large boats — plus front-mounted and shallow-water lifts."
+>
+  <PageHero
+    title="Boat lifts"
+    titleHtml="Lifts for <em>every boat</em> on the lake"
+    eyebrow="FiberSteel Boat Lifts"
+    lead="From a single PWC lift to a 24,000 lb lift with 8 arms and 3 poly tanks — each one set up for the boat, the slip and the way you dock."
+    crumbs={[{ label: 'Lifts' }]}
+    image={hero}
+  >
+    <a href={withBase('/lifts/sizes/#calculator')} class="btn btn--sun"><Icon name="calculator" size={18} /> Find your lift size</a>
+    <a href={withBase('/quote/')} class="btn btn--ghost-light">Request a quote</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow="Lifts by boat type" title="Start with your boat" />
+      <div class="grid grid--lifts">
+        {liftTypes.map((t) => <LiftTypeCard type={t} headingLevel="h3" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <SectionHeading
+        align="split"
+        eyebrow="Lift sizes"
+        title="Every standard size, <em>at a glance</em>"
+        lead="Sizes and specs as FiberSteel lists them. Need something else? FiberSteel builds custom lifts too."
+      >
+        <a href={withBase('/lifts/sizes/')} class="link-arrow">Sizes, parts & the calculator <Icon name="arrow-right" size={16} /></a>
+      </SectionHeading>
+      <SizeTable />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container ready">
+      <div>
+        <p class="eyebrow">Getting a quote</p>
+        <h2>Have these ready</h2>
+        <p class="lead">It’s all FiberSteel needs to size your lift — or call {site.sales.contact} at <a class="text-link" href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> for help.</p>
+      </div>
+      <ul class="checklist ready__list">
+        {
+          quoteChecklist.map((f) => (
+            <li>
+              <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <a href={withBase('/quote/')} class="btn btn--primary btn--lg">Request a quote <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container container--narrow">
+      <SectionHeading align="center" eyebrow="Good questions" title="About FiberSteel lifts" />
+      <FaqList faqs={getFaqs(['size', 'tanks', 'shallow', 'warranty', 'remote'])} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .ready {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .ready {
+      grid-template-columns: 1.2fr 1fr auto;
+    }
+  }
+
+  .ready > div {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .ready__list {
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+/**
+ * Dismissible seasonal announcement. The dismissal is remembered per browser;
+ * bump `id` to show a new announcement to everyone again.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  id: string;
+  href: string;
+  linkLabel: string;
+}
+
+const { id, href, linkLabel } = Astro.props;
+---
+
+<aside class="announcement no-print" aria-label="Announcement" data-announcement={id}>
+  <div class="container announcement__inner">
+    <p>
+      <span class="announcement__badge">Summer 2027</span>
+      <slot />
+      <a href={href} class="announcement__link">
+        {linkLabel}
+        <Icon name="arrow-right" size={14} />
+      </a>
+    </p>
+    <button type="button" class="announcement__close" data-announcement-close>
+      <Icon name="close" size={16} />
+      <span class="visually-hidden">Dismiss announcement</span>
+    </button>
+  </div>
+</aside>
+
+<style>
+  .announcement {
+    background: linear-gradient(90deg, var(--c-ink-2), var(--c-accent-700) 55%, var(--c-ink-2));
+    color: #fff;
+    font-size: var(--fs-xs);
+  }
+
+  :global(html.announcement-dismissed) .announcement {
+    display: none;
+  }
+
+  .announcement__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    min-height: 40px;
+    padding-block: 0.45rem;
+  }
+
+  .announcement p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.75rem;
+    text-align: center;
+  }
+
+  .announcement__badge {
+    padding: 0.1rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--c-sun);
+    color: var(--c-ink);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .announcement__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    color: #fff;
+    font-weight: 650;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .announcement__close {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    color: #fff;
+  }
+
+  .announcement__close:hover {
+    background: rgb(255 255 255 / 0.15);
+  }
+
+  .announcement__close:focus-visible {
+    outline-color: #fff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-announcement]').forEach((bar) => {
+    bar.querySelector('[data-announcement-close]')?.addEventListener('click', () => {
+      document.documentElement.classList.add('announcement-dismissed');
+      try {
+        localStorage.setItem('fs-announcement', bar.dataset.announcement ?? '');
+      } catch {
+        /* storage unavailable — dismissal lasts for this page view */
+      }
+    });
+  });
+</script>

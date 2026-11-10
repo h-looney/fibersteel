@@ -1,0 +1,852 @@
+/* ---------- Website section ---------- */
+
+.web-stats {
+  margin-bottom: 18px;
+}
+
+.web-pending {
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.web-pending > div {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .web-pending > .btn {
+    margin-left: 30px;
+  }
+}
+
+.web-toolbar {
+  padding: 0 16px;
+  margin: 0 0 12px;
+}
+
+.web-toolbar .search {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+/* Lists of things to act on (dealers, pending changes, publishes) */
+.web-list {
+  display: grid;
+  list-style: none;
+}
+
+.web-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.web-item:first-child {
+  border-top: 0;
+}
+
+.web-item__main {
+  display: grid;
+  gap: 3px;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.web-item__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-weight: 650;
+}
+
+.web-item__text {
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.web-item__meta {
+  font-size: 0.8125rem;
+  color: var(--o-muted);
+  overflow-wrap: anywhere;
+}
+
+.web-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.web-note,
+.web-more {
+  padding: 10px 16px 14px;
+}
+
+.photo-img--loading {
+  display: block;
+  background: var(--o-surface-2);
+}
+
+.photo-dialog {
+  display: grid;
+  gap: 14px;
+}
+
+.photo-hint {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  color: var(--o-muted);
+}
+
+.photo-hint .icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c-accent);
+}
+
+.photo-drop {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 22px 16px;
+  border: 1.5px dashed var(--o-line-strong);
+  border-radius: 12px;
+  background: var(--o-surface-2);
+  text-align: center;
+  cursor: pointer;
+}
+
+.photo-drop .icon {
+  color: var(--c-accent);
+}
+
+.photo-drop:hover,
+.photo-drop.is-dragging {
+  border-color: var(--c-accent);
+  background: var(--o-surface);
+}
+
+.photo-drop:focus-within {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 2px;
+}
+
+.photo-drop.is-disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.photo-drop__title {
+  font-weight: 650;
+}
+
+.photo-drop__hint {
+  font-size: 0.8125rem;
+  color: var(--o-muted);
+}
+
+.photo-status:empty {
+  display: none;
+}
+
+.photo-status {
+  display: grid;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
+.photo-errors {
+  display: grid;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  color: var(--bad);
+}
+
+.photo-warn {
+  font-size: 0.8125rem;
+  color: var(--bad);
+}
+
+.photo-errors .icon {
+  vertical-align: -2px;
+}
+
+.photo-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.photo-row {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 12px 16px;
+  padding: 12px;
+  border: 1px solid var(--o-line);
+  border-radius: 12px;
+}
+
+.photo-row__img {
+  position: relative;
+  align-self: start;
+}
+
+.photo-row__img img,
+.photo-row__img .photo-img--loading {
+  display: block;
+  width: 132px;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--o-surface-2);
+}
+
+.photo-row__main {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgb(11 37 69 / 0.82);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 650;
+}
+
+.photo-row__fields {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.photo-row__actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.photo-footer-note {
+  margin-right: auto;
+}
+
+@media (max-width: 520px) {
+  .photo-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .photo-row__img img,
+  .photo-row__img .photo-img--loading {
+    width: 100%;
+  }
+}
+
+/* ---------- Listing editor ---------- */
+.listing-editor {
+  display: grid;
+  gap: 16px;
+}
+
+.listing-editor__back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.listing-editor__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.listing-editor__title {
+  font-size: 1.25rem;
+  font-weight: 650;
+}
+
+.listing-editor__actions,
+.listing-editor__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.listing-editor__foot {
+  justify-content: flex-end;
+}
+
+.listing-editor__grid {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.listing-editor__main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .listing-editor__grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  .listing-editor__side {
+    position: sticky;
+    top: 16px;
+  }
+}
+
+.listing-problems ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+/* Specs */
+.spec-common {
+  display: grid;
+  gap: 8px;
+}
+
+.spec-common__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.spec-common__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.spec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 11px 0 9px;
+  border: 1px solid var(--o-line-strong);
+  border-radius: 999px;
+  background: var(--o-surface);
+  color: var(--o-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.spec-chip:hover:not(:disabled) {
+  border-color: var(--c-accent);
+}
+
+.spec-chip.is-on {
+  border-color: #c9d8fa;
+  background: var(--c-accent-50);
+  color: #153690;
+}
+
+.spec-chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.spec-empty {
+  padding: 10px 12px;
+  border: 1px dashed var(--o-line-strong);
+  border-radius: var(--o-radius);
+}
+
+.spec-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Preview */
+.listing-preview {
+  display: grid;
+  gap: 10px;
+}
+
+.listing-preview__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.listing-card {
+  overflow: hidden;
+  border: 1px solid var(--o-line);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--o-shadow-1);
+}
+
+.listing-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #e8eef4;
+}
+
+.listing-card__media img,
+.listing-card__media .photo-img--loading {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.listing-card__body {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px 14px;
+}
+
+.listing-card__brand {
+  color: #4f6176;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.listing-card__model {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+.listing-card__type {
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+}
+
+.listing-card__note {
+  margin-top: 6px;
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.listing-card__note.is-on {
+  color: #277553;
+}
+
+/* ---------- Lifts we’ve installed ---------- */
+
+.installs-tab {
+  display: grid;
+  gap: 18px;
+}
+
+.showcase-card {
+  border-left: 4px solid var(--o-line-strong);
+}
+
+.showcase-card.is-on {
+  border-left-color: #2f8a5b;
+}
+
+.showcase-card__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+}
+
+.showcase-card__note .link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.install-jobs {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-jobs__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--o-line-soft);
+}
+
+.install-jobs__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.installs-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 6px;
+}
+
+.installs-head__title {
+  font-size: 1.0625rem;
+}
+
+.install-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-tile {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  border: 1px solid var(--o-line);
+  border-radius: 12px;
+  background: var(--o-surface);
+}
+
+/* Coming off the site: dashed, with a faded photo (text keeps its contrast) */
+.install-tile.is-removed {
+  border-style: dashed;
+  background: var(--o-surface-2);
+}
+
+.install-tile.is-removed .install-tile__media img {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+.install-tile__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #e8eef4;
+  color: var(--o-muted);
+}
+
+/* The photo fills the frame whatever its shape, so the frame keeps its 16:10 */
+.install-tile__media img,
+.install-tile__media .photo-img--loading {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.install-tile__count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgb(11 37 69 / 0.72);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 650;
+}
+
+.install-tile__body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 10px 40px 12px 12px;
+}
+
+.install-tile__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.install-tile__title {
+  justify-self: start;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1rem;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.install-tile__meta {
+  font-size: 0.8125rem;
+}
+
+.install-tile__menu {
+  position: absolute;
+  right: 4px;
+  bottom: 6px;
+}
+
+/* The editor's preview card and website settings */
+.install-preview-card__empty {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  height: 100%;
+  color: var(--o-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.install-preview-card__summary {
+  font-size: 0.875rem;
+}
+
+.install-publish {
+  display: grid;
+  gap: 14px;
+}
+
+.install-consent {
+  padding: 10px 12px;
+  border: 1px solid var(--o-line);
+  border-radius: 10px;
+  background: var(--o-bg);
+}
+
+.install-consent.is-missing {
+  border-color: #9fb9f2;
+  background: var(--c-accent-50);
+}
+
+.install-jobs__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.install-jobs__more {
+  margin-top: 8px;
+}
+
+.site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* One list of short rows: what was built, what a used lift includes */
+.rows-editor {
+  display: grid;
+  gap: 12px;
+}
+
+.rows-editor__list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rows-editor__row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.rows-editor__n {
+  color: var(--o-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+  text-align: center;
+}
+
+.rows-editor__actions {
+  display: flex;
+  gap: 2px;
+}
+
+@media (max-width: 520px) {
+  .rows-editor__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .rows-editor__n {
+    display: none;
+  }
+}
+
+/* ---------- Used lifts ---------- */
+
+.used-rules {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.used-rules li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+}
+
+.used-rules .icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c-accent);
+}
+
+.used-empty {
+  padding: 4px 2px;
+}
+
+.used-preview__media,
+.used-tile .install-tile__media {
+  position: relative;
+}
+
+.used-preview__status {
+  position: absolute;
+  z-index: 1;
+  left: 8px;
+  top: 8px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #1d6a3d;
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.used-preview__status.is-pending {
+  background: var(--c-sun);
+  color: var(--c-ink);
+}
+
+.used-preview__status.is-sold {
+  background: var(--c-ink);
+}
+
+.used-preview.is-sold img,
+.used-tile .install-tile__media:has(.is-sold) img {
+  filter: grayscale(0.8);
+  opacity: 0.8;
+}
+
+.used-preview__price {
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.used-editor__stock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.used-editor__price {
+  max-width: 220px;
+  margin-top: 12px;
+}
+
+/* ---------- Dealer list ---------- */
+
+.dealer-row.is-hidden {
+  background: var(--o-surface-2);
+}
+
+.dealer-row.is-hidden .web-item__title {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.dealer-row .web-item__meta .icon {
+  display: inline-block;
+  vertical-align: -2px;
+}
+
+.dealer-edit__state {
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.dealer-edit__phone {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.dealer-edit__phone .input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .web-item__actions {
+    margin-left: auto;
+  }
+}
+
+.web-note .icon {
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+/* Fields with hints shouldn't stretch their neighbours */
+.listing-editor .form-grid,
+.dealer-edit .form-grid {
+  align-items: start;
+}
+
+.dealer-edit__more {
+  align-self: end;
+}
+
+.dealer-edit__more .btn {
+  justify-self: start;
+}
+
+.dealer-edit__hint {
+  margin-top: -6px;
+}

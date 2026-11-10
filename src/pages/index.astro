@@ -1,0 +1,542 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Photo from '../components/Photo.astro';
+import OpenStatus from '../components/OpenStatus.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import LiftTypeCard from '../components/LiftTypeCard.astro';
+import LiftCalculator from '../components/LiftCalculator.astro';
+import InstallGrid from '../components/InstallGrid.astro';
+import LiteVideo from '../components/LiteVideo.astro';
+import FaqList from '../components/FaqList.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+import { site, tel, prettyPhone } from '../data/site';
+import { liftTypes, whyFiberSteel } from '../data/lifts';
+import { installs } from '../data/installs';
+import { dealers, STATE_NAMES } from '../data/dealers';
+import { coverage } from '../data/warranty';
+import { dockSteps, usd } from '../data/products';
+import { getFaqs } from '../data/faqs';
+import { getVideo } from '../data/ownerHelp';
+import { photo } from '../data/photos';
+import { withBase } from '../scripts/url';
+
+const hero = photo('vbottom/16000-with-guides');
+const tanks = photo('shallow/8000-shallow-bow');
+const remote = photo('remotes/2-valve-14000');
+const steps = photo('docksteps/down');
+const used = photo('pontoon/tritoon-lift');
+const shop = photo('front/6800-front-mounted-2');
+
+const featured = installs.filter((i) => i.featured);
+const dealerStates = [...new Set(dealers.filter((d) => !d.factory).map((d) => d.state))].map((s) => STATE_NAMES[s] ?? s);
+const homeFaqs = getFaqs(['size', 'quote', 'shallow', 'warranty', 'where']);
+
+const quick = [
+  { icon: 'shield', value: 'Lifetime', label: 'warranty on the poly tanks and lift frame' },
+  { icon: 'lift', value: '1,500 – 24,000 lb', label: 'from PWC lifts to large cruisers' },
+  { icon: 'waves', value: '20 – 24 in.', label: 'shallow-water tanks, for shallow coves' },
+  { icon: 'award', value: '30+ years', label: 'in the marine industry' },
+] as const;
+---
+
+<BaseLayout
+  title="FiberSteel Boat Lifts | Floating Boat Lifts, Lake of the Ozarks — Camdenton, MO"
+  description="FiberSteel Boat Lifts designs, builds, installs and services floating boat lifts at the Lake of the Ozarks — PWC to 24,000 lb lifts, shallow-water and front-mounted lifts, factory direct from Camdenton, MO."
+>
+  <!-- ================= HERO ================= -->
+  <section class="hero on-dark">
+    <div class="hero__bg" aria-hidden="true">
+      <Photo src={hero.src} alt="" sizes="100vw" widths={[720, 1080, 1440, 1600]} position="50% 35%" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">Factory direct · Camdenton, MO · Lake of the Ozarks</p>
+        <h1 class="display">Floating boat lifts, <em>built at the lake.</em></h1>
+        <p class="lead hero__lead">
+          FiberSteel designs, builds, installs and services its own lifts — square poly tanks, virtually no metal in the
+          water, and the bunks set for your boat. PWC lifts to 24,000 lb cruisers.
+        </p>
+        <div class="hero__actions">
+          <a href={withBase('/quote/')} class="btn btn--sun btn--lg">
+            Request a quote <Icon name="arrow-right" size={18} class="icon-arrow" />
+          </a>
+          <a href={withBase('/lifts/sizes/#calculator')} class="btn btn--ghost-light btn--lg">
+            <Icon name="calculator" size={18} /> Find your lift size
+          </a>
+        </div>
+        <p class="hero__call">
+          <OpenStatus />
+          <a href={tel(site.sales.phone)}><Icon name="phone" size={16} /> Call {site.sales.contact} · {prettyPhone(site.sales.phone)}</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick" aria-label="FiberSteel at a glance">
+    <div class="container">
+      <ul class="quick__list" role="list">
+        {
+          quick.map((q) => (
+            <li>
+              <span class="icon-tile"><Icon name={q.icon} size={22} /></span>
+              <span>
+                <strong>{q.value}</strong>
+                <span>{q.label}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= LIFTS BY BOAT TYPE ================= -->
+  <section class="section" id="lifts">
+    <div class="container">
+      <SectionHeading
+        align="split"
+        eyebrow="Lifts by boat type"
+        title="Pick your boat. <em>We’ll build the lift for it.</em>"
+        lead="Every FiberSteel lift is set up for the boat that rides on it — the bunks, the arms, the docking style and the slip."
+      >
+        <a href={withBase('/lifts/')} class="link-arrow">All lifts and sizes <Icon name="arrow-right" size={16} /></a>
+      </SectionHeading>
+      <div class="grid grid--lifts">
+        {liftTypes.map((t) => <LiftTypeCard type={t} />)}
+        <a class="card card--hover lift-help" href={withBase('/quote/')}>
+          <span class="icon-tile"><Icon name="chat" size={24} /></span>
+          <span class="lift-help__title">Not sure which?</span>
+          <span class="lift-help__text">Tell us the boat and the slip, and we’ll size it. Or call {site.sales.contact}: {prettyPhone(site.sales.phone)}.</span>
+          <span class="link-arrow">Request a quote <Icon name="arrow-right" size={16} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LIFT SIZE CALCULATOR ================= -->
+  <section class="section section--tint" id="calculator-teaser">
+    <div class="container">
+      <SectionHeading
+        eyebrow="Lift size calculator"
+        title="How big a lift do you need?"
+        lead="FiberSteel’s rule of thumb: add the boat’s dry weight, its fuel and a safety margin. Type in your numbers — then send them with a quote request."
+      />
+      <LiftCalculator id="calculator" compact />
+    </div>
+  </section>
+
+  <!-- ================= INSTALLS ================= -->
+  <section class="section" id="installs" data-feature="installs">
+    <div class="container">
+      <SectionHeading
+        align="split"
+        eyebrow="Lifts we’ve installed"
+        title="Out on the water, <em>not in a brochure.</em>"
+        lead="Real lifts in real slips: the size, the boat, the slip and what was built for it. The installs in this concept are samples, made from photos on FiberSteel’s current site."
+      >
+        <a href={withBase('/installs/')} class="link-arrow">See all installs <Icon name="arrow-right" size={16} /></a>
+      </SectionHeading>
+      <InstallGrid installs={featured} scope="featured" limit={3} what="featured installs" />
+    </div>
+  </section>
+
+  <!-- ================= WHY FIBERSTEEL ================= -->
+  <section class="section section--dark on-dark why" id="why">
+    <div class="container why__inner">
+      <div class="why__copy" data-reveal>
+        <p class="eyebrow">Why square poly tanks</p>
+        <h2>Built like a strong dock — <em>not a log.</em></h2>
+        <p class="lead">
+          Docks, marinas and floating structures that need strength and stability use box-style flotation. FiberSteel
+          lifts do too: square polyethylene tanks instead of round air tanks, which need more steel in the water to hold
+          them in place — steel that will rust — and deeper water to work.
+        </p>
+        <ul class="checklist why__list">
+          {
+            whyFiberSteel.map((f) => (
+              <li>
+                <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="why__more">
+          <a href={withBase('/about/')} class="link-arrow">How we build our lifts <Icon name="arrow-right" size={16} /></a>
+        </p>
+      </div>
+      <div class="why__media" data-reveal style="--reveal-delay: 120ms">
+        <figure class="why__photo">
+          <Photo src={tanks.src} alt={tanks.alt} sizes="(min-width: 960px) 560px, 100vw" />
+          <figcaption>{tanks.caption}</figcaption>
+        </figure>
+        <LiteVideo video={getVideo('bfT7C_Cj4Vw')} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REMOTES, DOCK STEPS, USED ================= -->
+  <section class="section" id="more">
+    <div class="container">
+      <SectionHeading eyebrow="Add-ons & more" title="Everything for the slip." />
+      <div class="grid grid--3">
+        <article class="card card--hover extra">
+          <div class="card__media"><Photo src={remote.src} alt={remote.alt} sizes="(min-width: 1240px) 400px, 100vw" /></div>
+          <div class="card__body">
+            <h3><a class="card__link" href={withBase('/remotes/')}>Admiral remote controls</a></h3>
+            <p class="muted">Raise and lower your lift from a key fob — models for any size and any brand of lift, with a leak protection sensor. Installed on the lake for $200.</p>
+          </div>
+        </article>
+        <article class="card card--hover extra">
+          <div class="card__media"><Photo src={steps.src} alt={steps.alt} sizes="(min-width: 1240px) 400px, 100vw" /></div>
+          <div class="card__body">
+            <h3><a class="card__link" href={withBase('/dock-steps/')}>Self-raising dock steps</a></h3>
+            <p class="muted">Super heavy-duty floating steps for easy in and out of the water — 7 ft long, 7 steps. {usd(dockSteps.prices[0].price)}.</p>
+          </div>
+        </article>
+        <article class="card card--hover extra">
+          <div class="card__media"><Photo src={used.src} alt={used.alt} sizes="(min-width: 1240px) 400px, 100vw" /></div>
+          <div class="card__body">
+            <h3><a class="card__link" href={withBase('/used-lifts/')}>Used lifts</a></h3>
+            <p class="muted">First come, first served — they sell fast. Installed on the Lake of the Ozarks only.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DEALERS + WARRANTY ================= -->
+  <section class="section section--tint" id="dealers">
+    <div class="container duo">
+      <div class="duo__card" data-reveal>
+        <span class="icon-tile"><Icon name="map" size={24} /></span>
+        <h2 class="h3">Factory direct — or from a dealer near you</h2>
+        <p class="muted">
+          Order from the factory in Camdenton for the Lake of the Ozarks and all of Missouri — or we can ship to you.
+          FiberSteel’s authorized dealers sell lifts in {dealerStates.slice(0, -1).join(', ')} and {dealerStates.at(-1)}.
+        </p>
+        <div class="cluster">
+          <a href={withBase('/dealers/')} class="btn btn--primary">Find a dealer</a>
+          <a href={withBase('/dealers/become-a-dealer/')} class="link-arrow">Become a dealer <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+      <div class="duo__card" data-reveal style="--reveal-delay: 100ms">
+        <span class="icon-tile"><Icon name="shield" size={24} /></span>
+        <h2 class="h3">A warranty that lasts as long as you own it</h2>
+        <dl class="warranty-mini">
+          {
+            coverage.map((c) => (
+              <div>
+                <dt>{c.part}</dt>
+                <dd>{c.term}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="small muted">For lifts installed by FiberSteel, to the original purchaser. Parts only.</p>
+        <div class="cluster">
+          <a href={withBase('/warranty/')} class="btn btn--outline">The full warranty</a>
+          <a href={withBase('/warranty/register/')} class="link-arrow">Register your lift <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT TEASER ================= -->
+  <section class="section" id="about">
+    <div class="container about-teaser">
+      <figure class="about-teaser__media media-frame" data-reveal>
+        <Photo src={shop.src} alt={shop.alt} sizes="(min-width: 960px) 560px, 100vw" />
+      </figure>
+      <div class="about-teaser__copy" data-reveal style="--reveal-delay: 100ms">
+        <p class="eyebrow">The boaters’ choice</p>
+        <h2>We design, build, install <em>and service our lifts.</em></h2>
+        <p class="lead">
+          With {site.experience} in the marine industry, FiberSteel designs, builds, installs and services its own
+          floating boat lifts at the Lake of the Ozarks — and stands behind them with a lifetime warranty on the tanks and frame.
+        </p>
+        <p>
+          Finding the right lift can be tricky. Call {site.sales.contact} at{' '}
+          <a class="text-link" href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> — over 55 years of
+          boating, and glad to help you find the right lift for your boat.
+        </p>
+        <div class="cluster">
+          <a href={withBase('/about/')} class="btn btn--outline">About FiberSteel</a>
+          <a href={withBase('/contact/')} class="link-arrow">Visit the factory <Icon name="arrow-right" size={16} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="section section--paper" id="faq">
+    <div class="container container--narrow">
+      <SectionHeading align="center" eyebrow="Good questions" title="Before you call" />
+      <FaqList faqs={homeFaqs} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  /* ----- Hero ----- */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: clamp(520px, 48vw + 200px, 760px);
+    display: grid;
+    align-items: end;
+    background: var(--c-ink);
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero__bg :global(picture),
+  .hero__bg :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(7 26 50 / 0.94) 0%, rgb(7 26 50 / 0.78) 40%, rgb(7 26 50 / 0.12) 100%),
+      linear-gradient(0deg, rgb(7 26 50 / 0.7) 0%, transparent 50%);
+  }
+
+  @media (max-width: 760px) {
+    .hero__bg::after {
+      background: linear-gradient(0deg, rgb(7 26 50 / 0.96) 25%, rgb(7 26 50 / 0.55) 100%);
+    }
+  }
+
+  .hero__inner {
+    padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+
+  .hero__copy {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 660px;
+  }
+
+  .hero__lead {
+    max-width: 56ch;
+    color: var(--c-text-invert);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero__call {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    font-size: var(--fs-sm);
+  }
+
+  .hero__call a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    color: var(--c-text-invert);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .hero__call a:hover {
+    color: var(--c-sun);
+  }
+
+  /* ----- Quick facts ----- */
+  .quick {
+    background: var(--c-paper);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .quick__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: var(--space-4) var(--space-6);
+    padding-block: var(--space-6);
+  }
+
+  .quick__list li {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .quick__list li > span:last-child {
+    display: grid;
+    line-height: 1.3;
+  }
+
+  .quick__list strong {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-lg);
+    color: var(--c-ink);
+  }
+
+  .quick__list li > span:last-child > span {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  /* ----- "Not sure which?" tile ----- */
+  .lift-help {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+    background: var(--c-tint);
+    color: var(--c-text);
+    text-decoration: none;
+  }
+
+  .lift-help__title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 780;
+    font-size: var(--fs-lg);
+  }
+
+  .lift-help__text {
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+  }
+
+  /* ----- Why ----- */
+  .why__inner {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .why__inner {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  .why__copy {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .why__list {
+    gap: var(--space-3);
+  }
+
+  .why__media {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .why__photo {
+    margin: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .why__photo :global(img) {
+    border-radius: var(--radius-lg);
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .why__photo figcaption {
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  /* ----- Extras ----- */
+  .extra h3 {
+    font-size: var(--fs-lg);
+  }
+
+  /* ----- Dealers + warranty ----- */
+  .duo {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 900px) {
+    .duo {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .duo__card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .warranty-mini {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .warranty-mini div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .warranty-mini dt {
+    color: var(--c-text-muted);
+  }
+
+  .warranty-mini dd {
+    font-weight: 700;
+    color: var(--c-ink);
+  }
+
+  /* ----- About teaser ----- */
+  .about-teaser {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .about-teaser {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  .about-teaser__media {
+    margin: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  .about-teaser__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+</style>

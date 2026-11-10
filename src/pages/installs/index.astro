@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import InstallGrid from '../../components/InstallGrid.astro';
+import FeatureOff from '../../components/FeatureOff.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { installs } from '../../data/installs';
+import { photo } from '../../data/photos';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('large/24000-chris-craft-back-in');
+const sorted = [...installs].sort((a, b) => b.month.localeCompare(a.month));
+---
+
+<BaseLayout
+  title="Lifts We’ve Installed"
+  description="FiberSteel boat lifts on the water at the Lake of the Ozarks: the lift, the boat, the slip and what was built for it — filter by boat type, lift size and docking style."
+>
+  <PageHero
+    title="Lifts we’ve installed"
+    titleHtml="Lifts we’ve <em>installed</em>"
+    eyebrow="Our work"
+    lead="The lift, the boat, the slip, and what was built for it. Filter by boat type, lift size or how the boat docks."
+    crumbs={[{ label: 'Lifts we’ve installed' }]}
+    image={hero}
+  />
+
+  <section class="section" data-feature="installs">
+    <div class="container">
+      <p class="sample-note">
+        <Icon name="info" size={18} />
+        <span>
+          <strong>These installs are samples for this concept.</strong> The photos and what each lift has are from
+          FiberSteel’s current site; the towns, months and write-ups are made up. FiberSteel’s real installs would replace them —
+          added over time, or, with FiberSteel mode, uploaded and managed by FiberSteel’s staff.
+        </span>
+      </p>
+      <InstallGrid installs={sorted} scope="all" filters={['kind', 'size', 'docking']} what="installs" headingLevel="h2">
+        <Fragment slot="empty">
+          No installs match. <button type="button" class="text-link" data-install-reset>Show all installs</button>
+        </Fragment>
+      </InstallGrid>
+    </div>
+  </section>
+
+  <section class="section" data-feature-off="installs">
+    <div class="container">
+      <FeatureOff feature="installs" headingLevel="h2" page />
+    </div>
+  </section>
+
+  <CtaBand quoteHref={withBase('/quote/')} />
+</BaseLayout>
+
+<style>
+  .sample-note {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius);
+    border: 1px dashed var(--c-line-strong);
+    background: var(--c-paper);
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  .sample-note :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--c-accent);
+  }
+
+  .sample-note strong {
+    color: var(--c-text);
+  }
+
+  button.text-link {
+    font: inherit;
+  }
+</style>

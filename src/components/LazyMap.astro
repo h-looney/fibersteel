@@ -1,0 +1,116 @@
+---
+/**
+ * Google Maps embed that only loads after the visitor asks for it —
+ * keeps pages fast and avoids third-party requests until needed.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  src: string;
+  title: string;
+  label: string;
+  class?: string;
+}
+
+const { src, title, label, class: className } = Astro.props;
+---
+
+<div class:list={['lazy-map', className]} data-lazy-map data-src={src} data-title={title}>
+  <button type="button" class="lazy-map__button">
+    <span class="lazy-map__pin"><Icon name="pin" size={22} /></span>
+    <span class="lazy-map__label">{label}</span>
+    <span class="lazy-map__cta">Show interactive map</span>
+  </button>
+</div>
+
+<style>
+  .lazy-map {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background-color: #dfe7ef;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.45) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.45) 1px, transparent 1px),
+      radial-gradient(circle at 30% 40%, #cbd8e5 0 18%, transparent 19%),
+      radial-gradient(circle at 75% 70%, #cfe3d8 0 14%, transparent 15%),
+      linear-gradient(115deg, transparent 46%, #f0f4f8 46% 50%, transparent 50%),
+      linear-gradient(25deg, transparent 58%, #f0f4f8 58% 61%, transparent 61%);
+    background-size:
+      32px 32px,
+      32px 32px,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%;
+    overflow: hidden;
+  }
+
+  .lazy-map :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .lazy-map__button {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.35rem;
+    width: 100%;
+    color: var(--c-text);
+  }
+
+  .lazy-map__pin {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50% 50% 50% 0;
+    rotate: -45deg;
+    background: var(--c-accent);
+    color: #fff;
+    box-shadow: 0 10px 20px -6px rgb(29 78 208 / 0.6);
+    transition: translate var(--dur) var(--ease);
+  }
+
+  .lazy-map__pin :global(svg) {
+    rotate: 45deg;
+  }
+
+  .lazy-map__button:hover .lazy-map__pin {
+    translate: 0 -4px;
+  }
+
+  .lazy-map__label {
+    margin-top: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+  }
+
+  .lazy-map__cta {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-lazy-map]').forEach((wrap) => {
+    wrap.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = wrap.dataset.src ?? '';
+      iframe.title = wrap.dataset.title ?? 'Map';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      iframe.allowFullscreen = true;
+      wrap.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>

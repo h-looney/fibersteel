@@ -1,0 +1,323 @@
+---
+/**
+ * Lift size calculator: FiberSteel's own formula from its home page — dry weight + fuel (7 lb a gallon) + 2,000 lb
+ * for boats up to 30 ft (3,000 lb for larger boats) — and the smallest standard FiberSteel size that covers it.
+ * "Get a quote with these numbers" hands them to the quote form (/quote/?dry=&fuel=&length=).
+ */
+import Icon from './Icon.astro';
+import { boatSizes, formula, liftSizes, lb } from '../data/lifts';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  id?: string;
+  /** A compact version for the home page */
+  compact?: boolean;
+}
+
+const { id = 'calculator', compact = false } = Astro.props;
+const data = {
+  ...formula,
+  sizes: boatSizes.map((s) => ({ id: s.id, capacity: s.capacity, name: s.name, summary: s.summary })),
+  quote: withBase('/quote/'),
+};
+const pwc = liftSizes.filter((s) => s.group === 'pwc');
+---
+
+<div class:list={['calc', { 'calc--compact': compact }]} id={id} data-calc>
+  <script is:inline type="application/json" data-calc-data set:html={JSON.stringify(data)} />
+  <form class="calc__form" data-calc-form novalidate>
+    <fieldset class="calc__kind">
+      <legend class="field__label">What are you lifting?</legend>
+      <div class="cluster">
+        <label class="option">
+          <input type="radio" name="what" value="boat" checked />
+          <span class="option__mark"><Icon name="check" size={13} strokeWidth={3} /></span>
+          <span class="option__text">A boat</span>
+        </label>
+        <label class="option">
+          <input type="radio" name="what" value="pwc" />
+          <span class="option__mark"><Icon name="check" size={13} strokeWidth={3} /></span>
+          <span class="option__text">Personal watercraft</span>
+        </label>
+      </div>
+    </fieldset>
+    <div class="calc__inputs" data-calc-boat>
+      <label class="field">
+        <span class="field__label">Dry weight</span>
+        <span class="calc__unit"><input class="input" type="number" name="dry" inputmode="numeric" min="0" max="40000" step="50" placeholder="e.g. 4200" /><span>lb</span></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Fuel capacity</span>
+        <span class="calc__unit"><input class="input" type="number" name="fuel" inputmode="numeric" min="0" max="1000" step="1" placeholder="e.g. 50" /><span>gal</span></span>
+      </label>
+      <label class="field">
+        <span class="field__label">Boat length</span>
+        <span class="calc__unit"><input class="input" type="number" name="length" inputmode="decimal" min="5" max="80" step="0.5" placeholder="e.g. 24" /><span>ft</span></span>
+      </label>
+    </div>
+  </form>
+
+  <div class="calc__result" data-calc-result aria-live="polite">
+    <div data-calc-empty>
+      <p class="calc__formula">
+        <strong>Dry weight</strong> + <strong>fuel</strong> ({formula.fuelLbPerGallon} lb a gallon) + <strong>{lb(formula.allowanceUpTo30ft)}</strong>{' '}
+        for boats up to {formula.lengthCutoffFt} ft ({lb(formula.allowanceOver30ft)} for larger boats) = <strong>the lift size you need</strong>.
+      </p>
+      <p class="calc__hint">Type your boat’s numbers to see the math and the FiberSteel lift that covers it.</p>
+    </div>
+    <div data-calc-out hidden>
+      <p class="calc__label">The math</p>
+      <p class="calc__math" data-calc-math></p>
+      <p class="calc__label">The lift that covers it</p>
+      <p class="calc__size" data-calc-size></p>
+      <p class="calc__summary" data-calc-summary></p>
+      <div class="calc__actions">
+        <a href={withBase('/quote/')} class="btn btn--primary" data-calc-quote>
+          Get a quote with these numbers <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </a>
+        <a href={tel(site.sales.phone)} class="link-arrow"><Icon name="phone" size={16} /> Or call {site.sales.contact}, {prettyPhone(site.sales.phone)}</a>
+      </div>
+    </div>
+    <div data-calc-pwc hidden>
+      <p class="calc__label">For personal watercraft</p>
+      <ul class="calc__pwc" role="list">
+        {
+          pwc.map((s) => (
+            <li>
+              <strong>{s.name}</strong> — {s.summary}
+            </li>
+          ))
+        }
+      </ul>
+      <div class="calc__actions">
+        <a href={withBase('/quote/?type=pwc')} class="btn btn--primary">
+          Get a PWC lift quote <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </a>
+        <a href={withBase('/lifts/pwc/')} class="link-arrow">See PWC lifts <Icon name="arrow-right" size={16} /></a>
+      </div>
+    </div>
+    <p class="calc__note">
+      <Icon name="info" size={15} />
+      FiberSteel’s own rule of thumb, from its current site. The slip, the water and how you dock matter too — we confirm the size before any lift is built.
+    </p>
+  </div>
+</div>
+
+<style>
+  .calc {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    box-shadow: var(--shadow);
+  }
+
+  @media (min-width: 900px) {
+    .calc {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: var(--space-7);
+    }
+  }
+
+  .calc__form {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
+  }
+
+  .calc__kind {
+    display: grid;
+    gap: var(--space-3);
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .calc__kind .option {
+    min-height: 48px;
+  }
+
+  .calc__inputs {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .calc__inputs[hidden] {
+    display: none;
+  }
+
+  .calc__unit {
+    position: relative;
+    display: block;
+  }
+
+  .calc__unit .input {
+    padding-right: 3.2rem;
+    font-size: 1.125rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc__unit span {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    translate: 0 -50%;
+    color: var(--c-text-muted);
+    font-size: var(--fs-sm);
+    pointer-events: none;
+  }
+
+  .calc__result {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    border-radius: var(--radius);
+    background: var(--c-ink);
+    color: var(--c-text-invert);
+  }
+
+  .calc__result > div {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .calc__result [hidden] {
+    display: none;
+  }
+
+  .calc__formula {
+    font-size: var(--fs-md);
+    line-height: 1.55;
+  }
+
+  .calc__formula strong {
+    color: var(--c-sun);
+  }
+
+  .calc__hint,
+  .calc__summary {
+    color: var(--c-text-invert-muted);
+    font-size: var(--fs-sm);
+  }
+
+  .calc__label {
+    margin-top: var(--space-2);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-sun);
+  }
+
+  .calc__math {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert);
+  }
+
+  .calc__size {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 800;
+    font-size: var(--fs-2xl);
+    line-height: 1.1;
+  }
+
+  .calc__pwc {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert-muted);
+  }
+
+  .calc__pwc strong {
+    color: var(--c-text-invert);
+  }
+
+  .calc__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    margin-top: var(--space-3);
+  }
+
+  .calc__actions .btn--primary {
+    --btn-bg: var(--c-sun);
+    --btn-fg: var(--c-ink);
+    --btn-bg-hover: #ffd95c;
+    box-shadow: none;
+  }
+
+  .calc__actions .link-arrow {
+    color: var(--c-sun);
+  }
+
+  .calc__note {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--c-ink-line);
+    font-size: var(--fs-xs);
+    color: var(--c-text-invert-muted);
+  }
+
+  .calc__note :global(svg) {
+    flex: none;
+    margin-top: 2px;
+  }
+</style>
+
+<script>
+  interface CalcData {
+    fuelLbPerGallon: number;
+    allowanceUpTo30ft: number;
+    allowanceOver30ft: number;
+    lengthCutoffFt: number;
+    sizes: { id: string; capacity: number; name: string; summary: string }[];
+    quote: string;
+  }
+  const lb = (n: number) => `${n.toLocaleString('en-US')} lb`;
+
+  document.querySelectorAll<HTMLElement>('[data-calc]').forEach((root) => {
+    const data: CalcData = JSON.parse(root.querySelector('[data-calc-data]')!.textContent!);
+    const form = root.querySelector<HTMLFormElement>('[data-calc-form]')!;
+    const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const num = (name: string) => {
+      const v = Number((form.elements.namedItem(name) as HTMLInputElement).value);
+      return Number.isFinite(v) && v > 0 ? v : 0;
+    };
+    const update = () => {
+      const pwc = (form.querySelector<HTMLInputElement>('input[name="what"]:checked')?.value ?? 'boat') === 'pwc';
+      $('[data-calc-boat]').hidden = pwc;
+      $('[data-calc-pwc]').hidden = !pwc;
+      const dry = num('dry');
+      const length = num('length');
+      const ready = !pwc && dry > 0 && length > 0;
+      $('[data-calc-empty]').hidden = pwc || ready;
+      $('[data-calc-out]').hidden = !ready;
+      if (!ready) return;
+      const gallons = num('fuel');
+      const fuel = Math.round(gallons * data.fuelLbPerGallon);
+      const allowance = length > data.lengthCutoffFt ? data.allowanceOver30ft : data.allowanceUpTo30ft;
+      const needed = Math.round(dry) + fuel + allowance;
+      const size = data.sizes.find((s) => s.capacity >= needed);
+      $('[data-calc-math]').textContent = `${lb(Math.round(dry))} dry weight + ${lb(fuel)} of fuel (${gallons} gal × ${data.fuelLbPerGallon}) + ${lb(allowance)} for a boat ${length > data.lengthCutoffFt ? 'over' : 'up to'} ${data.lengthCutoffFt} ft = ${lb(needed)}`;
+      $('[data-calc-size]').textContent = size ? `${size.name}` : 'A custom lift';
+      $('[data-calc-summary]').textContent = size ? size.summary : 'That’s more than 24,000 lb — call us about a custom-built lift.';
+      const params = new URLSearchParams({ dry: String(Math.round(dry)), fuel: String(gallons), length: String(length) });
+      $<HTMLAnchorElement>('[data-calc-quote]').href = `${data.quote}?${params}`;
+    };
+    form.addEventListener('input', update);
+    form.addEventListener('change', update);
+    update();
+  });
+</script>

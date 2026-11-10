@@ -1,0 +1,51 @@
+---
+import type { Faq } from '../data/faqs';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  faqs: Faq[];
+  /** Emit FAQPage structured data (use once per page) */
+  schema?: boolean;
+  openFirst?: boolean;
+}
+
+const { faqs, schema = true, openFirst = false } = Astro.props;
+
+const strip = (html: string) => html.replace(/<[^>]+>/g, '');
+// Answers link with root-relative paths; add the base path (GitHub Pages serves the site from a subfolder)
+const linked = (html: string) => html.replace(/href="(\/[^"]*)"/g, (_, path) => `href="${withBase(path)}"`);
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: strip(f.a) },
+  })),
+};
+---
+
+<div class="accordion">
+  {
+    faqs.map((f, i) => (
+      <details class="accordion__item" open={openFirst && i === 0} id={`faq-${f.id}`}>
+        <summary>
+          <span>{f.q}</span>
+          <span class="accordion__icon" aria-hidden="true" />
+        </summary>
+        <div class="accordion__panel">
+          <p set:html={linked(f.a)} />
+        </div>
+      </details>
+    ))
+  }
+</div>
+{schema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
+
+<style>
+  .accordion__panel :global(a) {
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

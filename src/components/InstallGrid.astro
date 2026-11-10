@@ -1,0 +1,90 @@
+---
+/**
+ * A grid of installs, with optional filter chips (boat type, lift size, docking). Installs published from FiberSteel
+ * mode in this browser join it as previews (src/scripts/installs.ts): `scope` says which ones belong here —
+ *   all · featured · kind:<kind>
+ * The empty slot shows when nothing matches (or there's nothing yet).
+ */
+import '../styles/installs.css';
+import InstallCard from './InstallCard.astro';
+import { kindLabel, type Install } from '../data/installs';
+import { getSize } from '../data/lifts';
+
+type Filter = 'kind' | 'size' | 'docking';
+
+interface Props {
+  installs: Install[];
+  scope: string;
+  filters?: Filter[];
+  /** Show at most this many (featured strips) */
+  limit?: number;
+  /** For the filter announcements, e.g. "pontoon installs" */
+  what?: string;
+  headingLevel?: 'h2' | 'h3' | 'h4';
+  id?: string;
+}
+
+const { installs, scope, filters = [], limit, what = 'installs', headingLevel = 'h3', id } = Astro.props;
+const shown = limit ? installs.slice(0, limit) : installs;
+
+const valueOf = (i: Install, f: Filter) => (f === 'kind' ? i.kind : f === 'size' ? (i.size ?? 'other') : (i.docking ?? 'other'));
+const labelOf = (i: Install, f: Filter) =>
+  f === 'kind' ? kindLabel(i.kind) : f === 'size' ? (i.size ? getSize(i.size)?.name ?? i.size : 'Other') : (i.docking ?? 'Other');
+const filterLabels: Record<Filter, string> = { kind: 'Boat', size: 'Lift', docking: 'Docking' };
+
+const rows = filters.map((f) => {
+  const counts = new Map<string, { label: string; n: number; order: number }>();
+  for (const i of shown) {
+    const v = valueOf(i, f);
+    const order = f === 'size' && i.size ? getSize(i.size)?.capacity ?? 0 : 0;
+    counts.set(v, { label: labelOf(i, f), n: (counts.get(v)?.n ?? 0) + 1, order });
+  }
+  // Installs without a size or docking style aren't a category of their own: no "Other" chip (All still shows them)
+  const values = [...counts]
+    .filter(([v]) => v !== 'other')
+    .sort((a, b) => (f === 'size' ? a[1].order - b[1].order : b[1].n - a[1].n || a[1].label.localeCompare(b[1].label)));
+  return { f, values };
+});
+---
+
+<div class="install-grid-wrap" data-install-grid={scope} data-limit={limit} data-what={what} data-heading={headingLevel} id={id}>
+  {
+    filters.length > 0 && (
+      <div class="install-filters" role="group" aria-label={`Filter ${what}`} data-install-filters hidden={shown.length < 2 || undefined}>
+        {rows.map(({ f, values }) => (
+          <div class="install-filters__row" role="group" aria-label={filterLabels[f]} data-filter-row={f} hidden={values.length < 1 || undefined}>
+            <span class="install-filters__label" aria-hidden="true">
+              {filterLabels[f]}
+            </span>
+            <button type="button" class="chip" data-filter={f} data-value="all" aria-pressed="true">
+              All <span class="install-filters__n" data-filter-count="all">{shown.length}</span>
+            </button>
+            {values.map(([value, { label, n }]) => (
+              <button type="button" class="chip" data-filter={f} data-value={value} data-label={label} aria-pressed="false">
+                {label} <span class="install-filters__n">{n}</span>
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    )
+  }
+  <p class="visually-hidden" role="status" data-install-status></p>
+  <div class="grid install-grid" data-install-cards>
+    {
+      shown.map((i) => (
+        <div class="install-grid__item" data-kind={i.kind} data-size={i.size ?? 'other'} data-docking={i.docking ?? 'other'}>
+          <InstallCard install={i} headingLevel={headingLevel} />
+        </div>
+      ))
+    }
+  </div>
+  <div class="install-grid__empty" data-install-empty hidden={shown.length > 0 || undefined}>
+    <slot name="empty">No installs to show yet.</slot>
+  </div>
+</div>
+
+<script>
+  import { initInstallGrids } from '../scripts/installs';
+  initInstallGrids();
+</script>

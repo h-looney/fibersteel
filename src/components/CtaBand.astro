@@ -1,0 +1,139 @@
+---
+import Icon from './Icon.astro';
+import Photo from './Photo.astro';
+import { photo } from '../data/photos';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  title?: string;
+  text?: string;
+  /** Where "Request a quote" goes (lift pages pass a pre-filled link) */
+  quoteHref?: string;
+  /** A photo id for the art */
+  image?: string;
+}
+
+const {
+  // The current site's own line: "Get a LIFT for your Boat, on your phone!"
+  title = 'Get a lift for your boat — <em>right from your phone.</em>',
+  text = `Call ${site.sales.contact} for personal help, or send us your boat and slip details and we’ll size the lift for you. Ordering and scheduling the installation only takes about five minutes.`,
+  quoteHref = withBase('/quote/'),
+  image = 'large/24000-back-in',
+} = Astro.props;
+const art = photo(image);
+---
+
+<section class="cta-band on-dark">
+  <div class="container cta-band__inner" data-reveal>
+    <div class="cta-band__text">
+      <p class="eyebrow">Factory direct</p>
+      <h2 set:html={title} />
+      <p class="lead">{text}</p>
+      <div class="cta-band__actions">
+        <a href={quoteHref} class="btn btn--sun btn--lg">
+          Request a quote <Icon name="arrow-right" size={18} class="icon-arrow" />
+        </a>
+        <a href={tel(site.sales.phone)} class="btn btn--ghost-light btn--lg">
+          <Icon name="phone" size={18} /> Call {prettyPhone(site.sales.phone)}
+        </a>
+      </div>
+      <ul class="cta-band__phones" role="list">
+        <li>
+          <span>{site.service.label}</span>
+          <a href={tel(site.service.phone)} class="tabular">{prettyPhone(site.service.phone)}</a>
+        </li>
+        <li>
+          <span>Not sure of your size?</span>
+          <a href={withBase('/lifts/sizes/#calculator')}>Use the calculator</a>
+        </li>
+      </ul>
+    </div>
+    <div class="cta-band__art">
+      <Photo src={art.src} alt={art.alt} sizes="(min-width: 900px) 440px, 100vw" position={art.position} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 50% 80% at 80% 60%, rgb(29 78 208 / 0.3), transparent 70%),
+      var(--c-ink-2);
+    border-top: 1px solid var(--c-ink-line);
+  }
+
+  .cta-band__inner {
+    display: grid;
+    align-items: center;
+    gap: var(--space-7);
+    padding-block: clamp(3.5rem, 2rem + 5vw, 6.5rem);
+  }
+
+  @media (min-width: 900px) {
+    .cta-band__inner {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+
+  .cta-band__text {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  .cta-band__phones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-3);
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-sm);
+    color: var(--c-text-invert-muted);
+  }
+
+  .cta-band__phones li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .cta-band__phones a {
+    color: var(--c-text-invert);
+    font-weight: 600;
+  }
+
+  .cta-band__phones a:hover {
+    color: var(--c-sun);
+  }
+
+  .cta-band__art {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    box-shadow: 0 30px 60px -25px rgb(0 0 0 / 0.7);
+    border: 4px solid rgb(255 255 255 / 0.08);
+  }
+
+  .cta-band__art :global(picture),
+  .cta-band__art :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 899px) {
+    .cta-band__art {
+      display: none;
+    }
+  }
+</style>

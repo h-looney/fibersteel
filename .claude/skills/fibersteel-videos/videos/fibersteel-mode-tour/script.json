@@ -1,0 +1,73 @@
+{
+  "title": "FiberSteel mode: an optional staff demo",
+  "voice": {
+    "kokoroVoice": "af_heart",
+    "kokoroLang": "en"
+  },
+  "scenes": [
+    {
+      "id": "switch",
+      "narration": "FiberSteel mode is an optional staff side of the same system, one click from the website. It's purely a demo, to show what's possible. A real one would be customized to how FiberSteel works."
+    },
+    {
+      "id": "profiles",
+      "narration": "Staff pick a profile, and each one shows what that role works with."
+    },
+    {
+      "id": "dashboard",
+      "narration": "The dashboard is today at a glance: the schedule, from installs on the water to the shop's builds, new requests, and what needs attention."
+    },
+    {
+      "id": "inbox",
+      "narration": "Every request lands in one inbox: website forms, phone calls, walk-ins, Facebook and boat shows."
+    },
+    {
+      "id": "lead",
+      "narration": "A quote request shows the boat and the slip, with FiberSteel's formula worked out, ready to book a site visit or write the quote."
+    },
+    {
+      "id": "jobs",
+      "narration": "Site visits, shop builds, installs and service calls move across a board, from needs scheduling to done."
+    },
+    {
+      "id": "schedule",
+      "narration": "And the schedule shows the week for each crew and the shop."
+    },
+    {
+      "id": "to-customers",
+      "narration": ""
+    },
+    {
+      "id": "customers",
+      "narration": "Each customer has their lifts, with serial numbers, and the warranty worked out part by part."
+    },
+    {
+      "id": "warranty",
+      "narration": "Warranty claims and registrations have their own place, with a coverage check for any lift."
+    },
+    {
+      "id": "inventory",
+      "narration": "Inventory shows the finished lifts in the yard, the components they're built from, and how many the shop could build right now."
+    },
+    {
+      "id": "dealers",
+      "narration": "Dealers have their accounts and orders, from the shop build to shipping and the invoice. The dealer accounts here are samples."
+    },
+    {
+      "id": "accounting",
+      "narration": "Invoices, quotes, payments and bills are kept right here, or synced to QuickBooks Online instead."
+    },
+    {
+      "id": "analytics",
+      "narration": "Reports answer questions like how long installs take each crew, and which parts of a lift need the most service."
+    },
+    {
+      "id": "website",
+      "narration": "And the Website section keeps the public site up to date: the installs showcase, used lifts and the dealer list."
+    },
+    {
+      "id": "close",
+      "narration": "Everything here is a working demo with sample data, to show what FiberSteel could run from one system."
+    }
+  ]
+}

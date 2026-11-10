@@ -1,0 +1,45 @@
+---
+/** An install on a grid: FiberSteel's photo, where and when, the title, the lift size and the boat. Samples say so. */
+import '../styles/installs.css';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { kindLabel, monthLabel, type Install } from '../data/installs';
+import { getSize } from '../data/lifts';
+import { photo } from '../data/photos';
+import { withBase } from '../scripts/url';
+
+interface Props {
+  install: Install;
+  headingLevel?: 'h2' | 'h3' | 'h4';
+}
+
+const { install: i, headingLevel: H = 'h3' } = Astro.props;
+const lead = photo(i.photos[0]);
+const size = i.size ? getSize(i.size) : undefined;
+const facts = [size?.name, i.boat !== '—' ? i.boat : undefined].filter(Boolean).join(' · ');
+const setup = [i.docking, i.slip].filter(Boolean).join(' · ');
+---
+
+<article class="card card--hover install-card" data-install-card={i.slug}>
+  <div class="card__media install-card__media">
+    <Photo src={lead.src} alt={lead.alt} sizes="(min-width: 1240px) 380px, (min-width: 700px) 45vw, 100vw" position={lead.position} />
+    {i.photos.length > 1 && (
+      <span class="install-card__count">
+        <Icon name="camera" size={14} /> {i.photos.length}
+        <span class="visually-hidden">photos</span>
+      </span>
+    )}
+  </div>
+  <div class="card__body install-card__body">
+    <p class="install-card__where">
+      <Icon name="pin" size={14} />
+      {i.town} · {monthLabel(i.month)}
+    </p>
+    <H class="install-card__title">
+      <a href={withBase(`/installs/${i.slug}/`)} class="card__link">{i.title}</a>
+    </H>
+    {facts && <p class="install-card__model">{facts}</p>}
+    <p class="install-card__kind">{[kindLabel(i.kind), setup].filter(Boolean).join(' · ')}</p>
+    {i.sample && <p class="install-card__flag">Sample install</p>}
+  </div>
+</article>

@@ -1,0 +1,151 @@
+---
+/** FiberSteel's standard lift sizes, grouped as its sizes page groups them, each spec with its source. */
+import { liftSizes, sizeGroups } from '../data/lifts';
+import { sources, CHECKED } from '../data/sources';
+
+interface Props {
+  /** Only these size ids (a lift-type page); all by default */
+  only?: string[];
+  caption?: string;
+}
+
+const { only, caption = 'FiberSteel lift sizes' } = Astro.props;
+const shown = only ? liftSizes.filter((s) => only.includes(s.id)) : liftSizes;
+const groups = sizeGroups.map((g) => ({ ...g, sizes: shown.filter((s) => s.group === g.id) })).filter((g) => g.sizes.length);
+const srcList = [...new Set(shown.flatMap((s) => s.facts.map((f) => f.src)))].map((k) => sources[k]);
+---
+
+<div class="size-table">
+  <table>
+    <caption class="visually-hidden">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Lift</th>
+        <th scope="col">What FiberSteel says</th>
+      </tr>
+    </thead>
+    {
+      groups.map((g) => (
+        <tbody>
+          {groups.length > 1 && (
+            <tr class="size-table__group">
+              <th scope="rowgroup" colspan="2">
+                {g.name}
+                <span>{g.blurb}</span>
+              </th>
+            </tr>
+          )}
+          {g.sizes.map((s) => (
+            <tr id={`size-${s.id}`}>
+              <th scope="row">{s.name}</th>
+              <td>
+                <ul role="list">
+                  {s.facts.map((f) => (
+                    <li>{f.text}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      ))
+    }
+  </table>
+  <p class="size-table__source">
+    Specs as stated on FiberSteel’s current site ({srcList.map((s, i) => (
+      <>
+        {i > 0 && ', '}
+        <a href={s.url} target="_blank" rel="noopener">{s.label}</a>
+      </>
+    ))}), read {new Date(CHECKED + 'T12:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.
+  </p>
+</div>
+
+<style>
+  .size-table {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    font-size: var(--fs-sm);
+  }
+
+  thead th {
+    padding: var(--space-3) var(--space-5);
+    background: var(--c-ink);
+    color: var(--c-text-invert);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  tbody th,
+  tbody td {
+    padding: var(--space-3) var(--space-5);
+    border-top: 1px solid var(--c-line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody th[scope='row'] {
+    width: 34%;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 780;
+    font-size: var(--fs-md);
+    color: var(--c-ink);
+    white-space: nowrap;
+  }
+
+  .size-table__group th {
+    background: var(--c-tint);
+    font-weight: 700;
+    color: var(--c-ink);
+  }
+
+  .size-table__group span {
+    display: block;
+    font-weight: 400;
+    color: var(--c-text-muted);
+  }
+
+  td ul {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .size-table__source {
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .size-table__source a {
+    color: var(--c-accent);
+  }
+
+  @media (max-width: 560px) {
+    tbody th[scope='row'] {
+      white-space: normal;
+      width: 40%;
+    }
+
+    tbody th,
+    tbody td,
+    thead th {
+      padding-inline: var(--space-3);
+    }
+  }
+</style>

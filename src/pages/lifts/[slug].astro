@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import SizeTable from '../../components/SizeTable.astro';
+import Photo from '../../components/Photo.astro';
+import PhotoGrid from '../../components/PhotoGrid.astro';
+import InstallGrid from '../../components/InstallGrid.astro';
+import BrandPlaceholder from '../../components/BrandPlaceholder.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { liftTypes, getSize, liftTypeHref, type LiftType } from '../../data/lifts';
+import { installs, kindsForType } from '../../data/installs';
+import { waveArmor } from '../../data/products';
+import { photo, photos } from '../../data/photos';
+import { sources } from '../../data/sources';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+export function getStaticPaths() {
+  return liftTypes.map((t) => ({ params: { slug: t.slug }, props: { type: t } }));
+}
+
+interface Props {
+  type: LiftType;
+}
+
+const { type: t } = Astro.props;
+const hero = photo(t.hero);
+const quoteHref = withBase(`/quote/?type=${t.quoteType}`);
+const kinds = kindsForType[t.slug] ?? [];
+const typeInstalls = installs.filter((i) => kinds.includes(i.kind));
+const others = liftTypes.filter((o) => o.slug !== t.slug);
+const sizeNames = t.sizes.map((id) => getSize(id)?.name).filter(Boolean);
+
+const schema = [
+  {
+    '@type': 'Product',
+    name: `FiberSteel ${t.name}`,
+    brand: { '@type': 'Brand', name: site.name },
+    manufacturer: { '@id': `${site.url}/#business` },
+    description: t.intro,
+    image: new URL(hero.src.src, Astro.site).toString(),
+    url: new URL(withBase(liftTypeHref(t.slug)), Astro.site).toString(),
+    ...(sizeNames.length ? { additionalProperty: sizeNames.map((n) => ({ '@type': 'PropertyValue', name: 'Lift size', value: n })) } : {}),
+  },
+];
+---
+
+<BaseLayout title={`${t.name} — FiberSteel Boat Lifts`} description={`${t.tagline.text}. ${t.intro}`} schema={schema}>
+  <PageHero title={t.name} eyebrow="Lifts by boat type" lead={t.intro} crumbs={[{ label: 'Lifts', href: withBase('/lifts/') }, { label: t.name }]} image={hero}>
+    <a href={quoteHref} class="btn btn--sun">Get a quote <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
+    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> Call {site.sales.contact}</a>
+  </PageHero>
+
+  <section class="section section--tight type-intro">
+    <div class="container type-intro__inner">
+      <p class="type-intro__tagline">
+        <Icon name="quote" size={22} />
+        <span>{t.tagline.text}</span>
+      </p>
+      <p class="type-intro__src">From FiberSteel’s <a href={sources[t.tagline.src].url} target="_blank" rel="noopener">{sources[t.tagline.src].label}</a> page</p>
+    </div>
+  </section>
+
+  {
+    (t.sizes.length > 0 || t.sizeNote) && (
+      <section class="section section--tint" id="sizes">
+        <div class="container">
+          <SectionHeading eyebrow="Sizes" title={`Sizes for ${t.short.toLowerCase().startsWith('pwc') ? 'personal watercraft' : t.short.toLowerCase()}`} lead={t.sizeNote?.text} />
+          {t.sizes.length > 0 && <SizeTable only={t.sizes} caption={`Lift sizes for ${t.name.toLowerCase()}`} />}
+          {t.slug !== 'pwc' && (
+            <p class="type-calc">
+              <Icon name="calculator" size={18} /> Not sure of your size? <a href={withBase('/lifts/sizes/#calculator')}>Use the lift size calculator</a> — FiberSteel’s own formula.
+            </p>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" id="options">
+    <div class="container">
+      <SectionHeading eyebrow="Built for your boat" title="How it’s set up" />
+      <div class="grid grid--3 options">
+        {
+          t.options.map((o) => {
+            const p = o.photo ? photo(o.photo) : undefined;
+            return (
+              <article class="card option-card">
+                {p && (
+                  <div class="card__media">
+                    <Photo src={p.src} alt={p.alt} sizes="(min-width: 1240px) 400px, (min-width: 700px) 45vw, 100vw" position={p.position} />
+                  </div>
+                )}
+                <div class="card__body">
+                  <h3>{o.title}</h3>
+                  <p class="muted">{o.text}</p>
+                </div>
+              </article>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    typeInstalls.length > 0 && (
+      <section class="section section--paper" id="installs" data-feature="installs" data-install-section>
+        <div class="container">
+          <SectionHeading align="split" eyebrow="Lifts we’ve installed" title={`${t.short} lifts on the water`} lead="Samples for this concept, from FiberSteel’s own photos and captions.">
+            <a href={withBase(`/installs/?kind=${kinds[0]}`)} class="link-arrow">More installs <Icon name="arrow-right" size={16} /></a>
+          </SectionHeading>
+          <InstallGrid installs={typeInstalls} scope={`kind:${kinds.join(',')}`} limit={3} what={`${t.short.toLowerCase()} installs`} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    t.slug === 'pwc' && (
+      <section class="section section--tint" id="wavearmor">
+        <div class="container wave">
+          <div>
+            <p class="eyebrow">Also at FiberSteel</p>
+            <h2>{waveArmor.name}</h2>
+            <ul class="checklist">
+              {waveArmor.facts.map((f) => (
+                <li>
+                  <Icon name="check" size={18} strokeWidth={2.4} /> <span>{f.text}</span>
+                </li>
+              ))}
+            </ul>
+            <p class="muted small">WaveArmor is another company’s product, as shown on FiberSteel’s PWC page.</p>
+          </div>
+          <BrandPlaceholder label="WaveArmor PWC docking station" icon="waves" />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" id="photos">
+    <div class="container">
+      <SectionHeading eyebrow="Photos" title="More from the water" lead="FiberSteel’s photos, with its own captions." />
+      <PhotoGrid photos={photos(t.gallery)} id="gallery" />
+    </div>
+  </section>
+
+  <section class="section section--tight section--tint">
+    <div class="container">
+      <p class="eyebrow">Other lifts</p>
+      <ul class="others" role="list">
+        {
+          others.map((o) => (
+            <li>
+              <a href={withBase(liftTypeHref(o.slug))} class="chip">{o.name}</a>
+            </li>
+          ))
+        }
+        <li><a href={withBase('/lifts/sizes/')} class="chip">All sizes</a></li>
+        <li><a href={withBase('/remotes/')} class="chip">Remote controls</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    title={`Ready to put your boat <em>up out of the water?</em>`}
+    text={`Send your boat and slip details, and we’ll size the lift — or call ${site.sales.contact} at ${prettyPhone(site.sales.phone)}.`}
+    quoteHref={quoteHref}
+    image={t.gallery[0]}
+  />
+</BaseLayout>
+
+<style>
+  .type-intro {
+    background: var(--c-paper);
+    border-bottom: 1px solid var(--c-line);
+  }
+
+  .type-intro__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+  }
+
+  .type-intro__tagline {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 760;
+    font-size: var(--fs-xl);
+    color: var(--c-ink);
+    max-width: 50ch;
+  }
+
+  .type-intro__tagline :global(svg) {
+    flex: none;
+    margin-top: 0.2em;
+    color: var(--c-sun-text);
+  }
+
+  .type-intro__src {
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .type-intro__src a,
+  .type-calc a {
+    color: var(--c-accent);
+  }
+
+  .type-calc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    font-weight: 600;
+  }
+
+  .option-card h3 {
+    font-size: var(--fs-lg);
+  }
+
+  .wave {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .wave {
+      grid-template-columns: 1.2fr 1fr;
+    }
+  }
+
+  .wave > div:first-child {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .others {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding: 0;
+  }
+
+  .others a {
+    text-decoration: none;
+  }
+
+  .others a:hover {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+  }
+</style>

@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import LiteVideo from '../../components/LiteVideo.astro';
+import Icon from '../../components/Icon.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { videos } from '../../data/ownerHelp';
+import { getFaqs } from '../../data/faqs';
+import { photo } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('parts/tank-shut-off-valve');
+const tiles = [
+  { icon: 'wrench', title: 'Request service or parts', text: 'Repairs, parts and service calls, from the service department.', href: '/service/' },
+  { icon: 'shield', title: 'Warranty', text: 'Lifetime on the poly tanks and frame. What it covers, in plain words.', href: '/warranty/' },
+  { icon: 'clipboard', title: 'Register your warranty', text: 'Keep your lift and proof of ownership on file with FiberSteel.', href: '/warranty/register/' },
+  { icon: 'play', title: 'Blower control guide', text: 'How the single- and double-valve blower boxes work, on video.', href: '/owners/blower-guide/' },
+  { icon: 'check', title: 'Do’s & Don’ts', text: 'The basic rules for lift use that affect performance and warranty.', href: '/owners/dos-and-donts/' },
+  { icon: 'remote', title: 'Remote controls', text: 'Add an Admiral remote control blower system to any lift.', href: '/remotes/' },
+] as const;
+const ownerVideos = videos.filter((v) => ['SR-sWVL4A3M', '6RJ2ViN4ZiE', '-ira5yKwrUE', '2gqVc7PhQFY'].includes(v.id));
+---
+
+<BaseLayout title="Owner Help — Service, Warranty & Guides" description="FiberSteel owner help: request service or parts, the warranty, warranty registration, blower control guides and the Do's & Don'ts of boat lift use.">
+  <PageHero
+    title="Owner help"
+    titleHtml="Own a FiberSteel? <em>Start here.</em>"
+    eyebrow="Owners"
+    lead="Service and parts, the warranty, and FiberSteel’s guides to running your lift."
+    crumbs={[{ label: 'Owners' }]}
+    image={hero}
+    variant="split"
+  >
+    <a href={withBase('/service/')} class="btn btn--sun"><Icon name="wrench" size={18} /> Request service</a>
+    <a href={tel(site.service.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> Service {prettyPhone(site.service.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid--3">
+        {
+          tiles.map((t) => (
+            <a class="card card--hover owner-tile" href={withBase(t.href)}>
+              <span class="icon-tile">
+                <Icon name={t.icon} size={24} />
+              </span>
+              <span class="owner-tile__title">{t.title}</span>
+              <span class="muted">{t.text}</span>
+              <span class="link-arrow">
+                Open <Icon name="arrow-right" size={16} />
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container">
+      <SectionHeading eyebrow="Videos" title="FiberSteel on video" lead="FiberSteel’s own videos. They play from YouTube when you press play." />
+      <div class="grid grid--2">
+        {
+          ownerVideos.map((v) => (
+            <figure class="owner-video">
+              <LiteVideo video={v} />
+              <figcaption>{v.caption}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--paper">
+    <div class="container container--narrow">
+      <SectionHeading align="center" title="Owner questions" />
+      <FaqList faqs={getFaqs(['warranty', 'service-fee', 'remote'])} />
+    </div>
+  </section>
+
+  <CtaBand
+    title="Something not working <em>right?</em>"
+    text={`Call the service department at ${prettyPhone(site.service.phone)}, or send a service request with photos.`}
+    quoteHref={withBase('/service/')}
+    image="parts/bushing-assembly"
+  />
+</BaseLayout>
+
+<style>
+  .owner-tile {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+    color: var(--c-text);
+    text-decoration: none;
+  }
+
+  .owner-tile__title {
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
+    font-weight: 780;
+    font-size: var(--fs-lg);
+  }
+
+  .owner-video {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+  }
+
+  .owner-video figcaption {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+</style>

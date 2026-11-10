@@ -1,0 +1,104 @@
+/* ==========================================================================
+   FiberSteel Boat Lifts — design tokens
+   Shared by the public site (global.css) and FiberSteel mode (src/office/styles/office.css).
+   Colors come from the FiberSteel logo: lake navy, the royal blue of "Boat Lifts", the sun yellow of the
+   LakeBoatLifts.com box, and the palm green — over galvanized-steel greys.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --c-mist: #f3f6f9; /* page background */
+  --c-paper: #ffffff;
+  --c-tint: #e8eef4; /* alternate sections */
+  --c-line: #d5dde6;
+  --c-line-strong: #b4c1cf;
+
+  /* Dark surfaces (lake navy) */
+  --c-ink: #0b2545;
+  --c-ink-2: #0f2d52;
+  --c-ink-3: #183a64;
+  --c-ink-line: #28496f;
+
+  /* Text */
+  --c-text: #15263a;
+  --c-text-muted: #4d5e71;
+  --c-text-invert: #f1f5fa;
+  --c-text-invert-muted: #b7c6d7;
+
+  /* Accents */
+  --c-accent: #1d4ed0; /* FiberSteel blue — ≥4.5:1 on every light surface */
+  --c-accent-600: #1942ae;
+  --c-accent-700: #153690;
+  --c-accent-300: #8eaef6;
+  --c-accent-50: #e8effd;
+  --c-sun: #ffcf33; /* CTA on dark surfaces, with navy text */
+  --c-sun-600: #f5bd0a;
+  --c-sun-50: #fff7d9;
+  --c-sun-text: #7a5a00; /* sun-toned text on light, ≥4.5:1 */
+  --c-palm: #2f9e4f; /* decorative */
+  --c-steel: #7d8ea1; /* decorative rules & icons */
+  --c-steel-text: #4f6176;
+  --c-steel-light: #c8d3df;
+
+  /* Status */
+  --c-open: #1e7a43;
+  --c-open-bright: #4fd08a;
+  --c-closed: #b3341f;
+  --c-appt: #c08a00;
+  --c-danger: #b42318;
+
+  /* Typography */
+  --font-display: 'Archivo Variable', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --display-stretch: 108%;
+
+  --fs-2xs: 0.75rem;
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-base: 1.0625rem;
+  --fs-md: 1.1875rem;
+  --fs-lg: clamp(1.25rem, 1.12rem + 0.55vw, 1.5rem);
+  --fs-xl: clamp(1.5rem, 1.25rem + 1.05vw, 2rem);
+  --fs-2xl: clamp(1.875rem, 1.45rem + 1.9vw, 2.625rem);
+  --fs-3xl: clamp(2.125rem, 1.5rem + 2.8vw, 3.5rem);
+  --fs-display: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
+
+  --lh-tight: 1.04;
+  --lh-snug: 1.2;
+  --lh-body: 1.65;
+
+  /* Space */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --section-y: clamp(3.5rem, 2.4rem + 5vw, 7rem);
+
+  /* Shape & depth */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgb(11 37 69 / 0.06), 0 1px 1px rgb(11 37 69 / 0.04);
+  --shadow: 0 2px 6px rgb(11 37 69 / 0.06), 0 10px 24px -8px rgb(11 37 69 / 0.16);
+  --shadow-lg: 0 4px 12px rgb(11 37 69 / 0.08), 0 28px 60px -18px rgb(11 37 69 / 0.34);
+
+  /* Layout */
+  --container: 1240px;
+  --container-narrow: 820px;
+  --gutter: clamp(1rem, 0.6rem + 2.2vw, 2rem);
+  --header-h: 84px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 220ms;
+
+  color-scheme: light;
+}

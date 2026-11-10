@@ -1,0 +1,73 @@
+{
+  "title": "Lifts we've installed: the installs showcase",
+  "voice": {
+    "kokoroVoice": "af_heart",
+    "kokoroLang": "en"
+  },
+  "scenes": [
+    {
+      "id": "our-installs",
+      "narration": "Lifts we've installed is a new showcase on the website. Each listing is a lift FiberSteel put in, with FiberSteel's photos, the lift size, the boat and the slip. The ones in this demo are samples."
+    },
+    {
+      "id": "filter",
+      "narration": "Boaters can narrow it down by boat type, by lift size, or by how the boat docks."
+    },
+    {
+      "id": "install",
+      "narration": "Each install has its photos, what was built for the boat, and a quote button for a lift like it."
+    },
+    {
+      "id": "lift-page",
+      "narration": "The same installs show on each lift page, so the listings sell the lift and the custom work at the same time."
+    },
+    {
+      "id": "over-time",
+      "narration": "New installs can be added to the showcase over time."
+    },
+    {
+      "id": "fs-mode",
+      "narration": "Or, with FiberSteel mode, the listings can be uploaded and managed by FiberSteel's staff. FiberSteel mode is purely a demo of what's possible, and a real one would be customized. Its Website section lists recently finished install jobs, ready to post."
+    },
+    {
+      "id": "from-job",
+      "narration": "Posting one starts from the job, so the lift size, the boat, the slip, the docking, the town and the month are already filled in."
+    },
+    {
+      "id": "write",
+      "narration": "Staff add a one-line summary."
+    },
+    {
+      "id": "story",
+      "narration": "Then a few lines about the job."
+    },
+    {
+      "id": "photo",
+      "narration": "Each photo gets a description, and the location data phones add is removed before it's saved."
+    },
+    {
+      "id": "consent",
+      "narration": "It only goes up with the owners' OK, and it shows the town, never the address. This one also goes on the home page."
+    },
+    {
+      "id": "publish",
+      "narration": "Saving queues it for the next publish, and one click publishes it."
+    },
+    {
+      "id": "on-site",
+      "narration": "And there it is: first on the installs page, and on the home page too, because it's featured."
+    },
+    {
+      "id": "switch-off",
+      "narration": "The whole showcase has an on and off switch, so FiberSteel can keep it hidden until there are photos it's proud of."
+    },
+    {
+      "id": "off-site",
+      "narration": "Switched off, the lift pages simply skip it, and Our installs leaves the menu."
+    },
+    {
+      "id": "switch-on",
+      "narration": "Switch it back on, and it's all there again."
+    }
+  ]
+}

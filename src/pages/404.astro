@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
+---
+
+<BaseLayout title="Page not found" noindex>
+  <section class="nf on-dark">
+    <div class="container nf__inner">
+      <p class="nf__code">404</p>
+      <h1>This page has <em>drifted off.</em></h1>
+      <p class="lead">The page you’re looking for may have moved when we refreshed our website. Let’s get you back to the dock.</p>
+      <div class="nf__actions">
+        <a href={withBase('/')} class="btn btn--sun btn--lg">Back to home</a>
+        <a href={withBase('/lifts/')} class="btn btn--ghost-light btn--lg">Browse lifts</a>
+      </div>
+      <ul role="list" class="nf__links">
+        <li><a href={withBase('/lifts/sizes/#calculator')}>Lift size calculator <Icon name="arrow-right" size={14} /></a></li>
+        <li><a href={withBase('/quote/')}>Request a quote <Icon name="arrow-right" size={14} /></a></li>
+        <li><a href={withBase('/service/')}>Service &amp; parts <Icon name="arrow-right" size={14} /></a></li>
+        <li><a href={tel(site.sales.phone)}>Call {prettyPhone(site.sales.phone)}</a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 70vh;
+    display: grid;
+    align-items: center;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 110%, rgb(29 78 208 / 0.4), transparent 70%),
+      var(--c-ink);
+  }
+
+  .nf__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: var(--space-5);
+    justify-items: center;
+    padding-block: var(--space-9);
+    text-align: center;
+  }
+
+  .nf__code {
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 900;
+    font-size: clamp(5rem, 3rem + 10vw, 10rem);
+    line-height: 0.9;
+    color: var(--c-sun);
+  }
+
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3) var(--space-6);
+    padding: 0;
+  }
+
+  .nf__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    color: var(--c-text-invert);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .nf__links a:hover {
+    color: var(--c-sun);
+  }
+</style>

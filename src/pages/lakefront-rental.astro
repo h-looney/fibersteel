@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import { rental } from '../data/sideTopics';
+import { photo } from '../data/photos';
+
+const house = photo(rental.photo);
+---
+
+<BaseLayout title={`${rental.name} — Lakefront Vacation Rental`} description={`${rental.name}: an Ozark lakefront vacation home that sleeps 8, with a private dock, on Vrbo.`}>
+  <PageHero title={rental.name} eyebrow="Lakefront vacation rental" lead={rental.title} crumbs={[{ label: 'Lakefront rental' }]} />
+
+  <section class="section">
+    <div class="container rental">
+      <figure class="rental__photo media-frame">
+        <Photo src={house.src} alt={house.alt} sizes="(min-width: 960px) 640px, 100vw" />
+      </figure>
+      <div class="stack">
+        <h2 class="h3">Stay on the lake</h2>
+        <ul class="checklist">
+          <li><Icon name="check" size={18} strokeWidth={2.4} /> <span>Lakefront vacation home on the Lake of the Ozarks</span></li>
+          <li><Icon name="check" size={18} strokeWidth={2.4} /> <span>Sleeps 8</span></li>
+          <li><Icon name="check" size={18} strokeWidth={2.4} /> <span>Private dock</span></li>
+        </ul>
+        <p class="muted">Dates, rates and booking are on Vrbo.</p>
+        <a href={rental.vrbo} class="btn btn--primary" target="_blank" rel="noopener">
+          See it on Vrbo <Icon name="arrow-up-right" size={18} />
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .rental {
+    display: grid;
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  @media (min-width: 900px) {
+    .rental {
+      grid-template-columns: 1.3fr 1fr;
+    }
+  }
+
+  .rental__photo {
+    margin: 0;
+    aspect-ratio: 4 / 3;
+  }
+</style>

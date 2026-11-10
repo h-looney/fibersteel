@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import BrandPlaceholder from '../components/BrandPlaceholder.astro';
+import Icon from '../components/Icon.astro';
+import { bikes } from '../data/sideTopics';
+import { site, tel, prettyPhone } from '../data/site';
+---
+
+<BaseLayout title="E-LuX Electric Bikes" description="E-LuX electric bikes from FiberSteel Boat Lifts in Camdenton, MO — call for models and availability.">
+  <PageHero title={bikes.title} titleHtml={`${bikes.tagline.replace('!', '')} <em>again!</em>`} eyebrow="E-LuX bikes" lead="FiberSteel also carries E-LuX electric bikes. Call for models and availability." crumbs={[{ label: 'E-LuX bikes' }]}>
+    <a href={tel(site.sales.phone)} class="btn btn--sun"><Icon name="phone" size={18} /> Call &amp; order · {prettyPhone(site.sales.phone)}</a>
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="h3">Just a few of the E-LuX bikes</h2>
+      <p class="muted">The models shown on FiberSteel’s current page:</p>
+      <div class="grid grid--3 mt-5">
+        {bikes.models.map((m) => <BrandPlaceholder label={`E-LuX ${m}`} icon="bolt" />)}
+      </div>
+      <p class="small muted mt-5">E-LuX is another company’s brand; its photos aren’t copied into this concept.</p>
+    </div>
+  </section>
+</BaseLayout>

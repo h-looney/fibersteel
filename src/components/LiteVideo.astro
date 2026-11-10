@@ -1,0 +1,138 @@
+---
+/**
+ * Click-to-load YouTube facade. Shows one of FiberSteel's own photos and a play button; the player iframe (and any
+ * request to YouTube) is only created when the visitor clicks.
+ */
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { photo } from '../data/photos';
+import type { Video } from '../data/ownerHelp';
+
+interface Props {
+  video: Video;
+  class?: string;
+}
+
+const { video, class: className } = Astro.props;
+const embed = `https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`;
+const poster = photo(video.poster);
+---
+
+<div class:list={['lite-video', className]} data-lite-video data-embed={embed} data-title={video.title}>
+  <Photo src={poster.src} alt="" sizes="(min-width: 960px) 640px, 100vw" position={poster.position} class="lite-video__poster" />
+  <button type="button" class="lite-video__play">
+    <span class="lite-video__icon"><Icon name="play" size={26} /></span>
+    <span class="lite-video__meta">
+      <span class="lite-video__title">{video.title}</span>
+      <span class="lite-video__duration">Plays from YouTube</span>
+    </span>
+    <span class="visually-hidden">Play video</span>
+  </button>
+</div>
+
+<style>
+  .lite-video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--c-ink-2);
+    isolation: isolate;
+  }
+
+  .lite-video :global(.lite-video__poster),
+  .lite-video :global(.lite-video__poster img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+
+  .lite-video::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgb(7 26 50 / 0.75), rgb(7 26 50 / 0.05) 60%);
+    pointer-events: none;
+  }
+
+  .lite-video :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 2;
+  }
+
+  .lite-video__play {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    width: 100%;
+    color: #fff;
+    text-align: left;
+  }
+
+  .lite-video__icon {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    box-shadow: 0 0 0 8px rgb(29 78 208 / 0.25);
+    flex: none;
+    transition:
+      transform var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .lite-video__icon :global(svg) {
+    translate: 2px 0;
+  }
+
+  .lite-video__play:hover .lite-video__icon {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 12px rgb(29 78 208 / 0.22);
+  }
+
+  .lite-video__meta {
+    display: grid;
+    gap: 0.1rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .lite-video__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-md);
+    line-height: 1.25;
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.5);
+  }
+
+  .lite-video__duration {
+    font-size: var(--fs-xs);
+    color: rgb(255 255 255 / 0.8);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-lite-video]').forEach((wrap) => {
+    wrap.querySelector('button')?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = wrap.dataset.embed ?? '';
+      iframe.title = wrap.dataset.title ?? 'Video';
+      iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+      iframe.allowFullscreen = true;
+      wrap.append(iframe);
+      wrap.querySelector('button')?.remove();
+      iframe.focus();
+    });
+  });
+</script>

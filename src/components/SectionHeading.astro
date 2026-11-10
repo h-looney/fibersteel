@@ -1,0 +1,43 @@
+---
+interface Props {
+  eyebrow?: string;
+  /** Title HTML — may contain <em> for the accent color */
+  title: string;
+  lead?: string;
+  align?: 'left' | 'center' | 'split';
+  as?: 'h2' | 'h3';
+  id?: string;
+}
+
+const { eyebrow, title, lead, align = 'left', as: Tag = 'h2', id } = Astro.props;
+---
+
+<div
+  class:list={[
+    'section-head',
+    { 'section-head--center': align === 'center', 'section-head--split': align === 'split' },
+  ]}
+  data-reveal
+>
+  {
+    align === 'split' ? (
+      <>
+        <div class="stack" style="--stack-gap: var(--space-4)">
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          <Tag id={id} set:html={title} />
+        </div>
+        <div class="stack" style="--stack-gap: var(--space-4)">
+          {lead && <p class="lead">{lead}</p>}
+          <slot />
+        </div>
+      </>
+    ) : (
+      <>
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <Tag id={id} set:html={title} />
+        {lead && <p class="lead">{lead}</p>}
+        <slot />
+      </>
+    )
+  }
+</div>

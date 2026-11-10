@@ -1,0 +1,198 @@
+/* Lifts we've installed: install cards, grids and filters (src/components/InstallCard.astro, InstallGrid.astro). Global:
+   installs published from FiberSteel mode are built in the browser with the same classes (src/scripts/installs.ts). */
+
+.install-card__media {
+  --ratio: 4 / 3;
+}
+
+.install-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.install-card__count {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.2em 0.6em;
+  border-radius: var(--radius-pill);
+  background: rgb(11 37 69 / 0.72);
+  color: #fff;
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+}
+
+.install-card__body {
+  gap: var(--space-1);
+}
+
+.install-card__where {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-steel-text);
+}
+
+.install-card__title {
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+}
+
+.install-card__model {
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.install-card__brand {
+  color: var(--c-text-muted);
+  font-weight: 500;
+}
+
+.install-card__kind {
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+.install-card__flag {
+  justify-self: start;
+  margin-top: var(--space-2);
+  padding: 0.15em 0.6em;
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--c-text-muted);
+  font-size: var(--fs-2xs);
+  font-weight: 650;
+}
+
+.install-card__flag--preview {
+  border: 0;
+  background: var(--c-accent-50);
+  color: var(--c-accent-700);
+}
+
+/* ---------- Grids and filters ---------- */
+
+.install-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  align-items: stretch;
+}
+
+.install-grid__item {
+  display: grid;
+}
+
+.install-grid__item[hidden] {
+  display: none;
+}
+
+.install-filters {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.install-filters[hidden] {
+  display: none;
+}
+
+.install-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.install-filters__row[hidden] {
+  display: none;
+}
+
+.install-filters__label {
+  min-width: 5.5rem;
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--c-text-muted);
+}
+
+.install-filters__n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6em;
+  height: 1.6em;
+  padding-inline: 0.35em;
+  border-radius: var(--radius-pill);
+  background: var(--c-tint);
+  color: var(--c-text);
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+}
+
+button.chip[aria-pressed='true'] .install-filters__n {
+  background: rgb(255 255 255 / 0.16);
+  color: inherit;
+}
+
+.install-grid__empty {
+  padding: var(--space-5);
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+  color: var(--c-text-muted);
+}
+
+.install-grid__empty[hidden] {
+  display: none;
+}
+
+.install-grid__empty a {
+  color: var(--c-accent-700);
+  font-weight: 600;
+}
+
+/* A notice that a page or part of it is switched off in FiberSteel mode (this browser only) */
+.feature-off {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  max-width: 46rem;
+  padding: var(--space-5);
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--c-paper);
+}
+
+.feature-off__title {
+  margin-bottom: var(--space-1);
+  font-size: var(--fs-md);
+}
+
+.feature-off p {
+  color: var(--c-text-muted);
+}
+
+/* "Sample install" note on an install page */
+.install-sample {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--radius);
+  background: var(--c-paper);
+  color: var(--c-text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* A section that waits for its first install (a model page): shown once one is published */
+[data-install-section][hidden] {
+  display: none;
+}

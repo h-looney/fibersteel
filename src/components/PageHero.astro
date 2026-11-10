@@ -1,0 +1,179 @@
+---
+/**
+ * Interior page hero.
+ *  - "pano":  full-bleed photo behind the title
+ *  - "split": dark band with the title left and a framed photo right
+ *  - "plain": dark band, text only
+ */
+import Photo from './Photo.astro';
+import Breadcrumbs, { type Crumb } from './Breadcrumbs.astro';
+import type { SitePhoto } from '../data/photos';
+
+interface Props {
+  title: string;
+  /** Optional title HTML (allows <em>) — overrides `title` for display */
+  titleHtml?: string;
+  eyebrow?: string;
+  lead?: string;
+  crumbs?: Crumb[];
+  image?: SitePhoto;
+  variant?: 'pano' | 'split' | 'plain';
+}
+
+const { title, titleHtml, eyebrow, lead, crumbs, image, variant = image ? 'pano' : 'plain' } = Astro.props;
+---
+
+<section class:list={['page-hero', `page-hero--${variant}`, 'on-dark']}>
+  {
+    variant === 'pano' && image && (
+      <div class="page-hero__bg" aria-hidden="true">
+        <Photo
+          src={image.src}
+          alt=""
+          sizes="100vw"
+          position={image.position}
+          loading="eager"
+          fetchpriority="high"
+          class="page-hero__img"
+        />
+      </div>
+    )
+  }
+
+  <div class="container page-hero__inner">
+    <div class="page-hero__text">
+      {crumbs && <Breadcrumbs items={crumbs} class="page-hero__crumbs" />}
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      {titleHtml ? <h1 set:html={titleHtml} /> : <h1>{title}</h1>}
+      {lead && <p class="lead">{lead}</p>}
+      {
+        Astro.slots.has('default') && (
+          <div class="page-hero__actions">
+            <slot />
+          </div>
+        )
+      }
+    </div>
+
+    {
+      variant === 'split' && image && (
+        <div class="page-hero__media">
+          <Photo
+            src={image.src}
+            alt={image.alt}
+            sizes="(min-width: 960px) 520px, 100vw"
+            position={image.position}
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 90% at 90% 110%, rgb(29 78 208 / 0.22), transparent 60%),
+      radial-gradient(ellipse 50% 60% at 0% 0%, rgb(255 207 51 / 0.06), transparent 60%),
+      var(--c-ink);
+  }
+
+  .page-hero__inner {
+    position: relative;
+    display: grid;
+    align-items: center;
+    gap: var(--space-7);
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  .page-hero__text {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 680px;
+  }
+
+  .page-hero__text :global(.page-hero__crumbs) {
+    margin-bottom: var(--space-3);
+  }
+
+  .page-hero h1 {
+    font-size: var(--fs-3xl);
+  }
+
+  .page-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  /* ----- Pano ----- */
+  .page-hero--pano {
+    min-height: clamp(380px, 30vw + 160px, 560px);
+    display: grid;
+    align-items: end;
+  }
+
+  .page-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .page-hero__bg :global(picture),
+  .page-hero__bg :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .page-hero__bg :global(img) {
+    object-fit: cover;
+  }
+
+  .page-hero__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(7 26 50 / 0.92) 0%, rgb(7 26 50 / 0.72) 42%, rgb(7 26 50 / 0.18) 100%),
+      linear-gradient(0deg, rgb(7 26 50 / 0.7) 0%, transparent 45%);
+  }
+
+  @media (max-width: 760px) {
+    .page-hero__bg::after {
+      background: linear-gradient(0deg, rgb(7 26 50 / 0.95) 10%, rgb(7 26 50 / 0.55) 100%);
+    }
+  }
+
+  /* ----- Split ----- */
+  @media (min-width: 960px) {
+    .page-hero--split .page-hero__inner {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    }
+  }
+
+  .page-hero__media {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 30px 60px -25px rgb(0 0 0 / 0.7);
+    aspect-ratio: 4 / 3;
+    background: var(--c-ink-2);
+  }
+
+  .page-hero__media :global(picture),
+  .page-hero__media :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .page-hero__media :global(img) {
+    object-fit: cover;
+  }
+
+</style>

@@ -1,0 +1,49 @@
+---
+/**
+ * Responsive, optimized image. Wraps astro:assets <Picture> so every photo on
+ * the site gets WebP + a JPEG/PNG fallback at sensible widths.
+ */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  widths?: number[];
+  sizes?: string;
+  position?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+
+const {
+  src,
+  alt,
+  widths,
+  sizes = '(min-width: 1240px) 600px, 100vw',
+  position,
+  class: className,
+  loading = 'lazy',
+  fetchpriority,
+} = Astro.props;
+
+// Never upscale: only request widths at or below the source width.
+const candidate = widths ?? [360, 540, 720, 960, 1280, 1500];
+let resolvedWidths = candidate.filter((w) => w <= src.width);
+if (!resolvedWidths.includes(src.width) && src.width < Math.max(...candidate)) resolvedWidths.push(src.width);
+if (!resolvedWidths.length) resolvedWidths = [src.width];
+---
+
+<Picture
+  src={src}
+  alt={alt}
+  formats={['webp']}
+  widths={resolvedWidths}
+  sizes={sizes}
+  class={className}
+  loading={loading}
+  fetchpriority={fetchpriority}
+  decoding="async"
+  style={position ? `object-position: ${position}` : undefined}
+/>

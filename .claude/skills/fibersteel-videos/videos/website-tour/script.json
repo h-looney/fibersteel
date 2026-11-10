@@ -1,0 +1,85 @@
+{
+  "title": "The new FiberSteel Boat Lifts website",
+  "voice": {
+    "kokoroVoice": "af_heart",
+    "kokoroLang": "en"
+  },
+  "scenes": [
+    {
+      "id": "home",
+      "narration": "This is a concept for the new FiberSteel Boat Lifts website. It opens with what FiberSteel builds, both phone lines, and whether the office is open right now."
+    },
+    {
+      "id": "boat-types",
+      "narration": "Lifts are picked by boat: personal watercraft, V-bottoms, pontoons, performance boats, large cruisers, front-mounted and shallow water."
+    },
+    {
+      "id": "lift-type",
+      "narration": "Each boat type has its own page, with FiberSteel's photos, the sizes that fit, and how the lift is set up for that boat."
+    },
+    {
+      "id": "sizes",
+      "narration": "The sizes page lists every standard lift, with its arms, axles and poly tanks."
+    },
+    {
+      "id": "calculator",
+      "narration": "And the calculator uses FiberSteel's own formula: the boat's dry weight, plus its fuel, plus two thousand pounds, or three thousand for boats over thirty feet."
+    },
+    {
+      "id": "quote",
+      "narration": "The answer carries straight into a quote request, with the boat already filled in."
+    },
+    {
+      "id": "slip",
+      "narration": "Next comes the slip: its width and length, and how the boat docks."
+    },
+    {
+      "id": "contact",
+      "narration": "Then a name, and a phone number or an email."
+    },
+    {
+      "id": "sent",
+      "narration": "Sending it emails the request to the address FiberSteel chooses, for the team to review."
+    },
+    {
+      "id": "familiar",
+      "narration": "The pages owners know from the current site are all here too, just modernized."
+    },
+    {
+      "id": "remotes",
+      "narration": "Admiral remote systems, with the prices from the current site."
+    },
+    {
+      "id": "dock-steps",
+      "narration": "FiberSteel's self-raising floating dock steps."
+    },
+    {
+      "id": "used",
+      "narration": "Used lifts, first come, first served. The listings in this demo are samples."
+    },
+    {
+      "id": "dealers",
+      "narration": "Every authorized dealer is listed here, with a filter by state."
+    },
+    {
+      "id": "owners",
+      "narration": "Help for owners: service and parts, the warranty, FiberSteel's guides, and its videos."
+    },
+    {
+      "id": "warranty",
+      "narration": "The warranty, in plain words: lifetime on the poly tanks and the frame."
+    },
+    {
+      "id": "contact-page",
+      "narration": "And the contact page, with both lines, the hours, and directions to the shop in Camdenton."
+    },
+    {
+      "id": "side-topics",
+      "narration": "The lake info, the lakefront rental and the electric bikes are still here too, out of the way in the footer."
+    },
+    {
+      "id": "close",
+      "narration": "That's the public site. The installs showcase has its own short video, and so does FiberSteel mode, an optional staff demo."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+---
+/**
+ * A labelled stand-in for another company's product photo (Admiral, WaveArmor, E-LuX). Their photos are never copied
+ * into this concept; production would use the maker's dealer media kit, or FiberSteel's own photos.
+ */
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  /** What the photo would show, e.g. "Admiral A+ remote and app" */
+  label: string;
+  /** Where the real photo would come from */
+  source?: string;
+  icon?: IconName;
+  ratio?: string;
+}
+
+const { label, source = 'the maker’s dealer media kit', icon = 'camera', ratio = '4 / 3' } = Astro.props;
+---
+
+<div class="brand-ph" style={`aspect-ratio: ${ratio}`} role="img" aria-label={`Photo placeholder: ${label}`}>
+  <span class="brand-ph__icon"><Icon name={icon} size={30} strokeWidth={1.4} /></span>
+  <span class="brand-ph__label">{label}</span>
+  <span class="brand-ph__note">Photo placeholder — from {source}</span>
+</div>
+
+<style>
+  .brand-ph {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    border: 1.5px dashed var(--c-line-strong);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgb(11 37 69 / 0.03) 14px 28px),
+      var(--c-tint);
+    color: var(--c-text-muted);
+    text-align: center;
+  }
+
+  .brand-ph__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--c-paper);
+    color: var(--c-steel-text);
+  }
+
+  .brand-ph__label {
+    font-weight: 700;
+    color: var(--c-text);
+  }
+
+  .brand-ph__note {
+    font-size: var(--fs-xs);
+  }
+</style>

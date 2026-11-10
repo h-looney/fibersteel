@@ -1,0 +1,39 @@
+---
+/**
+ * The current GoDaddy site's addresses (src/data/redirects.ts), each a tiny page that sends visitors to the new
+ * address: a canonical link, a meta refresh, location.replace() and a visible link. Not indexed. On Cloudflare these
+ * become real 301 redirects.
+ */
+import type { GetStaticPaths } from 'astro';
+import { redirectPages } from '../data/redirects';
+import { withBase } from '../scripts/url';
+
+export const getStaticPaths = (() => redirectPages().map((r) => ({ params: { old: r.path }, props: { to: r.to } }))) satisfies GetStaticPaths;
+
+interface Props {
+  to: string;
+}
+
+const target = withBase(Astro.props.to);
+const canonical = new URL(target, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>This page has moved — FiberSteel Boat Lifts</title>
+    <link rel="canonical" href={canonical} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <script is:inline define:vars={{ target }}>location.replace(target + location.hash);</script>
+    <style>
+      body { font: 18px/1.6 system-ui, sans-serif; margin: 0; display: grid; place-items: center; min-height: 100vh; background: #f3f6f9; color: #15263a; }
+      a { color: #1d4ed0; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <p>This page has moved. <a href={target}>Continue to its new address</a>.</p>
+  </body>
+</html>

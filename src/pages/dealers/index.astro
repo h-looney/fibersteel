@@ -1,0 +1,406 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { dealers, STATE_NAMES, type Dealer } from '../../data/dealers';
+import { photo } from '../../data/photos';
+import { site, tel, prettyPhone } from '../../data/site';
+import { withBase } from '../../scripts/url';
+
+const hero = photo('about/boat-show-booth');
+const states = [...new Set(dealers.map((d) => d.state))].sort((a, b) => (a === 'MO' ? -1 : b === 'MO' ? 1 : STATE_NAMES[a].localeCompare(STATE_NAMES[b])));
+const directions = (d: Dealer) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([d.name.split(' — ')[0], d.street, `${d.city}, ${d.state}`, d.zip].filter(Boolean).join(', '))}`;
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+const schema = [
+  {
+    '@type': 'ItemList',
+    name: 'Authorized FiberSteel Boat Lifts dealers',
+    itemListElement: dealers
+      .filter((d) => !d.factory)
+      .map((d, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'LocalBusiness',
+          name: d.name,
+          telephone: `+1-${d.phones[0]}`,
+          address: { '@type': 'PostalAddress', streetAddress: d.street, addressLocality: d.city, addressRegion: d.state, postalCode: d.zip, addressCountry: 'US' },
+          ...(d.web ? { url: d.web } : {}),
+        },
+      })),
+  },
+];
+---
+
+<BaseLayout
+  title="Find a FiberSteel Dealer"
+  description="Buy FiberSteel boat lifts factory direct in Camdenton, MO — serving the Lake of the Ozarks and all of Missouri — or from an authorized dealer in Illinois, Iowa, Indiana, Kansas, Texas or Tennessee."
+  schema={schema}
+>
+  <PageHero
+    title="Find a dealer"
+    titleHtml="Your authorized <em>FiberSteel dealers</em>"
+    eyebrow="Dealers"
+    lead="Order factory direct for the Lake of the Ozarks and all of Missouri — or we can ship to you. Or find an authorized dealer near you."
+    crumbs={[{ label: 'Dealers' }]}
+    image={hero}
+  >
+    <a href={withBase('/dealers/become-a-dealer/')} class="btn btn--sun"><Icon name="handshake" size={18} /> Become a dealer</a>
+  </PageHero>
+
+  <section class="section" data-dealer-locator>
+    <div class="container">
+      <div class="locator-bar">
+        <div class="locator-bar__states" role="group" aria-label="Show dealers in">
+          <button type="button" class="chip" data-state="all" aria-pressed="true">All <span class="locator-bar__n">{dealers.length}</span></button>
+          {
+            states.map((s) => (
+              <button type="button" class="chip" data-state={s} aria-pressed="false">
+                {STATE_NAMES[s]} <span class="locator-bar__n">{dealers.filter((d) => d.state === s).length}</span>
+              </button>
+            ))
+          }
+        </div>
+        <button type="button" class="btn btn--outline btn--sm" data-near-me>
+          <Icon name="locate" size={16} /> Sort by distance from me
+        </button>
+      </div>
+      <p class="locator-note" data-near-status role="status">Distances use your device’s location, worked out in your browser only — nothing is sent anywhere.</p>
+
+      <ul class="dealers" role="list" data-dealer-list>
+        {
+          dealers.map((d) => (
+            <li class:list={['dealer', { 'dealer--factory': d.factory }]} data-dealer={d.id} data-state={d.state} data-lat={d.geo.lat} data-lng={d.geo.lng}>
+              <div class="dealer__head">
+                <p class="dealer__where">
+                  <Icon name="pin" size={14} /> {d.area ?? `${d.city}, ${d.state}`}
+                  <span class="dealer__dist" data-dist hidden></span>
+                </p>
+                <h2 class="dealer__name">{d.name}</h2>
+                {d.factory && <p class="dealer__badge">Factory direct</p>}
+                {d.lake && <p class="dealer__lake">{d.lake}</p>}
+              </div>
+              {d.note && <p class="dealer__note">{d.note}</p>}
+              {(d.street || d.zip) && (
+                <p class="dealer__addr">
+                  {[d.street, `${d.city}, ${d.state}${d.zip ? ` ${d.zip}` : ''}`].filter(Boolean).join(' · ')}
+                </p>
+              )}
+              <ul class="dealer__actions" role="list">
+                {d.phones.map((p) => (
+                  <li>
+                    <a href={tel(p)} class="dealer__action">
+                      <Icon name="phone" size={16} /> {prettyPhone(p)}
+                    </a>
+                  </li>
+                ))}
+                {d.email && (
+                  <li>
+                    <a href={`mailto:${d.email}`} class="dealer__action">
+                      <Icon name="mail" size={16} /> Email
+                    </a>
+                  </li>
+                )}
+                {d.web && (
+                  <li>
+                    <a href={d.web} class="dealer__action" target="_blank" rel="noopener">
+                      <Icon name="arrow-up-right" size={16} /> {host(d.web)}
+                    </a>
+                  </li>
+                )}
+                {d.factory ? (
+                  <li>
+                    <a href={site.directionsUrl} class="dealer__action" target="_blank" rel="noopener">
+                      <Icon name="map" size={16} /> Directions
+                    </a>
+                  </li>
+                ) : (
+                  (d.street || d.zip) && (
+                    <li>
+                      <a href={directions(d)} class="dealer__action" target="_blank" rel="noopener">
+                        <Icon name="map" size={16} /> Directions
+                      </a>
+                    </li>
+                  )
+                )}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="locator-more">
+        More dealers coming soon — <a class="text-link" href={withBase('/dealers/become-a-dealer/')}>dock builders, boat dealers and marinas: your name here!</a>
+      </p>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Want to sell <em>FiberSteel lifts?</em>"
+    text="Dealerships are available for marinas, dock builders and boat dealers. Tell us about your business, or call to talk it through."
+    quoteHref={withBase('/dealers/become-a-dealer/')}
+    image="about/boat-show-booth"
+  />
+</BaseLayout>
+
+<style>
+  .locator-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .locator-bar__states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .locator-bar__n {
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
+  .locator-note {
+    margin: var(--space-3) 0 var(--space-6);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+  }
+
+  .dealers {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: var(--space-4);
+    padding: 0;
+  }
+
+  .dealer {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--c-paper);
+    border: 1px solid var(--c-line);
+  }
+
+  .dealer[hidden] {
+    display: none;
+  }
+
+  .dealer--factory {
+    grid-column: 1 / -1;
+    background: var(--c-ink);
+    color: var(--c-text-invert);
+    border-color: var(--c-ink);
+  }
+
+  .dealer__where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-steel-text);
+  }
+
+  .dealer--factory .dealer__where {
+    color: var(--c-sun);
+  }
+
+  .dealer__dist {
+    margin-left: var(--space-2);
+    padding: 0.1em 0.5em;
+    border-radius: var(--radius-pill);
+    background: var(--c-accent-50);
+    color: var(--c-accent-700);
+    letter-spacing: 0.02em;
+  }
+
+  .dealer__name {
+    font-size: var(--fs-lg);
+  }
+
+  .dealer__badge {
+    display: inline-block;
+    justify-self: start;
+    margin-top: var(--space-1);
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius-pill);
+    background: var(--c-sun);
+    color: var(--c-ink);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+  }
+
+  .dealer__head {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .dealer__lake,
+  .dealer__addr,
+  .dealer__note {
+    font-size: var(--fs-sm);
+    color: var(--c-text-muted);
+  }
+
+  .dealer--factory .dealer__lake,
+  .dealer--factory .dealer__addr,
+  .dealer--factory .dealer__note {
+    color: var(--c-text-invert-muted);
+  }
+
+  .dealer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: 0;
+  }
+
+  .dealer__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 40px;
+    padding: 0.4em 0.85em;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-line-strong);
+    color: var(--c-text);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .dealer__action:hover {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+  }
+
+  .dealer--factory .dealer__action {
+    border-color: var(--c-ink-line);
+    color: var(--c-text-invert);
+  }
+
+  .dealer--factory .dealer__action:hover {
+    border-color: var(--c-sun);
+    color: var(--c-sun);
+  }
+
+  .locator-more {
+    margin-top: var(--space-6);
+    color: var(--c-text-muted);
+  }
+
+  /* A change published from FiberSteel mode in this browser (preview only) */
+  .dealer__flag {
+    justify-self: start;
+    padding: 0.15em 0.6em;
+    border-radius: var(--radius-pill);
+    background: var(--c-accent-50);
+    color: var(--c-accent-700);
+    font-size: var(--fs-2xs);
+    font-weight: 650;
+  }
+
+  .dealer--factory .dealer__flag {
+    background: var(--c-sun);
+    color: var(--c-ink);
+  }
+
+  .locator-bar__states .chip[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { milesBetween } from '../../data/dealers';
+  import { applyDealerPreviews, stateLabel } from '../../scripts/dealers';
+
+  const root = document.querySelector<HTMLElement>('[data-dealer-locator]');
+  if (root) {
+    const list = root.querySelector<HTMLElement>('[data-dealer-list]')!;
+    const items = () => [...list.querySelectorAll<HTMLElement>('[data-dealer]')];
+    const status = root.querySelector<HTMLElement>('[data-near-status]')!;
+    const chipRow = root.querySelector<HTMLElement>('.locator-bar__states')!;
+    const chips = () => [...chipRow.querySelectorAll<HTMLButtonElement>('button[data-state]')];
+    let current = 'all';
+
+    // A dealer taken off in a FiberSteel mode preview (data-preview-hidden) stays hidden whatever the filter
+    const showState = (state: string) => {
+      current = state;
+      chips().forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.state === state)));
+      items().forEach((li) => (li.hidden = li.hasAttribute('data-preview-hidden') || (state !== 'all' && li.dataset.state !== state && !li.classList.contains('dealer--factory'))));
+      const url = new URL(location.href);
+      if (state === 'all') url.searchParams.delete('state');
+      else url.searchParams.set('state', state);
+      history.replaceState(history.state, '', url.pathname + url.search);
+    };
+    chipRow.addEventListener('click', (e) => {
+      const chip = (e.target as Element).closest<HTMLButtonElement>('button[data-state]');
+      if (chip) showState(chip.dataset.state!);
+    });
+    const wanted = new URLSearchParams(location.search).get('state');
+    if (wanted && chips().some((c) => c.dataset.state === wanted)) showState(wanted);
+
+    root.querySelector('[data-near-me]')!.addEventListener('click', () => {
+      if (!('geolocation' in navigator)) {
+        status.textContent = 'Your browser can’t share a location. Pick a state instead.';
+        return;
+      }
+      status.textContent = 'Finding your location…';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const me = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          const known = (li: HTMLElement) => li.dataset.lat !== undefined && li.dataset.lng !== undefined;
+          const sorted = items()
+            .map((li) => ({ li, d: known(li) ? milesBetween(me, { lat: Number(li.dataset.lat), lng: Number(li.dataset.lng) }) : Infinity }))
+            .sort((a, b) => a.d - b.d);
+          for (const { li, d } of sorted) {
+            const dist = li.querySelector<HTMLElement>('[data-dist]')!;
+            dist.textContent = Number.isFinite(d) ? `≈ ${Math.round(d).toLocaleString('en-US')} mi` : '';
+            dist.hidden = !Number.isFinite(d);
+            li.classList.remove('dealer--factory-first');
+            list.append(li);
+          }
+          const nearest = sorted.find((x) => !x.li.hidden);
+          status.textContent = `Sorted by distance (as the crow flies, from approximate town locations). Nearest: ${nearest?.li.querySelector('.dealer__name')?.textContent ?? ''}.`;
+        },
+        () => (status.textContent = 'Couldn’t get your location — pick a state instead.'),
+        { timeout: 10000, maximumAge: 600000 },
+      );
+    });
+
+    // Dealer-list changes published from FiberSteel mode in this browser (simulated) show as previews; the state
+    // chips then count what's on the page, with a chip for any new state
+    void applyDealerPreviews(list).then((changed) => {
+      if (!changed) return;
+      const shown = items().filter((li) => !li.hasAttribute('data-preview-hidden'));
+      const count = (state: string) => shown.filter((li) => state === 'all' || li.dataset.state === state).length;
+      const model = chips().find((c) => c.dataset.state !== 'all');
+      for (const state of new Set(shown.map((li) => li.dataset.state!))) {
+        if (chips().some((c) => c.dataset.state === state) || !model) continue;
+        const chip = model.cloneNode(true) as HTMLButtonElement;
+        chip.dataset.state = state;
+        chip.setAttribute('aria-pressed', 'false');
+        chip.firstChild!.textContent = `${stateLabel(state)} `;
+        chipRow.append(chip);
+      }
+      chips().forEach((c) => {
+        const n = c.querySelector('.locator-bar__n');
+        if (n) n.textContent = String(count(c.dataset.state!));
+        c.hidden = c.dataset.state !== 'all' && count(c.dataset.state!) === 0;
+      });
+      // A link to a state only a preview has (?state=AR) opens on it now that its chip exists
+      const want = new URLSearchParams(location.search).get('state') ?? current;
+      const open = (s: string) => chips().some((c) => c.dataset.state === s && !c.hidden);
+      showState(open(want) ? want : open(current) ? current : 'all');
+    });
+  }
+</script>
