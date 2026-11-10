@@ -17,7 +17,7 @@ interface Props {
 const {
   // The current site's own line: "Get a LIFT for your Boat, on your phone!"
   title = 'Get a lift for your boat — <em>right from your phone.</em>',
-  text = `Call ${site.sales.contact} for personal help, or send us your boat and slip details and we’ll size the lift for you. Ordering and scheduling the installation only takes about five minutes.`,
+  text = `Call us for personal help, or send us your boat and slip details and we’ll size the lift for you. Ordering and scheduling the installation only takes about five minutes.`,
   quoteHref = withBase('/quote/'),
   image = 'large/24000-back-in',
 } = Astro.props;
@@ -60,7 +60,7 @@ const art = photo(image);
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(ellipse 50% 80% at 80% 60%, rgb(29 78 208 / 0.3), transparent 70%),
+      radial-gradient(ellipse 50% 80% at 80% 60%, rgb(var(--c-glow-rgb) / 0.3), transparent 70%),
       var(--c-ink-2);
     border-top: 1px solid var(--c-ink-line);
   }

@@ -4,7 +4,7 @@
 #
 #   bash .claude/skills/fibersteel-videos/bin/fibersteel-video.sh <name> [--check] [--live] [--no-build]
 #
-#   <name>      a folder in .claude/skills/fibersteel-videos/videos/ (website-tour, installs-feature, fibersteel-mode-tour)
+#   <name>      a folder in .claude/skills/fibersteel-videos/videos/ (website-tour, installs-feature)
 #   --check     only run the flow at full speed, no voice and no video (validates selectors; ~30 s)
 #   --live      record the published site, https://h-looney.github.io/fibersteel/, instead of a local build
 #   --no-build  reuse dist/ as it is (it must have been built with --base /fibersteel)

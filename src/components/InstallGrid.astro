@@ -1,8 +1,6 @@
 ---
 /**
- * A grid of installs, with optional filter chips (boat type, lift size, docking). Installs published from FiberSteel
- * mode in this browser join it as previews (src/scripts/installs.ts): `scope` says which ones belong here —
- *   all · featured · kind:<kind>
+ * A grid of installs, with optional filter chips (boat type, lift size, docking) worked by src/scripts/installs.ts.
  * The empty slot shows when nothing matches (or there's nothing yet).
  */
 import '../styles/installs.css';
@@ -14,7 +12,6 @@ type Filter = 'kind' | 'size' | 'docking';
 
 interface Props {
   installs: Install[];
-  scope: string;
   filters?: Filter[];
   /** Show at most this many (featured strips) */
   limit?: number;
@@ -24,7 +21,7 @@ interface Props {
   id?: string;
 }
 
-const { installs, scope, filters = [], limit, what = 'installs', headingLevel = 'h3', id } = Astro.props;
+const { installs, filters = [], limit, what = 'installs', headingLevel = 'h3', id } = Astro.props;
 const shown = limit ? installs.slice(0, limit) : installs;
 
 const valueOf = (i: Install, f: Filter) => (f === 'kind' ? i.kind : f === 'size' ? (i.size ?? 'other') : (i.docking ?? 'other'));
@@ -47,7 +44,7 @@ const rows = filters.map((f) => {
 });
 ---
 
-<div class="install-grid-wrap" data-install-grid={scope} data-limit={limit} data-what={what} data-heading={headingLevel} id={id}>
+<div class="install-grid-wrap" data-install-grid data-what={what} id={id}>
   {
     filters.length > 0 && (
       <div class="install-filters" role="group" aria-label={`Filter ${what}`} data-install-filters hidden={shown.length < 2 || undefined}>

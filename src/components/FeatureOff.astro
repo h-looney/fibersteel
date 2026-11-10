@@ -1,18 +1,19 @@
 ---
 /**
- * What shows in place of a part of the site switched off in FiberSteel mode — in this browser only (src/data/features.ts).
- * Hidden while the part is on. In production a switched-off part isn't published, so visitors wouldn't see this.
+ * What shows in place of a part of the site that's switched off (src/data/features.ts), for anyone who follows an old
+ * link to it. Hidden while the part is on.
  */
 import '../styles/installs.css';
 import Icon from './Icon.astro';
 import { featureLabels, type FeatureId } from '../data/features';
+import { site, tel, prettyPhone } from '../data/site';
 import { withBase } from '../scripts/url';
 
 interface Props {
   feature: FeatureId;
   /** Shown as the heading level of the notice */
   headingLevel?: 'h1' | 'h2' | 'h3';
-  /** A whole page (it wouldn't exist) or a section of one */
+  /** A whole page or a section of one */
   page?: boolean;
 }
 
@@ -23,15 +24,10 @@ const name = featureLabels[feature];
 <div class="feature-off" data-feature-off={feature}>
   <Icon name="info" size={22} />
   <div>
-    <H class="feature-off__title">“{name}” is switched off</H>
+    <H class="feature-off__title">{page ? `“${name}” isn’t on the site right now` : `“${name}” isn’t shown right now`}</H>
     <p>
-      {
-        page
-          ? `FiberSteel mode has “${name}” turned off, so on the live site this page wouldn’t be published.`
-          : `FiberSteel mode has “${name}” turned off, so this part of the page is hidden.`
-      }{' '}
-      Switch it back on in FiberSteel mode under <a href={withBase(`/office/website/?tab=installs&signin`)}>Website → Installs</a>. (This demo keeps the switch
-      in your browser.)
+      See <a href={withBase('/lifts/')}>our lifts by boat type</a>, or call us at
+      <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> and we’ll gladly help.
     </p>
   </div>
 </div>

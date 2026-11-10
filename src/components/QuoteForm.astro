@@ -41,7 +41,7 @@ const calc = { ...formula, sizes };
     }
   </ol>
 
-  <form class="quote__form" data-quote-form data-office="quote" novalidate>
+  <form class="quote__form" data-quote-form novalidate>
     <!-- Step 1: the boat -->
     <fieldset class="quote__panel" data-panel="0">
       <legend class="quote__legend">Tell us about your boat</legend>
@@ -299,12 +299,12 @@ const calc = { ...formula, sizes };
     <h2 class="quote__done-title" data-done-title>Thank you!</h2>
     <p class="muted">
       Your request is on its way to the FiberSteel team, and we’ll get back to you within 48 hours. Want to talk it
-      through now? Call {site.sales.contact} at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a>.
+      through now? Call us at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a>.
     </p>
     <dl class="quote__summary" data-summary></dl>
-    <p class="demo-handoff" data-office-note hidden>
-      <Icon name="briefcase" size={16} />
-      <span><strong>Concept demo:</strong> on the real site, this request is emailed to the address FiberSteel chooses, for the team to review. If FiberSteel adds FiberSteel mode, it also arrives in the staff inbox. <a href="#" data-office-link>See it in the FiberSteel mode demo</a></span>
+    <p class="demo-handoff" data-demo-note hidden>
+      <Icon name="info" size={16} />
+      <span><strong>Concept demo:</strong> nothing was sent. On the real site, this request is emailed to the address FiberSteel chooses, for the team to review.</span>
     </p>
     <div class="cluster">
       <a href={withBase('/installs/')} class="btn btn--outline" data-feature="installs">See lifts we’ve installed</a>
@@ -460,7 +460,7 @@ const calc = { ...formula, sizes };
     padding: var(--space-4) var(--space-5);
     border-radius: var(--radius);
     background: var(--c-accent-50);
-    border: 1px solid #c9d8fa;
+    border: 1px solid var(--c-accent-200);
   }
 
   .quote__estimate[hidden] {
@@ -610,7 +610,6 @@ const calc = { ...formula, sizes };
 
 <script>
   import { validate, liveClear, submit, setBusy } from '../scripts/forms';
-  import { withBase } from '../scripts/url';
 
   interface Calc {
     fuelLbPerGallon: number;
@@ -764,7 +763,7 @@ const calc = { ...formula, sizes };
       fail.hidden = true;
       setBusy(button, true);
       try {
-        const officeRef = await submit(form);
+        const result = await submit(form);
         const data = new FormData(form);
         const name = String(data.get('name') ?? '').split(' ')[0];
         root.querySelector('[data-done-title]')!.textContent = name ? `Thank you, ${name}!` : 'Thank you!';
@@ -796,10 +795,7 @@ const calc = { ...formula, sizes };
               return div;
             }),
         );
-        if (officeRef) {
-          root.querySelector<HTMLAnchorElement>('[data-office-link]')!.href = withBase(`/office/inbox/?ref=${officeRef}&signin`);
-          root.querySelector<HTMLElement>('[data-office-note]')!.hidden = false;
-        }
+        root.querySelector<HTMLElement>('[data-demo-note]')!.hidden = result !== 'demo';
         form.hidden = true;
         root.querySelector<HTMLElement>('.quote__steps')!.hidden = true;
         done.hidden = false;

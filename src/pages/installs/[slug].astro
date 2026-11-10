@@ -159,7 +159,7 @@ const schema = {
         <SectionHeading align="split" eyebrow="More installs" title="Lifts like this one">
           <a href={withBase('/installs/')} class="link-arrow">All installs <Icon name="arrow-right" size={16} /></a>
         </SectionHeading>
-        <InstallGrid installs={more} scope="none" />
+        <InstallGrid installs={more} />
       </div>
     </section>
   </div>
@@ -176,7 +176,7 @@ const schema = {
 <style>
   .ihero {
     background:
-      radial-gradient(ellipse 60% 90% at 90% 110%, rgb(29 78 208 / 0.3), transparent 60%),
+      radial-gradient(ellipse 60% 90% at 90% 110%, rgb(var(--c-glow-rgb) / 0.3), transparent 60%),
       var(--c-ink);
   }
 

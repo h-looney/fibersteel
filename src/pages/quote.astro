@@ -28,7 +28,7 @@ import { withBase } from '../scripts/url';
         <div class="quote-aside__card">
           <p class="quote-aside__title">Rather call?</p>
           <a href={tel(site.sales.phone)} class="quote-aside__phone"><Icon name="phone" size={20} /> {prettyPhone(site.sales.phone)}</a>
-          <p class="muted small">Ask for {site.sales.contact} — {site.sales.label.toLowerCase()}.</p>
+          <p class="muted small">{site.sales.label}</p>
           <OpenStatus />
         </div>
         <div class="quote-aside__card">

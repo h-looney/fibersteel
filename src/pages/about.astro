@@ -91,16 +91,15 @@ const aboutVideos = videos.filter((v) => ['2gqVc7PhQFY', 'SR-sWVL4A3M', 'bfT7C_C
   </section>
 
   <section class="section">
-    <div class="container dean">
-      <figure class="dean__photo media-frame">
+    <div class="container call-us">
+      <figure class="call-us__photo media-frame">
         <Photo src={shop.src} alt={shop.alt} sizes="(min-width: 960px) 520px, 100vw" />
       </figure>
-      <div class="dean__copy">
+      <div class="call-us__copy">
         <p class="eyebrow">Need help finding the right lift?</p>
-        <h2>Call {site.sales.contact}.</h2>
+        <h2>Call us.</h2>
         <p class="lead">
-          Finding the right lift can be tricky — and expensive. {site.sales.contact} has been boating for over 55 years and
-          will gladly help you find the right lift for your boats.
+          Finding the right lift can be tricky — and expensive. We’ll gladly help you find the right lift for your boats.
         </p>
         <div class="cluster">
           <a href={tel(site.sales.phone)} class="btn btn--primary btn--lg"><Icon name="phone" size={18} /> {prettyPhone(site.sales.phone)}</a>
@@ -205,7 +204,7 @@ const aboutVideos = videos.filter((v) => ['2gqVc7PhQFY', 'SR-sWVL4A3M', 'bfT7C_C
     color: var(--c-text-invert-muted);
   }
 
-  .dean,
+  .call-us,
   .member {
     display: grid;
     gap: var(--space-7);
@@ -213,7 +212,7 @@ const aboutVideos = videos.filter((v) => ['2gqVc7PhQFY', 'SR-sWVL4A3M', 'bfT7C_C
   }
 
   @media (min-width: 960px) {
-    .dean {
+    .call-us {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
@@ -222,13 +221,13 @@ const aboutVideos = videos.filter((v) => ['2gqVc7PhQFY', 'SR-sWVL4A3M', 'bfT7C_C
     }
   }
 
-  .dean__photo,
+  .call-us__photo,
   .member__photo {
     margin: 0;
     aspect-ratio: 4 / 3;
   }
 
-  .dean__copy {
+  .call-us__copy {
     display: grid;
     gap: var(--space-4);
   }

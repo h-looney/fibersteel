@@ -1,6 +1,5 @@
 /**
- * Minimal inline SVG icon set (24×24, stroke-based unless noted), shared by the public site
- * (src/components/Icon.astro) and FiberSteel mode (src/office/ui/Icon.tsx).
+ * Minimal inline SVG icon set (24×24, stroke-based unless noted), drawn by src/components/Icon.astro.
  */
 export const icons = {
   boat: '<path d="M3 15.5h18l-2.6 4H5.6z"/><path d="M6 15.5 7.5 9h7l3 6.5"/><path d="M10 9V5.5h3V9"/>',

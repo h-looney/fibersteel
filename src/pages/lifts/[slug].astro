@@ -50,7 +50,7 @@ const schema = [
 <BaseLayout title={`${t.name} — FiberSteel Boat Lifts`} description={`${t.tagline.text}. ${t.intro}`} schema={schema}>
   <PageHero title={t.name} eyebrow="Lifts by boat type" lead={t.intro} crumbs={[{ label: 'Lifts', href: withBase('/lifts/') }, { label: t.name }]} image={hero}>
     <a href={quoteHref} class="btn btn--sun">Get a quote <Icon name="arrow-right" size={18} class="icon-arrow" /></a>
-    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> Call {site.sales.contact}</a>
+    <a href={tel(site.sales.phone)} class="btn btn--ghost-light"><Icon name="phone" size={18} /> Call us</a>
   </PageHero>
 
   <section class="section section--tight type-intro">
@@ -107,12 +107,12 @@ const schema = [
 
   {
     typeInstalls.length > 0 && (
-      <section class="section section--paper" id="installs" data-feature="installs" data-install-section>
+      <section class="section section--paper" id="installs" data-feature="installs">
         <div class="container">
           <SectionHeading align="split" eyebrow="Lifts we’ve installed" title={`${t.short} lifts on the water`} lead="Samples for this concept, from FiberSteel’s own photos and captions.">
             <a href={withBase(`/installs/?kind=${kinds[0]}`)} class="link-arrow">More installs <Icon name="arrow-right" size={16} /></a>
           </SectionHeading>
-          <InstallGrid installs={typeInstalls} scope={`kind:${kinds.join(',')}`} limit={3} what={`${t.short.toLowerCase()} installs`} />
+          <InstallGrid installs={typeInstalls} limit={3} what={`${t.short.toLowerCase()} installs`} />
         </div>
       </section>
     )
@@ -166,7 +166,7 @@ const schema = [
 
   <CtaBand
     title={`Ready to put your boat <em>up out of the water?</em>`}
-    text={`Send your boat and slip details, and we’ll size the lift — or call ${site.sales.contact} at ${prettyPhone(site.sales.phone)}.`}
+    text={`Send your boat and slip details, and we’ll size the lift — or call us at ${prettyPhone(site.sales.phone)}.`}
     quoteHref={quoteHref}
     image={t.gallery[0]}
   />

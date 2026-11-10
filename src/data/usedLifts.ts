@@ -3,7 +3,7 @@
  * (the current page had no live listing with details on 2026-11-10). The sizes and builds are real FiberSteel sizes
  * from src/data/lifts.ts; everything else in a listing — condition, extras, status — is made up and marked
  * "Sample", and the photos are stand-ins from FiberSteel's site. No prices: the current page shows none ("$").
- * Real listings are added by FiberSteel over time, or managed in FiberSteel mode.
+ * Real listings replace them as FiberSteel has used lifts to sell.
  */
 export const usedRules = [
   "Used lifts are first come, first served, and must be paid in full for ownership. All sales final.",

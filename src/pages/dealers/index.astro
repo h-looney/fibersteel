@@ -298,30 +298,10 @@ const schema = [
     color: var(--c-text-muted);
   }
 
-  /* A change published from FiberSteel mode in this browser (preview only) */
-  .dealer__flag {
-    justify-self: start;
-    padding: 0.15em 0.6em;
-    border-radius: var(--radius-pill);
-    background: var(--c-accent-50);
-    color: var(--c-accent-700);
-    font-size: var(--fs-2xs);
-    font-weight: 650;
-  }
-
-  .dealer--factory .dealer__flag {
-    background: var(--c-sun);
-    color: var(--c-ink);
-  }
-
-  .locator-bar__states .chip[hidden] {
-    display: none;
-  }
 </style>
 
 <script>
   import { milesBetween } from '../../data/dealers';
-  import { applyDealerPreviews, stateLabel } from '../../scripts/dealers';
 
   const root = document.querySelector<HTMLElement>('[data-dealer-locator]');
   if (root) {
@@ -330,13 +310,10 @@ const schema = [
     const status = root.querySelector<HTMLElement>('[data-near-status]')!;
     const chipRow = root.querySelector<HTMLElement>('.locator-bar__states')!;
     const chips = () => [...chipRow.querySelectorAll<HTMLButtonElement>('button[data-state]')];
-    let current = 'all';
 
-    // A dealer taken off in a FiberSteel mode preview (data-preview-hidden) stays hidden whatever the filter
     const showState = (state: string) => {
-      current = state;
       chips().forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.state === state)));
-      items().forEach((li) => (li.hidden = li.hasAttribute('data-preview-hidden') || (state !== 'all' && li.dataset.state !== state && !li.classList.contains('dealer--factory'))));
+      items().forEach((li) => (li.hidden = state !== 'all' && li.dataset.state !== state && !li.classList.contains('dealer--factory')));
       const url = new URL(location.href);
       if (state === 'all') url.searchParams.delete('state');
       else url.searchParams.set('state', state);
@@ -375,32 +352,6 @@ const schema = [
         () => (status.textContent = 'Couldn’t get your location — pick a state instead.'),
         { timeout: 10000, maximumAge: 600000 },
       );
-    });
-
-    // Dealer-list changes published from FiberSteel mode in this browser (simulated) show as previews; the state
-    // chips then count what's on the page, with a chip for any new state
-    void applyDealerPreviews(list).then((changed) => {
-      if (!changed) return;
-      const shown = items().filter((li) => !li.hasAttribute('data-preview-hidden'));
-      const count = (state: string) => shown.filter((li) => state === 'all' || li.dataset.state === state).length;
-      const model = chips().find((c) => c.dataset.state !== 'all');
-      for (const state of new Set(shown.map((li) => li.dataset.state!))) {
-        if (chips().some((c) => c.dataset.state === state) || !model) continue;
-        const chip = model.cloneNode(true) as HTMLButtonElement;
-        chip.dataset.state = state;
-        chip.setAttribute('aria-pressed', 'false');
-        chip.firstChild!.textContent = `${stateLabel(state)} `;
-        chipRow.append(chip);
-      }
-      chips().forEach((c) => {
-        const n = c.querySelector('.locator-bar__n');
-        if (n) n.textContent = String(count(c.dataset.state!));
-        c.hidden = c.dataset.state !== 'all' && count(c.dataset.state!) === 0;
-      });
-      // A link to a state only a preview has (?state=AR) opens on it now that its chip exists
-      const want = new URLSearchParams(location.search).get('state') ?? current;
-      const open = (s: string) => chips().some((c) => c.dataset.state === s && !c.hidden);
-      showState(open(want) ? want : open(current) ? current : 'all');
     });
   }
 </script>

@@ -54,7 +54,7 @@ const poster = photo(video.poster);
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(0deg, rgb(7 26 50 / 0.75), rgb(7 26 50 / 0.05) 60%);
+    background: linear-gradient(0deg, rgb(var(--c-deep-rgb) / 0.75), rgb(var(--c-deep-rgb) / 0.05) 60%);
     pointer-events: none;
   }
 
@@ -87,7 +87,7 @@ const poster = photo(video.poster);
     height: 60px;
     border-radius: 50%;
     background: var(--c-accent);
-    box-shadow: 0 0 0 8px rgb(29 78 208 / 0.25);
+    box-shadow: 0 0 0 8px rgb(var(--c-accent-rgb) / 0.25);
     flex: none;
     transition:
       transform var(--dur) var(--ease),
@@ -100,7 +100,7 @@ const poster = photo(video.poster);
 
   .lite-video__play:hover .lite-video__icon {
     transform: scale(1.06);
-    box-shadow: 0 0 0 12px rgb(29 78 208 / 0.22);
+    box-shadow: 0 0 0 12px rgb(var(--c-accent-rgb) / 0.22);
   }
 
   .lite-video__meta {

@@ -85,8 +85,11 @@ export function toObject(data: FormData) {
   return out;
 }
 
-/** Submit to `data-endpoint` if present; otherwise simulate a short delay. */
-export async function submit(form: HTMLFormElement): Promise<string | undefined> {
+/**
+ * Submit to `data-endpoint` if present; otherwise simulate a short delay. Returns 'sent' when it reached an endpoint,
+ * or 'demo' when nothing was sent (the concept has no backend yet), so the confirmation can say so.
+ */
+export async function submit(form: HTMLFormElement): Promise<'sent' | 'demo'> {
   const payload = toObject(new FormData(form));
   const endpoint = form.dataset.endpoint;
   if (endpoint) {
@@ -96,102 +99,12 @@ export async function submit(form: HTMLFormElement): Promise<string | undefined>
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-    return undefined;
+    return 'sent';
   }
-  // Front-end prototype: nothing leaves the browser. In the concept demo, the request is handed to FiberSteel mode
-  // (the optional staff demo) through localStorage — see src/office/bridge.ts.
+  // Front-end prototype: nothing leaves the browser
   console.info('[FiberSteel concept] Form submitted (not sent — no backend configured):', payload);
   await new Promise((resolve) => setTimeout(resolve, 700));
-  return deliverToOffice(form);
-}
-
-type OfficeKind = 'quote' | 'service' | 'warranty' | 'dealer' | 'contact';
-
-/** Labels FiberSteel mode shows for each form field, per form (`data-office="quote|service|warranty|dealer|contact"`). */
-const officeFields: Record<OfficeKind, [name: string, label: string][]> = {
-  quote: [
-    ['boatType', 'Boat type'],
-    ['brand', 'Boat brand'],
-    ['model', 'Model'],
-    ['length', 'Length (ft)'],
-    ['dryWeight', 'Dry weight (lb)'],
-    ['fuel', 'Fuel capacity (gal)'],
-    ['suggested', 'Calculator suggested'],
-    ['slipWidth', 'Slip width (ft)'],
-    ['slipLength', 'Slip length (ft)'],
-    ['docking', 'Docking'],
-    ['water', 'Water at the dock'],
-    ['extras', 'Interested in'],
-    ['location', 'Where the dock is'],
-    ['timeline', 'When'],
-    ['contactPref', 'Best way to reach you'],
-  ],
-  service: [
-    ['need', 'What do you need?'],
-    ['liftSize', 'Lift size'],
-    ['installed', 'Installed by'],
-    ['installYear', 'Installed (year)'],
-    ['problem', 'The problem'],
-    ['remote', 'Remote system'],
-    ['location', 'Where the lift is'],
-    ['days', 'Best days'],
-  ],
-  warranty: [
-    ['liftSize', 'Lift size'],
-    ['installDate', 'Installation date'],
-    ['installedBy', 'Installed by'],
-    ['serial', 'Serial or order number'],
-    ['remote', 'Remote system'],
-    ['location', 'Where the lift is'],
-  ],
-  dealer: [
-    ['business', 'Business'],
-    ['businessType', 'Type of business'],
-    ['city', 'City'],
-    ['state', 'State'],
-    ['lakes', 'Lakes / areas served'],
-    ['website', 'Website'],
-    ['years', 'Years in business'],
-  ],
-  contact: [['topic', 'About']],
-};
-
-/** What the visitor saw for a field: option text for selects and checked boxes, typed text otherwise. */
-function shown(form: HTMLFormElement, name: string): string {
-  const controls = Array.from(form.elements).filter((el) => (el as HTMLInputElement).name === name) as (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[];
-  return controls
-    .map((el) => {
-      if (el instanceof HTMLSelectElement) return el.value ? el.selectedOptions[0]?.textContent?.trim() ?? '' : '';
-      if (el instanceof HTMLInputElement && (el.type === 'radio' || el.type === 'checkbox')) return el.checked ? el.closest('label')?.textContent?.trim() ?? el.value : '';
-      if (el instanceof HTMLInputElement && el.type === 'file') return '';
-      return el.value.trim();
-    })
-    .filter(Boolean)
-    .join(', ');
-}
-
-async function deliverToOffice(form: HTMLFormElement): Promise<string | undefined> {
-  const kind = form.dataset.office as OfficeKind | undefined;
-  if (!kind || !(kind in officeFields)) return undefined;
-  const { queueSubmission } = await import('../office/bridge');
-  const data = new FormData(form);
-  const value = (name: string) => String(data.get(name) ?? '').trim();
-  const files = (form.elements.namedItem('photos') as HTMLInputElement | null)?.files?.length ?? 0;
-  // The raw values too, so FiberSteel mode can fill in a lift size, a boat, a slip
-  const raw: Record<string, string> = {};
-  for (const [name] of officeFields[kind]) if (value(name)) raw[name] = value(name);
-  return queueSubmission({
-    kind,
-    name: value('name') || value('contactName'),
-    email: value('email') || undefined,
-    phone: value('phone') || undefined,
-    zip: value('zip') || undefined,
-    location: value('location') || undefined,
-    message: value('details') || value('description') || value('message') || undefined,
-    fields: officeFields[kind].map(([name, label]) => [label, shown(form, name)] as [string, string]).filter(([, v]) => v),
-    data: raw,
-    photos: files || undefined,
-  });
+  return 'demo';
 }
 
 /** Toggle a button's busy state while submitting. */

@@ -1,5 +1,4 @@
-/* A photo gallery on a dark band (src/components/InstallGallery.astro). Global: an install previewed from FiberSteel
-   mode is built in the browser with the same classes (src/scripts/installs.ts). */
+/* A photo gallery on a dark band: an install's photos (src/pages/installs/[slug].astro). */
 .gallery {
   display: grid;
   gap: var(--space-3);
@@ -20,7 +19,7 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  background: #061629;
+  background: var(--c-deep);
   box-shadow: 0 30px 60px -25px rgb(0 0 0 / 0.7);
 }
 
@@ -42,7 +41,7 @@
 }
 
 .gallery__frame--placeholder {
-  background: #dbe5ef;
+  background: #d6e5e1;
 }
 
 .gallery__frame--placeholder img {
@@ -65,14 +64,6 @@
   color: #ffe08a;
 }
 
-.gallery__note--preview {
-  padding: var(--space-2) var(--space-3);
-  border: 1px dashed rgb(255 207 51 / 0.55);
-  border-radius: var(--radius);
-  background: rgb(255 207 51 / 0.1);
-  color: var(--c-text-invert);
-}
-
 .gallery__thumbs {
   display: flex;
   flex-wrap: wrap;
@@ -90,7 +81,7 @@
   overflow: hidden;
   border: 2px solid transparent;
   border-radius: 8px;
-  background: #061629;
+  background: var(--c-deep);
   cursor: pointer;
   opacity: 0.7;
   transition: opacity 0.15s ease, border-color 0.15s ease;

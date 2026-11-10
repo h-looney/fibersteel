@@ -45,15 +45,14 @@ const listings = usedLifts.map((u) => ({ ...u, img: photo(u.photo), sizeName: ge
         <Icon name="info" size={18} />
         <span>
           <strong>Sample listings.</strong> The current page had no used lifts listed with details on November 10, 2026, so these are
-          examples: real FiberSteel sizes with stand-in photos. FiberSteel adds real listings over time — or, with FiberSteel mode,
-          staff post and mark them sold themselves.
+          examples: real FiberSteel sizes with stand-in photos. FiberSteel’s real listings would replace them as used lifts come in.
         </span>
       </p>
 
-      <div class="grid grid--models used-grid" data-used-grid>
+      <div class="grid grid--models used-grid">
         {
           listings.map((u) => (
-            <article class:list={['card', 'used-card', { 'is-sold': u.status === 'sold' }]} data-used-card={u.id}>
+            <article class:list={['card', 'used-card', { 'is-sold': u.status === 'sold' }]}>
               <div class="card__media">
                 <Photo src={u.img.src} alt={u.img.alt} sizes="(min-width: 1240px) 380px, (min-width: 700px) 45vw, 100vw" position={u.img.position} />
                 <span class:list={['used-card__status', `is-${u.status}`]}>{statusLabel[u.status]}</span>
@@ -61,19 +60,19 @@ const listings = usedLifts.map((u) => ({ ...u, img: photo(u.photo), sizeName: ge
               <div class="card__body">
                 <p class="used-card__size">{u.sizeName}</p>
                 <h2 class="used-card__title">{u.title}</h2>
-                <p class="muted small" data-used-condition>{u.condition}</p>
+                <p class="muted small">{u.condition}</p>
                 <ul class="used-card__includes" role="list">
                   {u.includes.map((x) => (
                     <li class="chip">{x}</li>
                   ))}
                 </ul>
-                <p class="used-card__price" data-used-price>Call for price</p>
+                <p class="used-card__price">Call for price</p>
                 {u.status !== 'sold' && (
-                  <a href={tel(site.sales.phone)} class="btn btn--outline btn--sm" data-used-call>
-                    <Icon name="phone" size={16} /> <span data-used-call-label>Call about {u.id}</span>
+                  <a href={tel(site.sales.phone)} class="btn btn--outline btn--sm">
+                    <Icon name="phone" size={16} /> Call about {u.id}
                   </a>
                 )}
-                <p class="install-card__flag" data-used-flag>Sample listing · stand-in photo</p>
+                <p class="install-card__flag">Sample listing · stand-in photo</p>
               </div>
             </article>
           ))
@@ -200,21 +199,5 @@ const listings = usedLifts.map((u) => ({ ...u, img: photo(u.photo), sizeName: ge
   .used-card .btn[hidden] {
     display: none;
   }
-
-  /* A listing published from FiberSteel mode without a photo (preview only) */
-  .used-card :global(.used-card__nophoto) {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    color: var(--c-text-muted);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-  }
 </style>
 
-<script>
-  // Listings published from FiberSteel mode in this browser (simulated) show here as previews
-  import { initUsedLiftPreviews } from '../scripts/usedLifts';
-  void initUsedLiftPreviews();
-</script>

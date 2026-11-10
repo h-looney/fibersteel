@@ -78,7 +78,7 @@ const { title, titleHtml, eyebrow, lead, crumbs, image, variant = image ? 'pano'
     isolation: isolate;
     overflow: hidden;
     background:
-      radial-gradient(ellipse 70% 90% at 90% 110%, rgb(29 78 208 / 0.22), transparent 60%),
+      radial-gradient(ellipse 70% 90% at 90% 110%, rgb(var(--c-glow-rgb) / 0.22), transparent 60%),
       radial-gradient(ellipse 50% 60% at 0% 0%, rgb(255 207 51 / 0.06), transparent 60%),
       var(--c-ink);
   }
@@ -140,13 +140,13 @@ const { title, titleHtml, eyebrow, lead, crumbs, image, variant = image ? 'pano'
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgb(7 26 50 / 0.92) 0%, rgb(7 26 50 / 0.72) 42%, rgb(7 26 50 / 0.18) 100%),
-      linear-gradient(0deg, rgb(7 26 50 / 0.7) 0%, transparent 45%);
+      linear-gradient(90deg, rgb(var(--c-deep-rgb) / 0.92) 0%, rgb(var(--c-deep-rgb) / 0.72) 42%, rgb(var(--c-deep-rgb) / 0.18) 100%),
+      linear-gradient(0deg, rgb(var(--c-deep-rgb) / 0.7) 0%, transparent 45%);
   }
 
   @media (max-width: 760px) {
     .page-hero__bg::after {
-      background: linear-gradient(0deg, rgb(7 26 50 / 0.95) 10%, rgb(7 26 50 / 0.55) 100%);
+      background: linear-gradient(0deg, rgb(var(--c-deep-rgb) / 0.95) 10%, rgb(var(--c-deep-rgb) / 0.55) 100%);
     }
   }
 

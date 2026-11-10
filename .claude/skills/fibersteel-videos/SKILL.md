@@ -1,6 +1,6 @@
 ---
 name: fibersteel-videos
-description: Make narrated demo videos of the FiberSteel Boat Lifts redesign to send to the client, locally and for free. Covers a tour of the public website (the lift and quote path first, then the familiar pages), a walkthrough of one feature (the "Lifts we've installed" showcase), and a tour of FiberSteel mode, the optional staff demo. Playwright records in its own fresh headless Chromium, never the user's Chrome or anything signed in. Kokoro narrates locally (Apache 2.0, OK for client work, voice af_heart), and ffmpeg assembles an H.264 MP4 with captions. Use it when asked for a demo video, walkthrough or feature video, a video for FiberSteel or the customer, or a re-recording after the UI changed.
+description: Make narrated demo videos of the FiberSteel Boat Lifts redesign to send to the client, locally and for free. Covers a tour of the website (the lift and quote path first, then the familiar pages) and a walkthrough of one feature (the "Lifts we've installed" showcase). Playwright records in its own fresh headless Chromium, never the user's Chrome or anything signed in. Kokoro narrates locally (Apache 2.0, OK for client work, voice af_heart), and ffmpeg assembles an H.264 MP4 with captions. Use it when asked for a demo video, walkthrough or feature video, a video for FiberSteel or the customer, or a re-recording after the UI changed.
 ---
 
 # FiberSteel videos
@@ -24,8 +24,7 @@ per scene. Its browser steps are in `flow.mjs`, one function per scene.
 | Name | Shows | Length |
 |---|---|---|
 | `website-tour` | The public site, lift and quote path first: home, lifts by boat type, a lift-type page, the sizes and the calculator with FiberSteel's formula, and sending a quote request (emailed to FiberSteel for review). Then the pages owners know from the current site, modernized: remotes, dock steps, used lifts, dealers, owner help, the warranty, contact, and the side topics in the footer | about 2:00 |
-| `installs-feature` | "Lifts we've installed": the showcase and its filters, an install page, the lift pages, how installs get added (over time, or by FiberSteel's staff with FiberSteel mode), posting one from a finished job, publishing it, and the on/off switch | about 1:45 |
-| `fibersteel-mode-tour` | FiberSteel mode, introduced as an optional demo of what's possible: sign-in, dashboard, inbox, jobs and schedule, customers and their lifts, warranty, inventory, dealers, accounting, analytics, website | about 1:40 |
+| `installs-feature` | "Lifts we've installed": the showcase and its filters, an install page, the lift and home pages, how installs get added (over time, from FiberSteel's photos of finished jobs), and the site with the showcase left off, then back on | about 1:10 |
 
 ## Make a video (what to run)
 
@@ -66,9 +65,8 @@ finds the root with `git rev-parse`) — it exists locally even before anything 
    - no frame shows an error page, a "Not found", a blank or white frame, or a spinner that never finished;
    - **every narration line is true of what's on screen while it plays.** Use the `.vtt` captions for the times, and
      extract extra frames where you need them (`ffmpeg -ss <seconds> -i <mp4> -frames:v 1 out.jpg`). A line that names
-     something the video doesn't show is a problem, even if the app can do it;
-   - in FiberSteel mode, no dialog or welcome panel covers the screen;
-   - on public pages, the demo's Public/FiberSteel mode pill and the forms' hand-off note are hidden.
+     something the video doesn't show is a problem, even if the site can do it;
+   - no page names an employee ("Call us", never a person's name), and the forms' concept-demo note is hidden.
 
    Also extract one frame from the captioned copy and check the caption is readable:
    ```bash
@@ -90,27 +88,21 @@ Options:
 
 ## Rules
 
-- **Recording is safe.** The site is static. FiberSteel mode keeps its sample data in the recording browser's own
-  storage, and nothing is sent anywhere: the forms and the publish are both simulated. Each run starts from a fresh
-  browser with freshly generated sample data.
+- **Recording is safe.** The site is static and nothing is sent anywhere: the forms are simulated. Each run starts
+  from a fresh browser.
 - **Never click anything that leaves the concept site** — dealer websites, the Vrbo listing, Google Maps directions,
   `tel:` and `mailto:` links, YouTube. Point at them (hover) instead. The flows don't load the map or the videos either.
-- **Sample data stays fictional.** Use `example.com` emails, 555 phone numbers and invented customers. Dean, the one
-  real name, appears only as the sign-in profile the demo already has.
-- **No invented claims.** Install samples are labelled as samples on the site, and the used-lift listings and dealer
-  accounts in FiberSteel mode are samples too. The narration must not call them real FiberSteel jobs, listings or
-  dealers. Specs and prices are only the ones FiberSteel's site states.
-- **FiberSteel mode is optional.** FiberSteel may buy the website on its own, so never present FiberSteel mode as part
-  of the website:
-  - The real site emails each request to the address FiberSteel chooses, for the team to review. Never say a website
-    request reaches FiberSteel mode.
-  - On public pages, hide the demo's Public/FiberSteel mode pill (`.mode-switch`) and the forms' hand-off note
-    (`[data-office-note]`), as `website-tour` does in `ready`. Neither is part of the real site; the note links into the
-    demo. Keep the pill only where the flow clicks it (`fibersteel-mode-tour`).
-  - Where FiberSteel mode does appear, present it as an option. `installs-feature` says new installs can be added over
-    time, or, with FiberSteel mode, uploaded and managed by FiberSteel's staff.
-  - `fibersteel-mode-tour` says at the start that it's purely a demo of what's possible, and that a real one would be
-    customized to how FiberSteel works.
+- **Sample data stays fictional.** Use `example.com` emails, 555 phone numbers and invented customers. Never name a
+  FiberSteel employee, in narration or typed text: the site says "Call us", because whoever answers may be someone
+  else.
+- **No invented claims.** Install samples and used-lift listings are labelled as samples on the site. The narration
+  must not call them real FiberSteel jobs or listings. Specs and prices are only the ones FiberSteel's site states.
+- **The website only.** There is no staff app. Never narrate one, or anything staff do in the site itself:
+  - The real site emails each request to the address FiberSteel chooses, for the team to review.
+  - Hide the forms' concept-demo note (`[data-demo-note]`), as both flows do in `ready`: it isn't part of the real
+    site, and the narration says what really happens.
+  - New installs are "added over time, from the photos FiberSteel sends of finished jobs". The showcase on/off is a
+    build setting (src/data/features.ts): say it "can stay off", never that FiberSteel flips a switch.
 - **Hand over H.264 MP4**, which plays everywhere, including iPhones and email previews.
 - **Don't commit generated files.** `video-drafts/` is gitignored. Only `script.json`, `flow.mjs`, `bin/` and `lib/`
   are source.
@@ -127,13 +119,13 @@ Options:
    - `baseURL` comes from `process.env.FS_VIDEO_BASE_URL`, and every path starts with `/fibersteel/`.
    - The `api` has `page` (Playwright), `click(target, { after, zoom })`, `hover(target)`, `type(target, text, { delay })`,
      `press(key)`, `scroll(px, seconds)` and `pause(seconds)`. A target is a CSS selector or a Playwright locator.
-   - `pause()` and `after` are skipped in `--check`. If the app must finish saving before you navigate (FiberSteel mode
-     saves to IndexedDB), use `page.waitForTimeout()` instead.
-   - `login` runs off camera, and its localStorage carries into the recording. To be signed in to FiberSteel mode, set
-     `fs-office-ui` to `{ signedIn: true, userId: 'dean', welcomeDismissed: true, … }`, as `installs-feature/flow.mjs`
-     does.
-   - Scroll smoothly with the `scrollTo()` helper in the existing flows. FiberSteel mode scrolls the window too. Don't
-     use the kit's `scroll()` for long distances: its wheel steps run far slower than their `seconds`.
+   - `pause()` and `after` are skipped in `--check`. Where something must finish before you navigate, use
+     `page.waitForTimeout()` instead.
+   - `login` runs off camera, and its localStorage carries into the recording.
+   - To show the site with the installs showcase left off, serve pages as a build with `installs: false` marks them
+     (`<html data-installs="off">`): `installs-feature/flow.mjs` does it with `page.route()`.
+   - Scroll smoothly with the `scrollTo()` helper in the existing flows. Don't use the kit's `scroll()` for long
+     distances: its wheel steps run far slower than their `seconds`.
    - Say only what the scene shows. The samples are samples, a feature you don't open isn't narrated, and dates and
      the open/closed status on screen must not contradict the narration.
 4. Run `--check` until it passes, then make the video and review its frames as above.

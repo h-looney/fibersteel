@@ -6,6 +6,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import { site, tel, prettyPhone } from '../data/site';
+import { withBase } from '../scripts/url';
 ---
 
 <BaseLayout title="Privacy" description="How FiberSteel Boat Lifts uses the information you send through this website.">
@@ -33,8 +34,8 @@ import { site, tel, prettyPhone } from '../data/site';
       </p>
       <h2>Questions</h2>
       <p>
-        Call {site.name} at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> or email
-        <a href={`mailto:${site.sales.email}`}>{site.sales.email}</a> to ask what we hold about you, or to have it deleted.
+        Call {site.name} at <a href={tel(site.sales.phone)}>{prettyPhone(site.sales.phone)}</a> or
+        <a href={withBase('/contact/#message')}>send us a message</a> to ask what we hold about you, or to have it deleted.
       </p>
     </div>
   </section>

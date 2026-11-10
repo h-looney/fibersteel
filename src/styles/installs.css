@@ -1,5 +1,5 @@
-/* Lifts we've installed: install cards, grids and filters (src/components/InstallCard.astro, InstallGrid.astro). Global:
-   installs published from FiberSteel mode are built in the browser with the same classes (src/scripts/installs.ts). */
+/* Lifts we've installed: install cards, grids and filters (src/components/InstallCard.astro, InstallGrid.astro), and
+   the notice shown in their place when the showcase is switched off (src/components/FeatureOff.astro). */
 
 .install-card__media {
   --ratio: 4 / 3;
@@ -21,7 +21,7 @@
   gap: 0.3em;
   padding: 0.2em 0.6em;
   border-radius: var(--radius-pill);
-  background: rgb(11 37 69 / 0.72);
+  background: rgb(var(--c-ink-rgb) / 0.72);
   color: #fff;
   font-size: var(--fs-2xs);
   font-weight: 650;
@@ -72,12 +72,6 @@
   color: var(--c-text-muted);
   font-size: var(--fs-2xs);
   font-weight: 650;
-}
-
-.install-card__flag--preview {
-  border: 0;
-  background: var(--c-accent-50);
-  color: var(--c-accent-700);
 }
 
 /* ---------- Grids and filters ---------- */
@@ -158,7 +152,7 @@ button.chip[aria-pressed='true'] .install-filters__n {
   font-weight: 600;
 }
 
-/* A notice that a page or part of it is switched off in FiberSteel mode (this browser only) */
+/* A notice that a page or part of it is switched off (src/data/features.ts) */
 .feature-off {
   display: flex;
   gap: var(--space-3);
@@ -190,9 +184,4 @@ button.chip[aria-pressed='true'] .install-filters__n {
   background: var(--c-paper);
   color: var(--c-text-muted);
   font-size: var(--fs-sm);
-}
-
-/* A section that waits for its first install (a model page): shown once one is published */
-[data-install-section][hidden] {
-  display: none;
 }

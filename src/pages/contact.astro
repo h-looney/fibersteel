@@ -11,7 +11,7 @@ import { withBase } from '../scripts/url';
 
 const hero = photo('front/6800-front-mounted-2');
 const lines = [
-  { ...site.sales, icon: 'phone' as const, note: `For help, call ${site.sales.contact} for personal service. Ordering a lift and scheduling the installation only takes about five minutes.` },
+  { ...site.sales, icon: 'phone' as const, note: 'For help, call us for personal service. Ordering a lift and scheduling the installation only takes about five minutes.' },
   { ...site.service, icon: 'wrench' as const, note: 'Repairs, parts and service calls.' },
 ];
 ---
@@ -44,7 +44,7 @@ const lines = [
               <div>
                 <h2 class="h4">{l.label}</h2>
                 <a href={tel(l.phone)} class="line__phone tabular">{prettyPhone(l.phone)}</a>
-                <a href={`mailto:${l.email}`} class="line__email">{l.email}</a>
+                {l.email && <a href={`mailto:${l.email}`} class="line__email">{l.email}</a>}
                 <p class="muted small">{l.note}</p>
               </div>
             </article>
@@ -82,7 +82,7 @@ const lines = [
           <h2 class="h3">Drop us a line</h2>
           <p class="muted">For a lift quote, the <a class="text-link" href={withBase('/quote/')}>quote request</a> asks for exactly what we need. For anything else:</p>
         </div>
-        <RequestForm kind="contact" submitLabel="Send" doneText="Your message is on its way, and we’ll get back to you within 48 hours.">
+        <RequestForm kind="contact" id="message" submitLabel="Send" doneText="Your message is on its way, and we’ll get back to you within 48 hours.">
           <div class="request__grid">
             <label class="field">
               <span class="field__label">Name</span>

@@ -57,9 +57,9 @@ export const site = {
   sales: {
     label: 'Sales & information',
     phone: '573-346-3088',
-    email: 'dean@lakeboatlifts.com',
-    /** "For help, call Dean for personal service!" (Contact page) */
-    contact: 'Dean',
+    // TODO(FiberSteel): a general sales address to show (e.g. sales@lakeboatlifts.com). The current site shows one
+    // person's address, and the pages here name no one: whoever answers may be someone else ("Call us").
+    email: undefined as string | undefined,
   },
   service: {
     label: 'Service, parts & repairs',

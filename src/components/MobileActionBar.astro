@@ -9,7 +9,7 @@ import { site, tel, prettyPhone } from '../data/site';
 import { withBase } from '../scripts/url';
 
 const lines = [
-  { label: 'Sales & new lifts', sub: `Ask for ${site.sales.contact}`, phone: site.sales.phone },
+  { label: 'Sales & new lifts', sub: 'Sizing, quotes & orders', phone: site.sales.phone },
   { label: 'Service, parts & repairs', sub: 'Service department', phone: site.service.phone },
 ];
 ---
@@ -69,7 +69,7 @@ const lines = [
       grid-template-columns: 1fr 1fr 1.3fr;
       gap: var(--space-2);
       padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
-      background: rgb(11 37 69 / 0.96);
+      background: rgb(var(--c-ink-rgb) / 0.96);
       backdrop-filter: blur(10px);
       border-top: 1px solid var(--c-ink-line);
     }
@@ -109,7 +109,7 @@ const lines = [
   }
 
   .sheet::backdrop {
-    background: rgb(7 26 50 / 0.55);
+    background: rgb(var(--c-deep-rgb) / 0.55);
   }
 
   @media (prefers-reduced-motion: no-preference) {

@@ -11,8 +11,7 @@ import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MobileActionBar from '../components/MobileActionBar.astro';
-import ModeSwitch from '../components/ModeSwitch.astro';
-import { features, FEATURES_KEY } from '../data/features';
+import { features } from '../data/features';
 import { withBase } from '../scripts/url';
 
 interface Props {
@@ -28,14 +27,17 @@ const { title, description, image, noindex, schema } = Astro.props;
 // The current site's announcement ("Order your NEW lift … installed to be ready for the summer fun!").
 // Bump this id when the announcement changes so returning visitors see it again.
 const announcementId = 'order-for-summer-2027';
+
+// Parts of the site that can be switched off at build time (src/data/features.ts): <html data-installs="on|off">
+const featureAttrs = Object.fromEntries(Object.entries(features).map(([id, on]) => [`data-${id}`, on ? 'on' : 'off']));
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" {...featureAttrs}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b2545" />
+    <meta name="theme-color" content="#0a2f2c" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
@@ -49,28 +51,6 @@ const announcementId = 'order-for-summer-2027';
           document.documentElement.classList.add('announcement-dismissed');
         }
       } catch (e) {}
-    </script>
-
-    <script is:inline define:vars={{ featureKey: FEATURES_KEY, featureDefaults: features }}>
-      // Parts of the site switched on or off in FiberSteel mode (src/data/features.ts): <html data-installs="on|off">.
-      // Set before the page draws, and again when FiberSteel mode flips a switch in another tab.
-      (function () {
-        var root = document.documentElement;
-        function apply() {
-          var set = {};
-          try {
-            set = JSON.parse(localStorage.getItem(featureKey) || '{}') || {};
-          } catch (e) {}
-          for (var id in featureDefaults) {
-            var on = typeof set[id] === 'boolean' ? set[id] : featureDefaults[id];
-            root.setAttribute('data-' + id, on ? 'on' : 'off');
-          }
-        }
-        apply();
-        addEventListener('storage', function (e) {
-          if (e.key === featureKey || e.key === null) apply();
-        });
-      })();
     </script>
 
     <script is:inline>
@@ -100,7 +80,6 @@ const announcementId = 'order-for-summer-2027';
 
     <Footer />
     <MobileActionBar />
-    <ModeSwitch />
 
     <script>
       // Reveal-on-scroll for elements marked [data-reveal]

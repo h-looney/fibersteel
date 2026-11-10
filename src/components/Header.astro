@@ -223,7 +223,7 @@ const feature = photo('performance/14000-back-in-walkboards');
           <a href={tel(site.sales.phone)} class="drawer__line">
             <span class="icon-tile"><Icon name="phone" size={20} /></span>
             <span>
-              <strong>Sales — ask for {site.sales.contact}</strong>
+              <strong>Sales &amp; new lifts</strong>
               <span class="tabular">{prettyPhone(site.sales.phone)}</span>
             </span>
           </a>
@@ -246,7 +246,7 @@ const feature = photo('performance/14000-back-in-walkboards');
 <style>
   /* ---------- Top bar ---------- */
   .topbar {
-    background: #071a32;
+    background: var(--c-deep);
     color: var(--c-text-invert-muted);
     font-size: var(--fs-xs);
   }
@@ -307,7 +307,7 @@ const feature = photo('performance/14000-back-in-walkboards');
     gap: var(--space-1);
     padding: 0;
     list-style: none;
-    --icon-cutout: #071a32;
+    --icon-cutout: var(--c-deep);
   }
 
   .topbar__social a {
@@ -349,7 +349,7 @@ const feature = photo('performance/14000-back-in-walkboards');
   }
 
   .site-header.is-scrolled {
-    box-shadow: 0 10px 30px -16px rgb(11 37 69 / 0.35);
+    box-shadow: 0 10px 30px -16px rgb(var(--c-ink-rgb) / 0.35);
   }
 
   @supports (backdrop-filter: blur(8px)) {
@@ -532,7 +532,7 @@ const feature = photo('performance/14000-back-in-walkboards');
     right: 0;
     background: var(--c-paper);
     border-bottom: 1px solid var(--c-line);
-    box-shadow: 0 30px 60px -20px rgb(11 37 69 / 0.4);
+    box-shadow: 0 30px 60px -20px rgb(var(--c-ink-rgb) / 0.4);
   }
 
   .mega__inner {
@@ -692,7 +692,7 @@ const feature = photo('performance/14000-back-in-walkboards');
   }
 
   .drawer::backdrop {
-    background: rgb(7 26 50 / 0.55);
+    background: rgb(var(--c-deep-rgb) / 0.55);
     backdrop-filter: blur(2px);
   }
 

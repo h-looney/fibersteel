@@ -10,8 +10,6 @@
     "video-drafts"
   ],
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
     "baseUrl": ".",
     "paths": {
       "@/*": [

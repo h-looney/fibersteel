@@ -6,10 +6,9 @@
  *   - every public page: axe-clean at 1440 px and 390 px, no console errors, no sideways scroll on a phone, and no
  *     request to anyone else's server until the visitor asks (maps, videos)
  *   - the lift size calculator and its hand-off to the quote form; the quote form's steps, checks and confirmation
- *   - the other forms (service, warranty registration, dealer inquiry, contact) and the hand-off queue
- *   - installs filters and the installs on/off switch; the dealer locator (state filter, distance sort)
+ *   - the other forms (service, warranty registration, dealer inquiry, contact), each saying nothing was sent
+ *   - installs filters, and what hides when the showcase is switched off; the dealer locator (state filter, distance sort)
  *   - old GoDaddy addresses redirect; the photo viewer and the phone menu and call sheet work by keyboard and touch
- *   - FiberSteel mode tests are in office.ts (run from here once the staff demo is built)
  *
  * No request leaves the machine: external navigations and assets are stubbed.
  */
@@ -39,7 +38,6 @@ const PUBLIC_PAGES = [
   '/quote/',
   '/installs/',
   '/installs/chris-craft-24000-back-in/',
-  '/installs/preview/?id=missing',
   '/remotes/',
   '/dock-steps/',
   '/used-lifts/',
@@ -138,11 +136,10 @@ await test('the calculator works out FiberSteel’s formula and hands the number
 
 /* ---------- The quote form ---------- */
 
-await test('quote form: checks each step, needs a phone or an email, then confirms and hands off', async () => {
+await test('quote form: checks each step, needs a phone or an email, then confirms (and says the demo sent nothing)', async () => {
   const t = await open();
   const { page } = t;
   await goto(page, url('/quote/?type=pontoon'));
-  await page.evaluate(() => localStorage.removeItem('fs-office-queue'));
   // ?type=pontoon pre-selects the boat
   assert(await page.$eval('input[name="boatType"][value="pontoon"]', (e) => (e as HTMLInputElement).checked), 'pontoon pre-selected');
   await page.click('input[name="boatType"][value="v-bottom"]');
@@ -171,15 +168,16 @@ await test('quote form: checks each step, needs a phone or an email, then confir
   const done = await page.evaluate(() => ({
     title: document.querySelector('[data-done-title]')?.textContent,
     summary: document.querySelector('[data-summary]')?.textContent ?? '',
-    note: !(document.querySelector('[data-office-note]') as HTMLElement).hidden,
-    link: (document.querySelector('[data-office-link]') as HTMLAnchorElement).getAttribute('href'),
-    queue: JSON.parse(localStorage.getItem('fs-office-queue') ?? '[]'),
+    text: document.querySelector('[data-done]')?.textContent?.replace(/\s+/g, ' ') ?? '',
+    note: (document.querySelector('[data-demo-note]') as HTMLElement).hidden ? '' : document.querySelector('[data-demo-note]')?.textContent?.replace(/\s+/g, ' ') ?? '',
+    links: [...document.querySelectorAll('[data-done] a')].map((a) => a.getAttribute('href')),
   }));
   assert(done.title === 'Thank you, Jordan!', `title: ${done.title}`);
   assert(done.summary.includes('Sample Boats') && done.summary.includes('12 × 28 ft'), done.summary);
-  assert(done.note && /\/fibersteel\/office\/inbox\/\?ref=W/.test(done.link ?? ''), 'hand-off note');
-  const q = done.queue[0];
-  assert(done.queue.length === 1 && q.kind === 'quote' && q.email === 'jordan@example.com' && q.data.slipWidth === '12' && q.data.dryWeight === '3000', JSON.stringify(q));
+  assert(/Call us at \(573\) 346-3088/.test(done.text), `confirmation: ${done.text}`);
+  assert(/nothing was sent/.test(done.note) && /emailed to the address FiberSteel chooses/.test(done.note), `demo note: ${done.note}`);
+  assert(done.links.every((h) => !/office/.test(h ?? '')), `links: ${done.links}`);
+  assert(t.external.length === 0, `the form sent something: ${t.external.join(', ')}`);
   await axe(page, 'quote confirmation');
   await page.close();
 });
@@ -189,8 +187,8 @@ await test('quote form: checks each step, needs a phone or an email, then confir
 await test('service, warranty, dealer and contact forms check their fields and confirm', async () => {
   const t = await open();
   const { page } = t;
+  const demoNote = () => page.$eval('[data-demo-note]', (e) => !(e as HTMLElement).hidden && /nothing was sent/.test(e.textContent ?? ''));
   await goto(page, url('/service/'));
-  await page.evaluate(() => localStorage.removeItem('fs-office-queue'));
   await page.click('[data-submit]');
   await sleep(150);
   assert(await page.$eval('[data-required-group]:has(input[name="problem"])', (e) => 'invalid' in (e as HTMLElement).dataset), 'a problem is required');
@@ -202,6 +200,7 @@ await test('service, warranty, dealer and contact forms check their fields and c
   await page.click('[data-submit]');
   await page.waitForSelector('[data-done]:not([hidden])', { timeout: 10_000 });
   assert((await page.$eval('[data-done-title]', (e) => e.textContent)) === 'Thank you, Avery!', 'service done');
+  assert(await demoNote(), 'service: demo note');
 
   await goto(page, url('/warranty/register/'));
   await page.select('select[name="liftSize"]', '10000');
@@ -212,6 +211,7 @@ await test('service, warranty, dealer and contact forms check their fields and c
   await page.click('[data-submit]');
   await page.waitForSelector('[data-done]:not([hidden])', { timeout: 10_000 });
   assert((await page.$eval('[data-done-title]', (e) => e.textContent)) === 'You’re registered, Casey!', 'warranty done');
+  assert(await demoNote(), 'warranty: demo note');
 
   await goto(page, url('/dealers/become-a-dealer/'));
   await page.type('input[name="business"]', 'Sample Marina');
@@ -219,6 +219,7 @@ await test('service, warranty, dealer and contact forms check their fields and c
   await page.type('input[name="email"]', 'riley@example.com');
   await page.click('[data-submit]');
   await page.waitForSelector('[data-done]:not([hidden])', { timeout: 10_000 });
+  assert(await demoNote(), 'dealer: demo note');
 
   await goto(page, url('/contact/'));
   await page.type('input[name="name"]', 'Sam Example');
@@ -226,16 +227,16 @@ await test('service, warranty, dealer and contact forms check their fields and c
   await page.type('textarea[name="message"]', 'Do you have a used 8,000 lb lift?');
   await page.click('[data-submit]');
   await page.waitForSelector('[data-done]:not([hidden])', { timeout: 10_000 });
+  assert(await demoNote(), 'contact: demo note');
 
-  const kinds = await page.evaluate(() => JSON.parse(localStorage.getItem('fs-office-queue') ?? '[]').map((q: { kind: string }) => q.kind));
-  assert(JSON.stringify(kinds) === JSON.stringify(['service', 'warranty', 'dealer', 'contact']), `queued: ${kinds}`);
+  assert(t.external.length === 0, `a form sent something: ${t.external.join(', ')}`);
   assert(t.errors.length === 0, t.errors.join('\n'));
   await page.close();
 });
 
 /* ---------- Installs ---------- */
 
-await test('installs: filters, ?kind= opens on one, and the whole showcase switches off', async () => {
+await test('installs: filters, ?kind= opens on one, and what hides when the showcase is switched off', async () => {
   const t = await open();
   const { page } = t;
   await goto(page, url('/installs/'));
@@ -249,18 +250,25 @@ await test('installs: filters, ?kind= opens on one, and the whole showcase switc
   assert(docking.length >= 1 && docking.every((d) => d === 'Back-in'), `docking: ${docking}`);
   // Every card says it's a sample
   assert(await page.$$eval('.install-card', (cards) => cards.every((c) => /Sample install/.test(c.textContent ?? ''))), 'sample flags');
-  // Switched off in FiberSteel mode (kept in this browser)
-  await page.evaluate(() => localStorage.setItem('fs-site-features', JSON.stringify({ installs: false })));
+  // Built with the showcase on (src/data/features.ts); built with it off, <html data-installs="off"> hides it
   await goto(page, url('/'));
-  const off = await page.evaluate(() => ({
-    attr: document.documentElement.dataset.installs,
-    section: getComputedStyle(document.querySelector('#installs')!).display,
-    nav: getComputedStyle(document.querySelector('.primary-nav [data-feature="installs"]')!).display,
-  }));
-  assert(off.attr === 'off' && off.section === 'none' && off.nav === 'none', JSON.stringify(off));
+  assert((await page.evaluate(() => document.documentElement.dataset.installs)) === 'on', 'built with installs on');
+  const off = await page.evaluate(() => {
+    document.documentElement.dataset.installs = 'off';
+    return {
+      section: getComputedStyle(document.querySelector('#installs')!).display,
+      nav: getComputedStyle(document.querySelector('.primary-nav [data-feature="installs"]')!).display,
+    };
+  });
+  assert(off.section === 'none' && off.nav === 'none', JSON.stringify(off));
   await goto(page, url('/installs/'));
-  assert(await page.$eval('.feature-off', (e) => getComputedStyle(e).display !== 'none'), 'switched-off notice');
-  await page.evaluate(() => localStorage.removeItem('fs-site-features'));
+  assert(await page.$eval('.feature-off', (e) => getComputedStyle(e).display === 'none'), 'no notice while on');
+  const notice = await page.evaluate(() => {
+    document.documentElement.dataset.installs = 'off';
+    const e = document.querySelector<HTMLElement>('.feature-off')!;
+    return getComputedStyle(e).display !== 'none' ? e.textContent?.replace(/\s+/g, ' ').trim() ?? '' : '';
+  });
+  assert(/isn’t on the site right now/.test(notice) && /call us/.test(notice), `switched-off notice: ${notice}`);
   await page.close();
 });
 
@@ -350,13 +358,6 @@ await test('videos and the map load only when asked', async () => {
   await page.waitForSelector('[data-lite-video] iframe[src*="youtube-nocookie.com"]');
   await page.close();
 });
-
-/* ---------- FiberSteel mode (phase 3) ---------- */
-
-if (existsSync(join(DIST, 'office', 'index.html'))) {
-  const { officeTests } = await import('./office.ts');
-  await officeTests({ ORIGIN, url });
-}
 
 await closeBrowser();
 server.close();

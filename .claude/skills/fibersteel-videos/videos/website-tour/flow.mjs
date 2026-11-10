@@ -4,10 +4,9 @@
 // Google Maps, tel: and mailto: links) — the flow points at them instead.
 const base = process.env.FS_VIDEO_BASE_URL ?? 'http://127.0.0.1:4398';
 
-/** Two demo-only extras that aren't part of the real site: the Public/FiberSteel mode pill, which covers the
- *  bottom-left corner, and the note after a form is sent that links into the FiberSteel mode demo. FiberSteel mode is
- *  optional, and the real site emails each request to the address FiberSteel chooses: hide both */
-const HIDE_DEMO_EXTRAS = '.mode-switch,[data-office-note]{display:none!important}';
+/** The note after a form is sent ("Concept demo: nothing was sent…") isn't part of the real site, which emails each
+ *  request to the address FiberSteel chooses (and the narration says so): hide it */
+const HIDE_DEMO_EXTRAS = '[data-demo-note]{display:none!important}';
 
 /** Smooth-scroll the window so the index-th match sits `offset` px from the top */
 async function scrollTo(page, selector, offset = 96, ms = 1100, index = 0) {

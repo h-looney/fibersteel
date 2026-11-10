@@ -5,7 +5,7 @@ export interface NavLink {
   label: string;
   href: string;
   description?: string;
-  /** Shown only while this part of the site is switched on in FiberSteel mode (src/data/features.ts) */
+  /** Shown only while this part of the site is switched on (src/data/features.ts) */
   feature?: 'installs';
 }
 

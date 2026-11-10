@@ -14,7 +14,7 @@ export const faqs: Faq[] = [
   {
     id: 'size',
     q: 'How do I find the lift size I need?',
-    a: 'Add up your boat’s dry weight, its fuel weight (7 lb per gallon) and 2,000 lb for boats up to 30 ft long (3,000 lb for larger boats). That’s the lift size you need. The <a href="/lifts/sizes/#calculator">lift size calculator</a> does the math — or call Dean at 573-346-3088 for help.',
+    a: 'Add up your boat’s dry weight, its fuel weight (7 lb per gallon) and 2,000 lb for boats up to 30 ft long (3,000 lb for larger boats). That’s the lift size you need. The <a href="/lifts/sizes/#calculator">lift size calculator</a> does the math — or call us at 573-346-3088 for help.',
   },
   {
     id: 'quote',

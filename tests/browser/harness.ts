@@ -1,6 +1,6 @@
 /**
  * Browser-test helpers: one headless Chromium, pages with every external request stubbed (no network), console-error
- * collection, axe-core checks, a sideways-scroll check and FiberSteel mode sign-in.
+ * collection, axe-core checks, a sideways-scroll check and tab stops.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -172,17 +172,4 @@ export async function tabStops(page: Page, max = 80): Promise<string[]> {
     );
   }
   return stops;
-}
-
-/** Sign in to FiberSteel mode as a demo profile (the sign-in screen stores the same thing). */
-export async function signIn(page: Page, origin: string, userId: string) {
-  await page.goto(`${origin}/fibersteel/robots.txt`);
-  await page.evaluate((id) => {
-    localStorage.setItem('fs-office-ui', JSON.stringify({ signedIn: true, userId: id, jobsView: 'board', range: '90d', welcomeDismissed: true, tried: [] }));
-  }, userId);
-}
-
-export async function officeReady(page: Page) {
-  await page.waitForSelector('[data-page-title]', { timeout: 30_000 });
-  await sleep(300);
 }

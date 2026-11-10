@@ -2,13 +2,15 @@
 /**
  * A one-page request form (service & parts, warranty registration, dealer inquiry, contact): the fields go in the
  * default slot; this handles checking them, sending (src/scripts/forms.ts — front end only, `data-endpoint` to wire a
- * backend), the confirmation, and the concept demo's hand-off note to FiberSteel mode.
+ * backend), the confirmation, and the concept demo's note that nothing was sent.
  *
  * Fields marked data-contact-one (phone, email): at least one of them is needed.
  */
 import Icon from './Icon.astro';
 import { site, tel, prettyPhone } from '../data/site';
-import type { FormKind } from '../office/bridge';
+
+/** Which request this is (sent with the form as data-kind) */
+type FormKind = 'service' | 'warranty' | 'dealer' | 'contact';
 
 interface Props {
   kind: FormKind;
@@ -25,7 +27,7 @@ const phone = line === 'service' ? site.service : site.sales;
 ---
 
 <div class="request" data-request id={id}>
-  <form class="request__form" data-request-form data-office={kind} novalidate>
+  <form class="request__form" data-request-form data-kind={kind} novalidate>
     <slot />
     <p class="request__privacy"><Icon name="shield" size={16} /> We’ll only use your information to answer your request.</p>
     <div class="request__actions">
@@ -45,9 +47,9 @@ const phone = line === 'service' ? site.service : site.sales;
       {doneText} Need us sooner? Call <a href={tel(phone.phone)}>{prettyPhone(phone.phone)}</a>.
     </p>
     <dl class="request__summary" data-request-summary></dl>
-    <p class="demo-handoff" data-office-note hidden>
-      <Icon name="briefcase" size={16} />
-      <span><strong>Concept demo:</strong> on the real site, this request is emailed to the address FiberSteel chooses, for the team to review. If FiberSteel adds FiberSteel mode, it also arrives in the staff inbox. <a href="#" data-office-link>See it in the FiberSteel mode demo</a></span>
+    <p class="demo-handoff" data-demo-note hidden>
+      <Icon name="info" size={16} />
+      <span><strong>Concept demo:</strong> nothing was sent. On the real site, this request is emailed to the address FiberSteel chooses, for the team to review.</span>
     </p>
   </div>
 </div>
@@ -194,7 +196,6 @@ const phone = line === 'service' ? site.service : site.sales;
 
 <script>
   import { validate, liveClear, submit, setBusy } from '../scripts/forms';
-  import { withBase } from '../scripts/url';
 
   document.querySelectorAll<HTMLElement>('[data-request]').forEach((root) => {
     const form = root.querySelector<HTMLFormElement>('[data-request-form]')!;
@@ -231,7 +232,7 @@ const phone = line === 'service' ? site.service : site.sales;
       fail.hidden = true;
       setBusy(button, true);
       try {
-        const officeRef = await submit(form);
+        const result = await submit(form);
         const name = String(new FormData(form).get('name') ?? new FormData(form).get('contactName') ?? '').split(' ')[0];
         const title = root.querySelector<HTMLElement>('[data-done-title]')!;
         title.textContent = name ? `${title.dataset.default?.replace(/!$/, '')}, ${name}!` : title.dataset.default ?? 'Thank you!';
@@ -255,10 +256,7 @@ const phone = line === 'service' ? site.service : site.sales;
             return div;
           }),
         );
-        if (officeRef) {
-          root.querySelector<HTMLAnchorElement>('[data-office-link]')!.href = withBase(`/office/inbox/?ref=${officeRef}&signin`);
-          root.querySelector<HTMLElement>('[data-office-note]')!.hidden = false;
-        }
+        root.querySelector<HTMLElement>('[data-demo-note]')!.hidden = result !== 'demo';
         form.hidden = true;
         done.hidden = false;
         done.focus();

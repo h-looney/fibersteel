@@ -6,6 +6,7 @@
  *   - structured data parses; the sitemap lists only pages that exist, and never the old-address redirect pages
  *   - every old GoDaddy address has a redirect page that sends people to a page that exists
  *   - no HMI or fireplace wording left behind, in pages or scripts; prices only on the pages that show them on the current site
+ *   - no staff demo pages, and no employee's name: the pages say "Call us"
  * DIST overrides the build folder (default: dist).
  */
 import assert from 'node:assert/strict';
@@ -31,8 +32,7 @@ function htmlFiles(dir: string): string[] {
 const redirectDirs = new Set(redirects.map((r) => decodeURIComponent(r.from).replace(/^\//, '')));
 const all = htmlFiles(DIST);
 const isRedirect = (f: string) => redirectDirs.has(relative(DIST, f).replace(/\/index\.html$/, '')) && !['warranty', 'used-lifts', 'dealers', 'e-lux-bikes'].includes(relative(DIST, f).replace(/\/index\.html$/, ''));
-const isOffice = (f: string) => relative(DIST, f).startsWith('office/');
-const pages = all.filter((f) => !isRedirect(f) && !isOffice(f));
+const pages = all.filter((f) => !isRedirect(f));
 const read = (f: string) => readFileSync(f, 'utf8');
 const rel = (f: string) => relative(DIST, f);
 
@@ -62,7 +62,7 @@ describe(`built site in ${DIST}/ (base "${BASE || '/'}")`, () => {
   it('pages served from another domain add noindex (the preview guard), and 404 is noindex outright', () => {
     for (const f of pages) {
       const html = read(f);
-      if (rel(f) === '404.html' || rel(f).startsWith('installs/preview')) assert.match(html, /<meta name="robots" content="noindex"/, rel(f));
+      if (rel(f) === '404.html') assert.match(html, /<meta name="robots" content="noindex"/, rel(f));
       else assert.match(html, /liveHost/, `${rel(f)}: no preview noindex guard`);
     }
   });
@@ -74,7 +74,6 @@ describe(`built site in ${DIST}/ (base "${BASE || '/'}")`, () => {
       for (const m of html.matchAll(/\s(?:href|src)="([^"]+)"/g)) {
         const u = m[1].replace(/&amp;/g, '&');
         if (!u.startsWith('/') || u.startsWith('//')) continue;
-        if (pathOf(u).startsWith(`${BASE}/office/`)) continue; // FiberSteel mode (built in phase 3)
         if (!u.startsWith(`${BASE}/`) && BASE) missing.add(`${rel(f)}: ${u} (not under ${BASE}/ — use withBase())`);
         else if (!existsSync(fileFor(u))) missing.add(`${rel(f)}: ${u}`);
       }
@@ -103,15 +102,15 @@ describe(`built site in ${DIST}/ (base "${BASE || '/'}")`, () => {
     assert.match(home, /"telephone":"\+1-573-346-3088"/);
   });
 
-  it('the sitemap lists pages that exist, never redirect or office pages', () => {
+  it('the sitemap lists pages that exist, never redirect pages', () => {
     const xml = read(join(DIST, 'sitemap.xml'));
     const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
     assert.ok(locs.length >= 25);
     for (const p of locs) {
       assert.ok(existsSync(fileFor(p)), `sitemap lists ${p}, which doesn't exist`);
-      assert.ok(!isRedirect(fileFor(p)) && !p.includes('/office/'), `sitemap lists ${p}`);
+      assert.ok(!isRedirect(fileFor(p)), `sitemap lists ${p}`);
     }
-    assert.match(read(join(DIST, 'robots.txt')), /Disallow: \/office\//);
+    assert.match(read(join(DIST, 'robots.txt')), /^Sitemap: https:\/\/lakeboatlifts\.com\/sitemap\.xml$/m);
   });
 
   it('every old GoDaddy address sends people to a page that exists', () => {
@@ -137,7 +136,7 @@ describe(`built site in ${DIST}/ (base "${BASE || '/'}")`, () => {
     }
   });
 
-  it('no HMI or fireplace wording in the scripts either (FiberSteel mode’s screens live there)', () => {
+  it('no HMI or fireplace wording in the scripts either', () => {
     const words = /\bHMI\b|hmifireplace|fireplace|hearth|\bstoves?\b|Osage Beach showroom|Nixa|Vermont Castings|Heat & Glo|chimney|pellet|firebox|hmi-last|hmi-office/i;
     const astro = join(DIST, '_astro');
     const scripts = existsSync(astro) ? readdirSync(astro).filter((n) => n.endsWith('.js')) : [];
@@ -145,6 +144,27 @@ describe(`built site in ${DIST}/ (base "${BASE || '/'}")`, () => {
     for (const name of scripts) {
       const hit = readFileSync(join(astro, name), 'utf8').match(words);
       assert.ok(!hit, `_astro/${name}: "${hit?.[0]}"`);
+    }
+  });
+
+  it('has no staff demo: no /office/ pages, no staff sign-in, no "FiberSteel mode"', () => {
+    assert.ok(!existsSync(join(DIST, 'office')), 'dist/office/ exists');
+    const astro = join(DIST, '_astro');
+    const scripts = readdirSync(astro).filter((n) => n.endsWith('.js')).map((n) => join(astro, n));
+    for (const f of [...all, ...scripts, join(DIST, 'robots.txt')]) {
+      const hit = read(f).match(/FiberSteel mode|\/office\/|Staff sign-in|fs-office|fs-site-features|data-office/i);
+      assert.ok(!hit, `${rel(f)}: "${hit?.[0]}"`);
+    }
+  });
+
+  it('names no employee: “Call us”, never a person (whoever answers may be someone else)', () => {
+    const astro = join(DIST, '_astro');
+    const scripts = readdirSync(astro).filter((n) => n.endsWith('.js')).map((n) => join(astro, n));
+    for (const f of [...all, ...scripts]) {
+      const text = read(f);
+      // …nor one person's own claim ("boating for over 55 years") turned into the company's
+      const hit = text.match(/\bdean\b|55 years/i) ?? [...text.matchAll(/\b[Aa]sk for [A-Z][a-z]+|\b[Cc]all [A-Z][a-z]+(?= at| for| ·|\.)/g)].find((m) => !/FiberSteel/.test(m[0]));
+      assert.ok(!hit, `${rel(f)}: "${hit?.[0]}"`);
     }
   });
 

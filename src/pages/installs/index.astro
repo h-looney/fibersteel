@@ -32,11 +32,11 @@ const sorted = [...installs].sort((a, b) => b.month.localeCompare(a.month));
         <Icon name="info" size={18} />
         <span>
           <strong>These installs are samples for this concept.</strong> The photos and what each lift has are from
-          FiberSteel’s current site; the towns, months and write-ups are made up. FiberSteel’s real installs would replace them —
-          added over time, or, with FiberSteel mode, uploaded and managed by FiberSteel’s staff.
+          FiberSteel’s current site; the towns, months and write-ups are made up. FiberSteel’s real installs would replace them,
+          added over time as FiberSteel sends photos of finished jobs.
         </span>
       </p>
-      <InstallGrid installs={sorted} scope="all" filters={['kind', 'size', 'docking']} what="installs" headingLevel="h2">
+      <InstallGrid installs={sorted} filters={['kind', 'size', 'docking']} what="installs" headingLevel="h2">
         <Fragment slot="empty">
           No installs match. <button type="button" class="text-link" data-install-reset>Show all installs</button>
         </Fragment>

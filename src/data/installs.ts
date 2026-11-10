@@ -4,8 +4,8 @@
  *
  * THE INSTALLS HERE ARE SAMPLES. The photos and each "built for it" fact come from FiberSteel's current site (its
  * captions); the town, the month and the write-up are made up for this concept, and every card and page says
- * "Sample". Never present them as FiberSteel's real jobs. Real installs replace them: added over time, or — with
- * FiberSteel mode — uploaded and managed by FiberSteel's staff. No invented quotes, ratings or reviews.
+ * "Sample". Never present them as FiberSteel's real jobs. Real installs replace them, added over time from
+ * FiberSteel's photos of finished jobs. No invented quotes, ratings or reviews.
  */
 import type { SourceKey } from './sources';
 

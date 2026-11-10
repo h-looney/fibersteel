@@ -52,7 +52,7 @@ const year = new Date().getFullYear();
         <p>
           <span class="footer__line-label">{site.sales.label}</span>
           <a href={tel(site.sales.phone)} class="footer__phone tabular"><Icon name="phone" size={14} /> {prettyPhone(site.sales.phone)}</a>
-          <a href={`mailto:${site.sales.email}`} class="footer__email">{site.sales.email}</a>
+          {site.sales.email && <a href={`mailto:${site.sales.email}`} class="footer__email">{site.sales.email}</a>}
         </p>
         <p>
           <span class="footer__line-label">{site.service.label}</span>
@@ -101,7 +101,6 @@ const year = new Date().getFullYear();
       <p class="footer__bottom-links">
         <a href={withBase('/privacy/')}>Privacy</a>
         <a href={withBase('/contact/')}>Contact</a>
-        <a href={withBase('/office/?signin')}>Staff sign-in</a>
       </p>
     </div>
   </div>
@@ -111,7 +110,7 @@ const year = new Date().getFullYear();
   .site-footer {
     position: relative;
     background:
-      radial-gradient(ellipse 60% 120% at 85% 0%, rgb(29 78 208 / 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 120% at 85% 0%, rgb(var(--c-glow-rgb) / 0.18), transparent 60%),
       var(--c-ink);
     padding-top: var(--space-8);
     --icon-cutout: var(--c-ink);
@@ -216,6 +215,7 @@ const year = new Date().getFullYear();
 
   .footer__lines p {
     display: grid;
+    align-content: start;
     gap: 0.15rem;
   }
 
@@ -313,7 +313,7 @@ const year = new Date().getFullYear();
 
   .footer__bottom {
     border-top: 1px solid var(--c-ink-line);
-    background: #071a32;
+    background: var(--c-deep);
   }
 
   .footer__bottom-inner {

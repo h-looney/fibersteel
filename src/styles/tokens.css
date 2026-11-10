@@ -1,44 +1,52 @@
 /* ==========================================================================
    FiberSteel Boat Lifts — design tokens
-   Shared by the public site (global.css) and FiberSteel mode (src/office/styles/office.css).
-   Colors come from the FiberSteel logo: lake navy, the royal blue of "Boat Lifts", the sun yellow of the
-   LakeBoatLifts.com box, and the palm green — over galvanized-steel greys.
+   Used by global.css and the page styles.
+   Sea green and sun yellow: deep sea-green surfaces, a sea-green teal accent, and the sun yellow of the
+   LakeBoatLifts.com box in the logo, over cool sea-grey neutrals. (They replaced the logo's lake navy and royal
+   blue in the concept; the logo itself keeps its own colors.)
    ========================================================================== */
 
 :root {
   /* Surfaces */
-  --c-mist: #f3f6f9; /* page background */
+  --c-mist: #f2f6f5; /* page background */
   --c-paper: #ffffff;
-  --c-tint: #e8eef4; /* alternate sections */
-  --c-line: #d5dde6;
-  --c-line-strong: #b4c1cf;
+  --c-tint: #e5efec; /* alternate sections */
+  --c-line: #d2dfdb;
+  --c-line-strong: #b0c4bf;
 
-  /* Dark surfaces (lake navy) */
-  --c-ink: #0b2545;
-  --c-ink-2: #0f2d52;
-  --c-ink-3: #183a64;
-  --c-ink-line: #28496f;
+  /* Dark surfaces (deep sea green) — also the heading color on light surfaces */
+  --c-ink: #0a2f2c;
+  --c-ink-2: #0d3835;
+  --c-ink-3: #144540;
+  --c-ink-line: #255a53;
+  --c-deep: #061f1d; /* the darkest band: top bar, footer bottom, photo viewer */
+  --c-ink-rgb: 10 47 44; /* for shadows and translucent bands: rgb(var(--c-ink-rgb) / 0.7) */
+  --c-deep-rgb: 6 31 29; /* for the overlays on photos */
 
   /* Text */
-  --c-text: #15263a;
-  --c-text-muted: #4d5e71;
-  --c-text-invert: #f1f5fa;
-  --c-text-invert-muted: #b7c6d7;
+  --c-text: #142a27;
+  --c-text-muted: #4a605b;
+  --c-text-invert: #eff7f5;
+  --c-text-invert-muted: #aac7c0;
+  --c-text-invert-rgb: 239 247 245;
 
   /* Accents */
-  --c-accent: #1d4ed0; /* FiberSteel blue — ≥4.5:1 on every light surface */
-  --c-accent-600: #1942ae;
-  --c-accent-700: #153690;
-  --c-accent-300: #8eaef6;
-  --c-accent-50: #e8effd;
+  --c-accent: #0f7462; /* sea-green teal — ≥4.5:1 on every light surface, and with white text on it */
+  --c-accent-600: #0c6254;
+  --c-accent-700: #0a5246;
+  --c-accent-300: #5fd0bd; /* on dark surfaces */
+  --c-accent-200: #b8e4da; /* borders around accent-50 */
+  --c-accent-50: #e3f4ef;
+  --c-accent-rgb: 15 116 98; /* the accent, for shadows and focus rings: rgb(var(--c-accent-rgb) / 0.2) */
+  --c-glow-rgb: 43 181 156; /* a brighter teal for glows on the navy bands */
   --c-sun: #ffcf33; /* CTA on dark surfaces, with navy text */
   --c-sun-600: #f5bd0a;
   --c-sun-50: #fff7d9;
   --c-sun-text: #7a5a00; /* sun-toned text on light, ≥4.5:1 */
   --c-palm: #2f9e4f; /* decorative */
-  --c-steel: #7d8ea1; /* decorative rules & icons */
-  --c-steel-text: #4f6176;
-  --c-steel-light: #c8d3df;
+  --c-steel: #7a918c; /* decorative rules & icons */
+  --c-steel-text: #4b625d;
+  --c-steel-light: #c4d6d1;
 
   /* Status */
   --c-open: #1e7a43;
@@ -85,9 +93,9 @@
   --radius: 8px;
   --radius-lg: 14px;
   --radius-pill: 999px;
-  --shadow-sm: 0 1px 2px rgb(11 37 69 / 0.06), 0 1px 1px rgb(11 37 69 / 0.04);
-  --shadow: 0 2px 6px rgb(11 37 69 / 0.06), 0 10px 24px -8px rgb(11 37 69 / 0.16);
-  --shadow-lg: 0 4px 12px rgb(11 37 69 / 0.08), 0 28px 60px -18px rgb(11 37 69 / 0.34);
+  --shadow-sm: 0 1px 2px rgb(var(--c-ink-rgb) / 0.06), 0 1px 1px rgb(var(--c-ink-rgb) / 0.04);
+  --shadow: 0 2px 6px rgb(var(--c-ink-rgb) / 0.06), 0 10px 24px -8px rgb(var(--c-ink-rgb) / 0.16);
+  --shadow-lg: 0 4px 12px rgb(var(--c-ink-rgb) / 0.08), 0 28px 60px -18px rgb(var(--c-ink-rgb) / 0.34);
 
   /* Layout */
   --container: 1240px;
