@@ -14,7 +14,11 @@
 # assemble an H.264 MP4 → check every line's loudness in it → captions (.vtt + .srt, and a copy with them burned in)
 # → frames to look at.
 #
-# Output (gitignored):  video-drafts/<name>.mp4, <name>.captioned.mp4, <name>.vtt, <name>.srt, frames/<name>-<m>m<ss>s.jpg
+# Output (gitignored):  video-drafts/<name>.mp4 (no captions), captions/<name>.vtt + .srt,
+#                       with-captions/<name>.captioned.mp4, frames/<name>-<m>m<ss>s.jpg
+#                       The caption files are kept out of the videos' folder on purpose: players such as Celluloid
+#                       (mpv), VLC and Totem show a caption file named like the video automatically, and the videos
+#                       must play with captions off unless the viewer turns them on.
 # Work files:           video-drafts/work/<name>/ (narration clips, recording, timeline) — safe to delete
 # =============================================================================
 set -euo pipefail
@@ -51,7 +55,9 @@ command -v ffmpeg > /dev/null || die "ffmpeg is missing (Linux: sudo apt install
 
 OUT="$ROOT/video-drafts"
 WORK="$OUT/work/$NAME"
-mkdir -p "$WORK" "$OUT/frames"
+mkdir -p "$WORK" "$OUT/frames" "$OUT/captions" "$OUT/with-captions"
+# Files an older version of this script left next to the video: a player would turn their captions on by default
+rm -f "$OUT/$NAME.vtt" "$OUT/$NAME.srt" "$OUT/$NAME.captioned.mp4"
 cp "$SRC/script.json" "$SRC/flow.mjs" "$WORK/"
 # The kit's own levelling (single-pass loudnorm) leaves lines shorter than ~3 s far too quiet on ffmpeg 4.4:
 # switch it off for every video, and level the clips with lib/level.mjs after voicing instead
@@ -109,12 +115,24 @@ MP4="$OUT/$NAME.mp4"
 ffmpeg -loglevel error -y -i "$WORK/draft.mp4" -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart "$MP4"
 # Every narrated line in the finished video must be at the same level: frames can't show a line nobody can hear
 node "$SKILL/lib/level.mjs" "$WORK" --check "$MP4" || die "A narration line is too quiet or too loud in $MP4 (see the table above)."
-node "$SKILL/lib/captions.mjs" "$WORK" "$OUT/$NAME.vtt" "$OUT/$NAME.srt"
-# A copy with the captions burned in, for watching with the sound off (phones, email previews)
+# Captions in their own folder, never next to the video (see Output above): the video plays with captions off
+node "$SKILL/lib/captions.mjs" "$WORK" "$OUT/captions/$NAME.vtt" "$OUT/captions/$NAME.srt"
+# A copy with the captions burned in, for watching with the sound off (phones, email previews), in its own folder
 ffmpeg -loglevel error -y -i "$MP4" \
-  -vf "subtitles=$OUT/$NAME.srt:force_style='FontName=DejaVu Sans,FontSize=17,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=3,Outline=6,Shadow=0,MarginV=34'" \
-  -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -c:a copy -movflags +faststart "$OUT/$NAME.captioned.mp4" \
+  -vf "subtitles=$OUT/captions/$NAME.srt:force_style='FontName=DejaVu Sans,FontSize=17,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,BorderStyle=3,Outline=6,Shadow=0,MarginV=34'" \
+  -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -c:a copy -movflags +faststart "$OUT/with-captions/$NAME.captioned.mp4" \
   || say "Couldn't burn in the captions (ffmpeg without libass?) — the .vtt/.srt files are still there"
+# Captions must be off by default: no caption track in the video to send, and no caption file where players look
+# for one (next to the video, or in a subs/subtitles folder beside it)
+[ -z "$(ffprobe -v error -select_streams s -show_entries stream=index -of csv=p=0 "$MP4")" ] \
+  || die "$MP4 has a caption track, which some players switch on by themselves. The video to send must have none."
+for f in "$OUT/$NAME"* "$OUT"/{subs,Subs,subtitles,Subtitles}/"$NAME"*; do
+  case "$f" in
+    *.srt | *.vtt | *.ass | *.ssa | *.sub | *.smi | *.idx | *.sup)
+      die "$f is where video players look for captions, so they'd show them by default. Keep captions in $OUT/captions/." ;;
+  esac
+done
+say "Caption check passed: $NAME.mp4 plays with captions off."
 
 # Frames to look at before sending: one every 8 seconds, from 4 s, each seeked exactly and named by its time
 # (ffmpeg's fps filter would keep the LAST frame of each 8 s slot, so its frames run seconds ahead of their label)
@@ -127,7 +145,7 @@ done
 DUR="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$MP4" | cut -d. -f1)"
 SIZE="$(du -h "$MP4" | cut -f1)"
 say "Done: $NAME — $((DUR / 60)):$(printf '%02d' $((DUR % 60))), $SIZE"
-echo "  $MP4"
-[ -f "$OUT/$NAME.captioned.mp4" ] && echo "  $OUT/$NAME.captioned.mp4"
-echo "  $OUT/$NAME.vtt  (captions)"
+echo "  $MP4  (captions off)"
+[ -f "$OUT/with-captions/$NAME.captioned.mp4" ] && echo "  $OUT/with-captions/$NAME.captioned.mp4  (captions burned in)"
+echo "  $OUT/captions/$NAME.vtt and .srt  (captions)"
 echo "  $OUT/frames/$NAME-*.jpg  ($(ls "$OUT/frames/$NAME"-*.jpg | wc -l) frames to review)"

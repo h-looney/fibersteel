@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Simplified from the FiberSteel Boat Lifts logo: the palm in the sun, over the lake, in the site's sea green. A stand-in until FiberSteel supplies a vector original. -->
-  <rect width="64" height="64" rx="14" fill="#0a2f2c"/>
+  <!-- Simplified from the FiberSteel Boat Lifts logo: the palm in the sun, over the lake. A stand-in until FiberSteel supplies a vector original. -->
+  <rect width="64" height="64" rx="14" fill="#0b2545"/>
   <circle cx="34" cy="27" r="17" fill="#ffd23f" stroke="#f08a1c" stroke-width="2.5"/>
-  <path d="M10 46c8-3 14-3 22 0s14 3 22 0v8c-8 3-14 3-22 0s-14-3-22 0z" fill="#2bb59c"/>
+  <path d="M10 46c8-3 14-3 22 0s14 3 22 0v8c-8 3-14 3-22 0s-14-3-22 0z" fill="#2f6fe0"/>
   <path d="M33 23c-1 9-3 17-8 25" fill="none" stroke="#6b5a3c" stroke-width="3" stroke-linecap="round"/>
   <path d="M33 22c-6-7-15-7-20-2 6-1 12 1 16 5z" fill="#2fa84f"/>
   <path d="M33 22c4-8 13-10 19-6-6 0-11 3-15 8z" fill="#36b357"/>

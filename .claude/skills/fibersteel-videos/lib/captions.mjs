@@ -13,22 +13,32 @@ if (!dir || !vttOut) {
 const tl = JSON.parse(fs.readFileSync(path.join(dir, 'timeline.json'), 'utf8'));
 
 const MAX = 84; // two lines of ~42
+const MIN = 20; // when a sentence is split, no piece shorter than this: a word or two on its own flashes by unread
+// Split a long sentence into pieces of at most MAX characters: at the last comma that leaves both sides at least MIN
+// long, else at the space nearest an even split. (Cutting at the last space that fits left "feet." on its own for 0.3 s.)
+function splitLong(s) {
+  const out = [];
+  let rest = s;
+  while (rest.length > MAX) {
+    const fits = (i) => i >= MIN && rest.length - i - 1 >= MIN;
+    let cut = -1;
+    for (let i = MAX; i > 0 && cut < 0; i--) if (rest[i] === ' ' && rest[i - 1] === ',' && fits(i)) cut = i;
+    if (cut < 0) {
+      const target = rest.length / Math.ceil(rest.length / MAX);
+      for (let i = 1; i <= MAX; i++) {
+        if (rest[i] === ' ' && (cut < 0 || Math.abs(i - target) < Math.abs(cut - target))) cut = i;
+      }
+    }
+    if (cut < 0) break; // one unbroken word longer than MAX: leave it whole
+    out.push(rest.slice(0, cut).trim());
+    rest = rest.slice(cut + 1).trim();
+  }
+  if (rest) out.push(rest);
+  return out;
+}
 function chunks(text) {
   const sentences = text.replace(/\s+/g, ' ').trim().split(/(?<=[.!?])\s+/);
-  const out = [];
-  for (const s of sentences) {
-    if (s.length <= MAX) { out.push(s); continue; }
-    // Split a long sentence at a comma or space near the middle of each piece
-    let rest = s;
-    while (rest.length > MAX) {
-      let cut = rest.lastIndexOf(', ', MAX);
-      if (cut < MAX / 2) cut = rest.lastIndexOf(' ', MAX);
-      out.push(rest.slice(0, cut + (rest[cut] === ',' ? 1 : 0)).trim());
-      rest = rest.slice(cut + 1).trim();
-    }
-    if (rest) out.push(rest);
-  }
-  return out;
+  return sentences.flatMap((s) => (s.length <= MAX ? [s] : splitLong(s)));
 }
 function wrap(line) {
   if (line.length <= 42) return line;

@@ -2,10 +2,8 @@
 
 A modern, front-end-only redesign of [lakeboatlifts.com](https://lakeboatlifts.com/) for **FiberSteel Boat Lifts**
 (factory-direct sales and service at 3910 Old Route 5, Camdenton, MO — Lake of the Ozarks). It keeps what makes the
-current site FiberSteel's — the palm-and-sun logo, the sun yellow, bold headings, the menu groups, and hundreds of
-FiberSteel's own photos of lifts on the water — and adds the tools today's boat owners expect. Around the yellow, a
-deep sea green and a sea-green teal accent replace the current site's navy and royal blue (all in
-`src/styles/tokens.css`).
+current site FiberSteel's — the palm-and-sun logo, the royal blue and sun yellow, bold headings, the menu groups, and
+hundreds of FiberSteel's own photos of lifts on the water — and adds the tools today's boat owners expect.
 
 Built with [Astro](https://astro.build) 7 (the same stack and package versions as the HMI concept): every page is
 pre-rendered static HTML with responsive WebP images, self-hosted fonts and only a few kilobytes of JavaScript.
@@ -136,19 +134,23 @@ Playwright records in its own headless Chromium (never your own browser or anyth
 
 ```bash
 bash .claude/skills/fibersteel-videos/bin/fibersteel-video.sh website-tour --check     # the flow only, ~30 s (builds the site first)
-bash .claude/skills/fibersteel-videos/bin/fibersteel-video.sh website-tour --no-build  # → video-drafts/website-tour.mp4 (+ .captioned.mp4, .vtt, frames)
+bash .claude/skills/fibersteel-videos/bin/fibersteel-video.sh website-tour --no-build  # → video-drafts/website-tour.mp4 (+ with-captions/, captions/, frames/)
 ```
 
 | Video | Shows | Length |
 | --- | --- | --- |
-| `website-tour` | The lift and quote path first — lifts by boat type, a lift page, the sizes and the calculator, a quote request (emailed to FiberSteel for review) — then the familiar pages: remotes, dock steps, used lifts, dealers, owner help, the warranty, contact, and the side topics in the footer | 1:55 |
+| `website-tour` | The lift and quote path first — lifts by boat type, a lift page, the sizes and the calculator, a quote request (emailed to FiberSteel for review) — then the familiar pages: remotes, dock steps, used lifts, dealers, owner help, the warranty, contact, and the side topics in the footer | 1:56 |
 | `installs-feature` | "Lifts we've installed": filters, an install page, the lift and home pages, adding installs over time from FiberSteel's photos, and the site with the showcase left off, then back on | 0:55 |
 
 Each is a `script.json` (narration per scene) and a `flow.mjs` (what the browser does). Both hide the forms'
 concept-demo note (the real site emails each request), and nothing that leaves the concept site is ever clicked (dealer
 sites, the Vrbo listing, maps, `tel:` and `mailto:` links). Every narration line is levelled to the same loudness
 (`lib/level.mjs`, with the kit's own levelling off — `"loudnorm": false`), and the run fails if a line in the finished
-video is off. `video-drafts/` is gitignored. The skill's `SKILL.md` has the full steps, including the frame review.
+video is off. The videos play with captions off: the MP4 to send has no caption track, and the captions
+(`video-drafts/captions/`) and a copy with them burned in (`video-drafts/with-captions/`) are kept apart from it,
+because players such as VLC and mpv show a caption file named like the video automatically. The run fails if either
+check doesn't pass. `video-drafts/` is gitignored. The skill's `SKILL.md` has the full steps, including the frame
+review.
 
 ## Forms & a future backend
 
@@ -212,7 +214,7 @@ and a monthly link check fits in Website Care.
 | Research (passive) | Done 2026-11-10 — `research/FACTS.md` (gitignored) |
 | The site | Done — build, `npm run check`, 28 unit, 14 site and 12 browser tests pass; screenshots reviewed at 1440 and 390 px |
 | Publishing | Done 2026-11-10 — [github.com/h-looney/fibersteel](https://github.com/h-looney/fibersteel), live at [h-looney.github.io/fibersteel](https://h-looney.github.io/fibersteel/). `.github/workflows/deploy.yml` (HMI's, cut down) deploys every push to `main` once the unit tests and the built-site checks pass |
-| Demo videos | Done — two videos in `video-drafts/` (gitignored): `website-tour` 1:55, `installs-feature` 0:55; loudness checks passed and every frame reviewed (see [Demo videos](#demo-videos)) |
+| Demo videos | Done — two videos in `video-drafts/` (gitignored): `website-tour` 1:56, `installs-feature` 0:55; loudness and caption checks passed and every frame reviewed (see [Demo videos](#demo-videos)) |
 | Proposal | Done — kept outside the repo |
 
 ## To confirm with FiberSteel
@@ -264,5 +266,3 @@ and a monthly link check fits in Website Care.
 - **The privacy policy** is a draft in plain words — please review.
 - **Reviews**: none were invented. Real reviews (Google, Facebook, Yelp) could be added with permission.
 - **Logo**: a vector original (SVG/EPS/AI) would be sharper than the PNG.
-- **Colors**: the concept pairs your sun yellow with a deep sea green and a sea-green teal instead of the current
-  site's navy and royal blue (the logo itself is unchanged). Happy with that, or closer to the logo's blues?

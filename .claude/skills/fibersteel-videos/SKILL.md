@@ -24,7 +24,7 @@ per scene. Its browser steps are in `flow.mjs`, one function per scene.
 | Name | Shows | Length |
 |---|---|---|
 | `website-tour` | The public site, lift and quote path first: home, lifts by boat type, a lift-type page, the sizes and the calculator with FiberSteel's formula, and sending a quote request (emailed to FiberSteel for review). Then the pages owners know from the current site, modernized: remotes, dock steps, used lifts, dealers, owner help, the warranty, contact, and the side topics in the footer | about 2:00 |
-| `installs-feature` | "Lifts we've installed": the showcase and its filters, an install page, the lift and home pages, how installs get added (over time, from FiberSteel's photos of finished jobs), and the site with the showcase left off, then back on | about 1:10 |
+| `installs-feature` | "Lifts we've installed": the showcase and its filters, an install page, the lift and home pages, how installs get added (over time, from FiberSteel's photos of finished jobs), and the site with the showcase left off, then back on | about 1:00 |
 
 ## Make a video (what to run)
 
@@ -55,27 +55,31 @@ finds the root with `git rev-parse`) — it exists locally even before anything 
    anyway, run it again: the cache makes it resume quickly.
 
    The run levels every narration line to the same loudness, then measures each line in the finished video. If one is
-   off, it stops with `Loudness check failed` and names the scene. Report that and stop: never send a video from a run
-   that didn't pass. The script prints the files it made:
-   - `video-drafts/<name>.mp4`
-   - `video-drafts/<name>.captioned.mp4`, with the captions burned in for watching without sound
-   - `video-drafts/<name>.vtt` and `.srt`, the captions
+   off, it stops with `Loudness check failed` and names the scene. Then it checks that the video plays with captions
+   off: it has no caption track, and no caption file sits where players look for one. If either check fails, the run
+   stops (`Loudness check failed`, or a message naming the caption track or file). Report that and stop: never send a
+   video from a run that didn't print both `Loudness check passed` and `Caption check passed`. The script prints the
+   files it made:
+   - `video-drafts/<name>.mp4`, the video to send, which plays with captions off
+   - `video-drafts/with-captions/<name>.captioned.mp4`, with the captions burned in for watching without sound
+   - `video-drafts/captions/<name>.vtt` and `.srt`, the captions
    - `video-drafts/frames/<name>-<m>m<ss>s.jpg`, a frame every 8 seconds from 0:04, named by its exact time in the video
 4. **Look at the frames before you call it done.** Open every `video-drafts/frames/<name>-*.jpg` and check that:
    - no frame shows an error page, a "Not found", a blank or white frame, or a spinner that never finished;
-   - **every narration line is true of what's on screen while it plays.** Use the `.vtt` captions for the times, and
+   - **every narration line is true of what's on screen while it plays.** Use the captions
+     (`video-drafts/captions/<name>.vtt`) for the times, and
      extract extra frames where you need them (`ffmpeg -ss <seconds> -i <mp4> -frames:v 1 out.jpg`). A line that names
      something the video doesn't show is a problem, even if the site can do it;
    - no page names an employee ("Call us", never a person's name), and the forms' concept-demo note is hidden.
 
    Also extract one frame from the captioned copy and check the caption is readable:
    ```bash
-   ffmpeg -loglevel error -y -ss 20 -i video-drafts/<name>.captioned.mp4 -frames:v 1 video-drafts/frames/<name>-captioned.jpg
+   ffmpeg -loglevel error -y -ss 20 -i video-drafts/with-captions/<name>.captioned.mp4 -frames:v 1 video-drafts/frames/<name>-captioned.jpg
    ```
 5. **Report** for each video:
    - its length;
    - the two MP4 paths;
-   - that the loudness check passed;
+   - that the loudness check and the caption check passed;
    - anything odd you saw in the frames, with the frame file name.
 
    If a run warns that a scene "keeps moving after its narration ends", include the warning. It's cosmetic, but worth
@@ -104,6 +108,10 @@ Options:
   - New installs are "added over time, from the photos FiberSteel sends of finished jobs". The showcase on/off is a
     build setting (src/data/features.ts): say it "can stay off", never that FiberSteel flips a switch.
 - **Hand over H.264 MP4**, which plays everywhere, including iPhones and email previews.
+- **Captions are off by default.** The user asked for this (2026-11-10). The video to send has no caption track. Never
+  put a `.vtt` or `.srt` file next to it, or in a `subs` or `subtitles` folder beside it: Celluloid (mpv), VLC and
+  Totem find a caption file named like the video and show it automatically. Captions go in `video-drafts/captions/`,
+  and the burned-in copies go in `video-drafts/with-captions/`, kept apart from the videos to send.
 - **Don't commit generated files.** `video-drafts/` is gitignored. Only `script.json`, `flow.mjs`, `bin/` and `lib/`
   are source.
 
@@ -141,8 +149,11 @@ Options:
    the peaks;
 6. runs the kit's `record.mjs` (paced to each narration clip, with a drawn cursor and click ripples), then `assemble.mjs`;
 7. re-encodes the result as H.264 and measures each narrated line in it (`lib/level.mjs --check`);
-8. writes the captions from the timeline (`lib/captions.mjs`) and burns a copy into the video;
-9. pulls out the review frames.
+8. writes the captions from the timeline (`lib/captions.mjs`) to `captions/`, and burns a copy into the video in
+   `with-captions/`;
+9. checks that the video plays with captions off: no caption track, and no `.srt`/`.vtt` named like it next to it or in
+   a `subs`/`subtitles` folder;
+10. pulls out the review frames.
 
 Why the kit's levelling is off: it runs ffmpeg's single-pass `loudnorm` on each clip, and ffmpeg 4.4 gets clips shorter
 than about 3 seconds badly wrong. In testing on the HMI videos, a 2.9-second line came out 29 dB too quiet, and every

@@ -14,7 +14,7 @@ import { installs, kindsForType } from '../../data/installs';
 import { waveArmor } from '../../data/products';
 import { photo, photos } from '../../data/photos';
 import { sources } from '../../data/sources';
-import { site, tel, prettyPhone } from '../../data/site';
+import { site, tel } from '../../data/site';
 import { withBase } from '../../scripts/url';
 
 export function getStaticPaths() {
@@ -166,7 +166,7 @@ const schema = [
 
   <CtaBand
     title={`Ready to put your boat <em>up out of the water?</em>`}
-    text={`Send your boat and slip details, and we’ll size the lift — or call us at ${prettyPhone(site.sales.phone)}.`}
+    text="Send your boat and slip details, and we’ll size the lift — or give us a call."
     quoteHref={quoteHref}
     image={t.gallery[0]}
   />

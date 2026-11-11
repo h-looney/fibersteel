@@ -24,7 +24,7 @@ const {
 const art = photo(image);
 ---
 
-<section class="cta-band on-dark">
+<section class="cta-band section--blue on-dark wave-top">
   <div class="container cta-band__inner" data-reveal>
     <div class="cta-band__text">
       <p class="eyebrow">Factory direct</p>
@@ -56,13 +56,10 @@ const art = photo(image);
 </section>
 
 <style>
+  /* Royal blue with a wave along its top (.section--blue, .wave-top in global.css) */
   .cta-band {
-    position: relative;
     overflow: hidden;
-    background:
-      radial-gradient(ellipse 50% 80% at 80% 60%, rgb(var(--c-glow-rgb) / 0.3), transparent 70%),
-      var(--c-ink-2);
-    border-top: 1px solid var(--c-ink-line);
+    padding-top: var(--wave-h);
   }
 
   .cta-band__inner {
